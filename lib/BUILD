@@ -4,5 +4,7 @@ cc_library(
             "gauge.cc"],
     hdrs = ["counter.h",
             "gauge.h"],
-    visibility = ["//tests:__pkg__"],
+    visibility = ["//visibility:public"],
+    deps = ["@protobuf//:protobuf",
+            "@prometheus_client_model//:prometheus_client_model"],
 )

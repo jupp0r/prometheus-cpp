@@ -1,6 +1,6 @@
 cc_test(
-    name = "counter_test",
-    srcs = ["counter_test.cc"],
+    name = "prometheus_test",
+    srcs = ["counter_test.cc", "gauge_test.cc"],
     copts = ["-Iexternal/googletest/include"],
     deps = ["@googletest//:main",
             "//lib:prometheus-cpp"],

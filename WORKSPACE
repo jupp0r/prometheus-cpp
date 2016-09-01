@@ -63,3 +63,35 @@ git_repository(
     remote = "https://github.com/google/protobuf.git",
     tag = "v3.0.0",
     )
+
+new_git_repository(
+    name = "civetweb",
+    remote = "https://github.com/civetweb/civetweb.git",
+    tag = "v1.8",
+    build_file_content = """
+cc_library(
+    name = "civetweb",
+    srcs = [
+         "src/civetweb.c",
+         "src/CivetServer.cpp",
+    ],
+    hdrs = [
+         "include/civetweb.h",
+         "include/CivetServer.h",
+         "src/md5.inl",
+         "src/handle_form.inl",
+    ],
+    includes = [
+         "include",
+    ],
+    copts = [
+          "-DNDEBUG",
+          "-DNO_CGI",
+          "-DNO_CACHING",
+          "-DNO_SSL",
+          "-DNO_FILES",
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+)

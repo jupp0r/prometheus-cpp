@@ -20,4 +20,4 @@ script:
   - mkdir gcov
   - cd gcov
   - ../bazel-bin/tests/prometheus_test
-  - cpp-coveralls --exclude external --exclude tests --exclude /usr -b /build/bazel-build --gcov . -t ${COVERALLS_TOKEN}
+  - cpp-coveralls --exclude external --exclude tests --exclude /usr -b ../bazel-build --gcov . -t ${COVERALLS_TOKEN}

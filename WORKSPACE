@@ -64,64 +64,34 @@ git_repository(
     tag = "v3.0.0",
     )
 
-# new_git_repository(
-#     name = "civetweb",
-#     remote = "https://github.com/civetweb/civetweb.git",
-#     tag = "v1.8",
-#     build_file_content = """
-# cc_library(
-#     name = "civetweb",
-#     srcs = [
-#          "src/civetweb.c",
-#          "src/CivetServer.cpp",
-#     ],
-#     hdrs = [
-#          "include/civetweb.h",
-#          "include/CivetServer.h",
-#          "src/md5.inl",
-#          "src/handle_form.inl",
-#     ],
-#     includes = [
-#          "include",
-#     ],
-#     copts = [
-#           "-DNDEBUG",
-#           "-DNO_CGI",
-#           "-DNO_CACHING",
-#           "-DNO_SSL",
-#           "-DNO_FILES",
-#     ],
-#     visibility = ["//visibility:public"],
-# )
-# """
-# )
-new_local_repository(
-     name = "civetweb",
-     path = "../civetweb",
-     build_file_content = """
+new_git_repository(
+    name = "civetweb",
+    remote = "https://github.com/civetweb/civetweb.git",
+    commit = "fbdee74",
+    build_file_content = """
 cc_library(
-     name = "civetweb",
-     srcs = [
-          "src/civetweb.c",
-          "src/CivetServer.cpp",
-     ],
-     hdrs = [
-          "include/civetweb.h",
-          "include/CivetServer.h",
-          "src/md5.inl",
-          "src/handle_form.inl",
-     ],
-     includes = [
-          "include",
-     ],
-     copts = [
-           "-DNDEBUG",
-           "-DNO_CGI",
-           "-DNO_CACHING",
-           "-DNO_SSL",
-           "-DNO_FILES",
-     ],
-     visibility = ["//visibility:public"],
- )
- """
- )
+    name = "civetweb",
+    srcs = [
+         "src/civetweb.c",
+         "src/CivetServer.cpp",
+    ],
+    hdrs = [
+         "include/civetweb.h",
+         "include/CivetServer.h",
+         "src/md5.inl",
+         "src/handle_form.inl",
+    ],
+    includes = [
+         "include",
+    ],
+    copts = [
+          "-DNDEBUG",
+          "-DNO_CGI",
+          "-DNO_CACHING",
+          "-DNO_SSL",
+          "-DNO_FILES",
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+)

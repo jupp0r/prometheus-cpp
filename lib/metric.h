@@ -1,17 +1,11 @@
 #pragma once
 
-namespace io {
-namespace prometheus {
-namespace client {
-class Metric;
-}
-}
-}
+#include "cpp/metrics.pb.h"
 
 namespace prometheus {
 
 class Metric {
-  public:
+ public:
   virtual ~Metric() = default;
   virtual io::prometheus::client::Metric collect() = 0;
 };

@@ -49,3 +49,13 @@ TEST_F(FamilyTest, counter_value) {
     ASSERT_GE(collected[0].metric_size(), 1);
     EXPECT_THAT(collected[0].metric(0).counter().value(), Eq(1));
 }
+
+TEST_F(FamilyTest, remove) {
+    auto family = Family<Counter>{"total_requests", "Counts all requests", {}};
+    auto counter1 = family.add({{"name", "counter1"}});
+    family.add({{"name", "counter2"}});
+    family.remove(counter1);
+    auto collected = family.collect();
+    ASSERT_GE(collected.size(), 1);
+    EXPECT_EQ(collected[0].metric_size(), 1);
+}

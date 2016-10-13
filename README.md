@@ -9,7 +9,12 @@ offer the possibility for metrics to collected by Prometheus, but
 other push/pull collections can be added as plugins.
 
 ## Project Status
-Pre-alpha
+Alpha
+
+* parts of the library are instrumented by itself (bytes scraped, number of scrapes)
+* there is a working [example](tests/sample_server.cc) that prometheus successfully scrapes
+* gauge and counter metrics are implemented, histograms and summaries aren't
+* thread safety is missing in registries and metric families (you'd have to lock access yourself for now)
 
 ## License
 MIT

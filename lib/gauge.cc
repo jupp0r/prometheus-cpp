@@ -27,9 +27,9 @@ void Gauge::dec(double value) {
 void Gauge::set(double value) { value_.store(value); }
 
 void Gauge::change(double value) {
-    auto current = value_.load();
-    while (!value_.compare_exchange_weak(current, current + value))
-        ;
+  auto current = value_.load();
+  while (!value_.compare_exchange_weak(current, current + value))
+    ;
 }
 
 void Gauge::set_to_current_time() {
@@ -38,4 +38,11 @@ void Gauge::set_to_current_time() {
 }
 
 double Gauge::value() const { return value_; }
+
+io::prometheus::client::Metric Gauge::collect() {
+  io::prometheus::client::Metric metric;
+  auto gauge = metric.mutable_gauge();
+  gauge->set_value(value());
+  return metric;
+}
 }

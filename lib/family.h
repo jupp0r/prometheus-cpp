@@ -7,7 +7,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "counter.h"
 #include "collectable.h"
+#include "gauge.h"
 #include "metric.h"
 
 namespace prometheus {

@@ -51,6 +51,30 @@ int main(int argc, char** argv) {
 }
 ```
 
+## Building
+
+Install [bazel](https://www.bazel.io).  Bazel makes it trivial to add
+this repo to your project as a dependency. Just add the following to
+your WORKSPACE
+
+```
+git_repository(
+    name = "prometheus-cpp",
+    remote = "https://github.com/jupp0r/prometheus-cpp.git",
+    branch = "master",
+    )
+```
+
+You can also check out this repo and build the library using
+``` bash
+bazel build lib:all
+```
+
+or run the unit tests using
+```
+bazel test tests:prometheus_test
+```
+
 ## Project Status
 Alpha
 

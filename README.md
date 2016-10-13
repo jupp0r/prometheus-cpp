@@ -8,6 +8,49 @@ a powerful abstraction on which to collect and expose metrics. We
 offer the possibility for metrics to collected by Prometheus, but
 other push/pull collections can be added as plugins.
 
+## Usage
+
+``` c++
+#include <chrono>
+#include <map>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include "lib/exposer.h"
+#include "lib/registry.h"
+
+int main(int argc, char** argv) {
+  using namespace prometheus;
+
+  // create an http server running on port 8080
+  auto exposer = Exposer{8080};
+
+  // create a metrics registry with component=main labels applied to all its
+  // metrics
+  auto registry = std::make_shared<Registry>(
+      std::map<std::string, std::string>{{"component", "main"}});
+
+  // add a new counter family to the registry (families combine values with the
+  // same name, but  distinct labels)
+  auto counterFamily = registry->add_counter(
+      "time_running_seconds", "How many seconds is this server running?", {});
+
+  // add a counter to the metric
+  auto secondCounter = counterFamily->add({});
+
+  // ask the exposer to scrape the registry on incoming scrapes
+  exposer.registerCollectable(registry);
+
+  for (;;) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // increment the counter by one (second)
+    secondCounter->inc();
+  }
+  return 0;
+}
+```
+
 ## Project Status
 Alpha
 

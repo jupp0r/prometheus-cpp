@@ -1,4 +1,4 @@
-# Zero-Cost Abstraction Metrics for C++ [![Build Status](https://travis-ci.org/jupp0r/prometheus-cpp.svg?branch=master)](https://travis-ci.org/jupp0r/prometheus-cpp)
+# Prometheus Client Library for Modern C++ [![Build Status](https://travis-ci.org/jupp0r/prometheus-cpp.svg?branch=master)](https://travis-ci.org/jupp0r/prometheus-cpp)
 
 This library aims to enable
 [Metrics-Driven Development](https://sookocheff.com/post/mdd/mdd/) for

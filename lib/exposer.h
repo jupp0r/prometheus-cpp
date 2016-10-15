@@ -16,6 +16,9 @@ class MetricsHandler : public CivetHandler {
 
   bool handleGet(CivetServer* server, struct mg_connection* conn);
 
+ private:
+  std::vector<io::prometheus::client::MetricFamily> collectMetrics() const;
+
   const std::vector<std::weak_ptr<Collectable>>& collectables_;
   Family<Counter>* bytesTransferedFamily_;
   Counter* bytesTransfered_;

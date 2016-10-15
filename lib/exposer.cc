@@ -1,10 +1,12 @@
 #include <chrono>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <thread>
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/util/json_util.h>
 
 #include "exposer.h"
 
@@ -24,12 +26,10 @@ MetricsHandler::MetricsHandler(
           {{"component", "exposer"}})),
       numScrapes_(numScrapesFamily_->add({})) {}
 
-bool MetricsHandler::handleGet(CivetServer* server,
-                               struct mg_connection* conn) {
-  using namespace io::prometheus::client;
-
+static std::string serializeToDelimitedProtobuf(
+    const std::vector<std::weak_ptr<Collectable>>& collectables) {
   std::ostringstream ss;
-  for (auto&& wcollectable : collectables_) {
+  for (auto&& wcollectable : collectables) {
     auto collectable = wcollectable.lock();
     if (!collectable) {
       continue;
@@ -49,18 +49,88 @@ bool MetricsHandler::handleGet(CivetServer* server,
       ss << buffer;
     }
   }
+  return ss.str();
+}
 
-  auto body = ss.str();
-  mg_printf(conn,
-            "HTTP/1.1 200 OK\r\n"
-            "Content-Type: "
-            "application/vnd.google.protobuf; "
-            "proto=io.prometheus.client.MetricFamily; "
-            "encoding=delimited\r\n"
-            "Content-Length: ");
-  mg_printf(conn, "%lu\r\n\r\n", body.size());
-  mg_write(conn, body.data(), body.size());
-  bytesTransfered_->inc(body.size());
+static std::string getAcceptedEncoding(struct mg_connection* conn) {
+  auto request_info = mg_get_request_info(conn);
+  for (int i = 0; i < request_info->num_headers; i++) {
+    auto header = request_info->http_headers[i];
+    if (std::string{header.name} == "Accept") {
+      return {header.value};
+    }
+  }
+  return "";
+}
+
+bool MetricsHandler::handleGet(CivetServer* server,
+                               struct mg_connection* conn) {
+  using namespace io::prometheus::client;
+
+  auto acceptedEncoding = getAcceptedEncoding(conn);
+  if (acceptedEncoding.find("application/vnd.google.protobuf") !=
+      std::string::npos) {
+    auto body = serializeToDelimitedProtobuf(collectables_);
+    mg_printf(conn,
+              "HTTP/1.1 200 OK\r\n"
+              "Content-Type: "
+              "application/vnd.google.protobuf; "
+              "proto=io.prometheus.client.MetricFamily; "
+              "encoding=delimited\r\n"
+              "Content-Length: ");
+    mg_printf(conn, "%lu\r\n\r\n", body.size());
+    mg_write(conn, body.data(), body.size());
+    bytesTransfered_->inc(body.size());
+  } else if (acceptedEncoding.find("application/json") != std::string::npos) {
+    std::stringstream ss;
+    ss << "[";
+
+    for (auto&& wcollectable : collectables_) {
+      auto collectable = wcollectable.lock();
+      if (!collectable) {
+        continue;
+      }
+
+      for (auto&& metricFamily : collectable->collect()) {
+        std::string result;
+        google::protobuf::util::MessageToJsonString(
+            metricFamily, &result, google::protobuf::util::JsonPrintOptions());
+        ss << result;
+        if (collectable != collectables_.back().lock()) {
+          ss << ",";
+        }
+      }
+    }
+    ss << "]";
+    auto body = ss.str();
+    mg_printf(conn,
+              "HTTP/1.1 200 OK\r\n"
+              "Content-Type: application/json\r\n"
+              "Content-Length: ");
+    mg_printf(conn, "%lu\r\n\r\n", body.size());
+    mg_write(conn, body.data(), body.size());
+    bytesTransfered_->inc(body.size());
+  } else {
+    auto body = std::string{};
+    for (auto&& wcollectable : collectables_) {
+      auto collectable = wcollectable.lock();
+      if (!collectable) {
+        continue;
+      }
+
+      for (auto&& metricFamily : collectable->collect()) {
+        body += metricFamily.DebugString() + "\n";
+      }
+      mg_printf(conn,
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: text/plain\r\n"
+                "Content-Length: ");
+      mg_printf(conn, "%lu\r\n\r\n", body.size());
+      mg_write(conn, body.data(), body.size());
+      bytesTransfered_->inc(body.size());
+    }
+  }
+
   numScrapes_->inc();
   return true;
 }

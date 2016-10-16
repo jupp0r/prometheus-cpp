@@ -5,6 +5,7 @@
 #include "collectable.h"
 #include "cpp/metrics.pb.h"
 #include "family.h"
+#include "histogram.h"
 
 namespace prometheus {
 
@@ -20,6 +21,9 @@ class Registry : public Collectable {
       const std::map<std::string, std::string>& labels);
   Family<Gauge>* add_gauge(const std::string& name, const std::string& help,
                            const std::map<std::string, std::string>& labels);
+  Family<Histogram>* add_histogram(
+      const std::string& name, const std::string& help,
+      const std::map<std::string, std::string>& labels);
 
   // collectable
   std::vector<io::prometheus::client::MetricFamily> collect() override;

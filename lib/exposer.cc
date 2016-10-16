@@ -25,7 +25,14 @@ MetricsHandler::MetricsHandler(
       numScrapesFamily_(registry.add_counter(
           "exposer_total_scrapes", "Number of times metrics were scraped",
           {{"component", "exposer"}})),
-      numScrapes_(numScrapesFamily_->add({})) {}
+      numScrapes_(numScrapesFamily_->add({})),
+      requestLatenciesFamily_(registry.add_histogram(
+          "exposer_request_latencies",
+          "Latencies of serving scrape requests, in milliseconds",
+          {{"component", "exposer"}})),
+      requestLatencies_(requestLatenciesFamily_->add(
+          {}, Histogram::BucketBoundaries{1, 5, 10, 20, 40, 80, 160, 320, 640,
+                                          1280, 2560})) {}
 
 static std::string serializeToDelimitedProtobuf(
     const std::vector<io::prometheus::client::MetricFamily>& metrics) {
@@ -90,6 +97,8 @@ bool MetricsHandler::handleGet(CivetServer* server,
                                struct mg_connection* conn) {
   using namespace io::prometheus::client;
 
+  auto startTimeOfRequest = std::chrono::steady_clock::now();
+
   auto acceptedEncoding = getAcceptedEncoding(conn);
   auto metrics = collectMetrics();
 
@@ -118,8 +127,12 @@ bool MetricsHandler::handleGet(CivetServer* server,
   mg_printf(conn, "Content-Length: %lu\r\n\r\n", body.size());
   mg_write(conn, body.data(), body.size());
 
-  bytesTransfered_->inc(body.size());
+  auto stopTimeOfRequest = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+      stopTimeOfRequest - startTimeOfRequest);
+  requestLatencies_->observe(duration.count());
 
+  bytesTransfered_->inc(body.size());
   numScrapes_->inc();
   return true;
 }

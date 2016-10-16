@@ -23,4 +23,7 @@ if [[ ! $telegraf_output == *"time_running_seconds"* ]] ; then
    exit 1
 fi
 
+echo "Success:"
+echo "${telegraf_output}"
+
 exit 0

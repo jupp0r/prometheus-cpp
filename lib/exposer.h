@@ -6,6 +6,7 @@
 
 #include "CivetServer.h"
 #include "registry.h"
+#include "histogram.h"
 
 namespace prometheus {
 
@@ -24,6 +25,8 @@ class MetricsHandler : public CivetHandler {
   Counter* bytesTransfered_;
   Family<Counter>* numScrapesFamily_;
   Counter* numScrapes_;
+  Family<Histogram> *requestLatenciesFamily_;
+  Histogram* requestLatencies_;
 };
 
 class Exposer {

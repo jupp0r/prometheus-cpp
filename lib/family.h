@@ -7,9 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "counter.h"
 #include "collectable.h"
-#include "gauge.h"
 #include "metric.h"
 
 namespace prometheus {
@@ -19,7 +17,8 @@ class Family : public Collectable {
  public:
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constantLabels);
-  T* add(const std::map<std::string, std::string>& labels);
+  template <typename... Args>
+  T* add(const std::map<std::string, std::string>& labels, Args&&... args);
   void remove(T* metric);
 
   // Collectable
@@ -46,9 +45,11 @@ Family<T>::Family(const std::string& name, const std::string& help,
     : name_(name), help_(help), constantLabels_(constantLabels) {}
 
 template <typename T>
-T* Family<T>::add(const std::map<std::string, std::string>& labels) {
+template <typename... Args>
+T* Family<T>::add(const std::map<std::string, std::string>& labels,
+                  Args&&... args) {
   auto hash = hash_labels(labels);
-  auto metric = new T();
+  auto metric = new T(std::forward<Args>(args)...);
 
   metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
   labels_.insert({hash, labels});

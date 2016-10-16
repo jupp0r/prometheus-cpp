@@ -72,14 +72,21 @@ bazel build lib:all
 
 or run the unit tests using
 ```
-bazel test tests:prometheus_test
+bazel test //tests:prometheus_test
+```
+
+There is also an integration test that
+uses [telegraf](https://github.com/influxdata/telegraf) to scrape a
+sample server. With telegraf installed, it can be run using
+```
+bazel test //tests/integration:scrape_test
 ```
 
 ## Project Status
 Alpha
 
 * parts of the library are instrumented by itself (bytes scraped, number of scrapes)
-* there is a working [example](tests/sample_server.cc) that prometheus successfully scrapes
+* there is a working [example](tests/integration/sample_server.cc) that prometheus successfully scrapes
 * gauge and counter metrics are implemented, histograms and summaries aren't
 * thread safety is missing in registries and metric families (you'd have to lock access yourself for now)
 

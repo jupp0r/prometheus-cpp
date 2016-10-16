@@ -14,10 +14,8 @@ install:
   - sudo echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
   - curl https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg | sudo apt-key add -
   - sudo apt-get update && sudo apt-get install -y bazel
-  - sudo pip install cpp-coveralls
+  - wget https://dl.influxdata.com/telegraf/releases/telegraf_1.0.1_amd64.deb
+  - sudo dpkg -i telegraf_1.0.1_amd64.deb
 script:
-  - bazel build tests:prometheus_test --collect_code_coverage
-  - mkdir gcov
-  - cd gcov
-  - ../bazel-bin/tests/prometheus_test
-  - cpp-coveralls --exclude external --exclude tests --exclude /usr -b ../bazel-build --gcov . -t ${COVERALLS_TOKEN}
+  - bazel test --test_output=all //tests:prometheus_test
+  - bazel test --test_output=all //tests/integration:scrape_test

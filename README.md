@@ -82,6 +82,50 @@ sample server. With telegraf installed, it can be run using
 bazel test //tests/integration:scrape_test
 ```
 
+## Benchmarks
+
+There's a benchmark suite you can run:
+
+```
+bazel run -c opt tests/benchmark/benchmarks
+
+INFO: Found 1 target...
+Target //tests/benchmark:benchmarks up-to-date:
+  bazel-bin/tests/benchmark/benchmarks
+INFO: Elapsed time: 1.682s, Critical Path: 1.56s
+
+INFO: Running command line: bazel-bin/tests/benchmark/benchmarks
+Run on (8 X 2300 MHz CPU s)
+2016-10-17 15:56:49
+Benchmark                              Time           CPU Iterations
+--------------------------------------------------------------------
+BM_Counter_Increment                  11 ns         11 ns   62947942
+BM_Counter_Collect                    84 ns         84 ns    8221752
+BM_Gauge_Increment                    11 ns         11 ns   61384663
+BM_Gauge_Decrement                    11 ns         11 ns   62148197
+BM_Gauge_SetToCurrentTime            199 ns        198 ns    3589670
+BM_Gauge_Collect                      86 ns         85 ns    7469136
+BM_Histogram_Observe/0               122 ns        122 ns    5839855
+BM_Histogram_Observe/1               116 ns        115 ns    5806623
+BM_Histogram_Observe/8               126 ns        126 ns    5781588
+BM_Histogram_Observe/64              138 ns        138 ns    4895550
+BM_Histogram_Observe/512             228 ns        228 ns    2992898
+BM_Histogram_Observe/4k              959 ns        958 ns     642231
+BM_Histogram_Collect/0               328 ns        327 ns    2002792
+BM_Histogram_Collect/1               356 ns        354 ns    1819032
+BM_Histogram_Collect/8              1553 ns       1544 ns     454921
+BM_Histogram_Collect/64            10389 ns      10287 ns      66759
+BM_Histogram_Collect/512           75795 ns      75093 ns       9075
+BM_Histogram_Collect/4k           615853 ns     610277 ns       1222
+BM_Registry_CreateFamily             195 ns        182 ns    3843894
+BM_Registry_CreateCounter/0          319 ns        317 ns    1914132
+BM_Registry_CreateCounter/1         2146 ns       2131 ns     408432
+BM_Registry_CreateCounter/8         8936 ns       8837 ns      82439
+BM_Registry_CreateCounter/64       72589 ns      72010 ns       9248
+BM_Registry_CreateCounter/512     694323 ns     686655 ns       1056
+BM_Registry_CreateCounter/4k    18246638 ns   18150525 ns         40
+```
+
 ## Project Status
 Alpha
 

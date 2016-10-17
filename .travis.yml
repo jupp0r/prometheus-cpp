@@ -19,3 +19,4 @@ install:
 script:
   - bazel test --test_output=all //tests:prometheus_test
   - bazel test --test_output=all //tests/integration:scrape_test
+  - bazel run -c opt //tests/benchmark:benchmarks

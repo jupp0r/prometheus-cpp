@@ -95,3 +95,25 @@ cc_library(
 )
 """
 )
+
+new_git_repository(
+    name = "googlebenchmark",
+    remote = "https://github.com/google/benchmark.git",
+    commit = "57a22c69b382b3f010ec4042c9574ea3fd8dcbb4",
+    build_file_content = """
+cc_library(
+    name = "googlebenchmark",
+    srcs = glob(["src/*.cc"],
+                exclude = ["src/re_posix.cc", "src/gnuregex.cc"]),
+    hdrs = glob(["src/*.h", "include/benchmark/*.h"],
+                exclude = ["src/re_posix.h", "src/gnuregex.h"]),
+    includes = [
+         "include",
+    ],
+    visibility = ["//visibility:public"],
+    copts = [
+          "-DHAVE_STD_REGEX"
+    ],
+)
+"""
+)

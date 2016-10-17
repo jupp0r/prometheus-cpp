@@ -85,10 +85,14 @@ bazel test //tests/integration:scrape_test
 ## Project Status
 Alpha
 
-* parts of the library are instrumented by itself (bytes scraped, number of scrapes)
-* there is a working [example](tests/integration/sample_server.cc) that prometheus successfully scrapes
-* gauge and counter metrics are implemented, histograms and summaries aren't
-* thread safety is missing in registries and metric families (you'd have to lock access yourself for now)
+* parts of the library are instrumented by itself (bytes scraped,
+  number of scrapes, scrape request latencies)
+* there is a working [example](tests/integration/sample_server.cc)
+  that prometheus successfully scrapes
+* gauge, counter and histogram metrics are implemented, summaries
+  aren't
+* thread safety is missing in registries and metric families (you'd
+  have to lock access yourself for now)
 
 ## License
 MIT

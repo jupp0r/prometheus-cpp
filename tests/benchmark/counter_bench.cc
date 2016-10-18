@@ -4,7 +4,7 @@
 static void BM_Counter_Increment(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto counterFamily = registry.add_counter("benchmark counter", "", {});
   auto counter = counterFamily->add({});
 
@@ -15,7 +15,7 @@ BENCHMARK(BM_Counter_Increment);
 static void BM_Counter_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto counterFamily = registry.add_counter("benchmark counter", "", {});
   auto counter = counterFamily->add({});
 

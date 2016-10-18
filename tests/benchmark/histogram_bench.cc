@@ -21,7 +21,7 @@ static void BM_Histogram_Observe(benchmark::State& state) {
 
   const auto numberOfBuckets = state.range(0);
 
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto counterFamily = registry.add_histogram("benchmark histogram", "", {});
   auto bucketBoundaries = createLinearBuckets(0, numberOfBuckets - 1, 1);
   auto histogram = counterFamily->add({}, bucketBoundaries);
@@ -48,7 +48,7 @@ static void BM_Histogram_Collect(benchmark::State& state) {
 
   const auto numberOfBuckets = state.range(0);
 
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto counterFamily = registry.add_histogram("benchmark histogram", "", {});
   auto bucketBoundaries = createLinearBuckets(0, numberOfBuckets - 1, 1);
   auto histogram = counterFamily->add({}, bucketBoundaries);

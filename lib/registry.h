@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <mutex>
 
 #include "collectable.h"
 #include "cpp/metrics.pb.h"
@@ -31,5 +32,6 @@ class Registry : public Collectable {
  private:
   std::vector<std::unique_ptr<Collectable>> collectables_;
   std::map<std::string, std::string> constLabels_;
+  std::mutex mutex_;
 };
 }

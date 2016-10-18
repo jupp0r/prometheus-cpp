@@ -135,8 +135,6 @@ Alpha
   that prometheus successfully scrapes
 * gauge, counter and histogram metrics are implemented, summaries
   aren't
-* thread safety is missing in registries and metric families (you'd
-  have to lock access yourself for now)
 
 ## License
 MIT

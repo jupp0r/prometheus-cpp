@@ -30,9 +30,9 @@ TEST_F(FamilyTest, labels) {
   dynamicLabel.set_name("status");
   dynamicLabel.set_value("200");
 
-  auto family = Family<Counter>{"total_requests",
-                                "Counts all requests",
-                                {{constLabel.name(), constLabel.value()}}};
+  Family<Counter> family{"total_requests",
+                         "Counts all requests",
+                         {{constLabel.name(), constLabel.value()}}};
   family.add({{dynamicLabel.name(), dynamicLabel.value()}});
   auto collected = family.collect();
   ASSERT_GE(collected.size(), 1);
@@ -42,7 +42,7 @@ TEST_F(FamilyTest, labels) {
 }
 
 TEST_F(FamilyTest, counter_value) {
-  auto family = Family<Counter>{"total_requests", "Counts all requests", {}};
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto counter = family.add({});
   counter->inc();
   auto collected = family.collect();
@@ -52,7 +52,7 @@ TEST_F(FamilyTest, counter_value) {
 }
 
 TEST_F(FamilyTest, remove) {
-  auto family = Family<Counter>{"total_requests", "Counts all requests", {}};
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto counter1 = family.add({{"name", "counter1"}});
   family.add({{"name", "counter2"}});
   family.remove(counter1);
@@ -62,8 +62,9 @@ TEST_F(FamilyTest, remove) {
 }
 
 TEST_F(FamilyTest, histogram) {
-  auto family = Family<Histogram>{"request_latency", "Latency Histogram", {}};
-  auto histogram1 = family.add({{"name", "histogram1"}}, Histogram::BucketBoundaries{0,1,2});
+  Family<Histogram> family{"request_latency", "Latency Histogram", {}};
+  auto histogram1 = family.add({{"name", "histogram1"}},
+                               Histogram::BucketBoundaries{0, 1, 2});
   histogram1->observe(0);
   auto collected = family.collect();
   ASSERT_EQ(collected.size(), 1);

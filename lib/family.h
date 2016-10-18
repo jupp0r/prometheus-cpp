@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <numeric>
 #include <string>
 #include <unordered_map>
@@ -32,6 +33,7 @@ class Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constantLabels_;
+  std::mutex mutex_;
 
   io::prometheus::client::Metric collect_metric(std::size_t hash, T* metric);
 
@@ -48,6 +50,7 @@ template <typename T>
 template <typename... Args>
 T* Family<T>::add(const std::map<std::string, std::string>& labels,
                   Args&&... args) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hash_labels(labels);
   auto metric = new T(std::forward<Args>(args)...);
 
@@ -71,6 +74,7 @@ std::size_t Family<T>::hash_labels(
 
 template <typename T>
 void Family<T>::remove(T* metric) {
+  std::lock_guard<std::mutex> lock{mutex_};
   if (labels_reverse_lookup_.count(metric) == 0) {
     return;
   }
@@ -83,6 +87,7 @@ void Family<T>::remove(T* metric) {
 
 template <typename T>
 std::vector<io::prometheus::client::MetricFamily> Family<T>::collect() {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto family = io::prometheus::client::MetricFamily{};
   family.set_name(name_);
   family.set_help(help_);

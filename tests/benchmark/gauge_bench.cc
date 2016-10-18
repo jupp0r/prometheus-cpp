@@ -4,7 +4,7 @@
 static void BM_Gauge_Increment(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto gaugeFamily = registry.add_gauge("benchmark gauge", "", {});
   auto gauge = gaugeFamily->add({});
 
@@ -15,7 +15,7 @@ BENCHMARK(BM_Gauge_Increment);
 static void BM_Gauge_Decrement(benchmark::State& state) {
     using prometheus::Registry;
     using prometheus::Gauge;
-    auto registry = Registry{{}};
+    Registry registry{{}};
     auto gaugeFamily = registry.add_gauge("benchmark gauge", "", {});
     auto gauge = gaugeFamily->add({});
 
@@ -26,7 +26,7 @@ BENCHMARK(BM_Gauge_Decrement);
 static void BM_Gauge_SetToCurrentTime(benchmark::State& state) {
     using prometheus::Registry;
     using prometheus::Gauge;
-    auto registry = Registry{{}};
+    Registry registry{{}};
     auto gaugeFamily = registry.add_gauge("benchmark gauge", "", {});
     auto gauge = gaugeFamily->add({});
 
@@ -37,7 +37,7 @@ BENCHMARK(BM_Gauge_SetToCurrentTime);
 static void BM_Gauge_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
-  auto registry = Registry{{}};
+  Registry registry{{}};
   auto gaugeFamily = registry.add_gauge("benchmark gauge", "", {});
   auto gauge = gaugeFamily->add({});
 

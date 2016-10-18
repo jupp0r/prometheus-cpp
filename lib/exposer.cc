@@ -1,17 +1,14 @@
 #include <chrono>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <thread>
 
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/util/json_util.h>
-#include <google/protobuf/util/message_differencer.h>
+#include "cpp/metrics.pb.h"
 
 #include "exposer.h"
-
-#include "cpp/metrics.pb.h"
+#include "json_serializer.h"
+#include "protobuf_delimited_serializer.h"
+#include "serializer.h"
+#include "text_serializer.h"
 
 namespace prometheus {
 MetricsHandler::MetricsHandler(
@@ -34,54 +31,6 @@ MetricsHandler::MetricsHandler(
           {}, Histogram::BucketBoundaries{1, 5, 10, 20, 40, 80, 160, 320, 640,
                                           1280, 2560})) {}
 
-static std::string serializeToDelimitedProtobuf(
-    const std::vector<io::prometheus::client::MetricFamily>& metrics) {
-  std::ostringstream ss;
-  for (auto&& metric : metrics) {
-    {
-      google::protobuf::io::OstreamOutputStream rawOutput{&ss};
-      google::protobuf::io::CodedOutputStream output(&rawOutput);
-
-      const int size = metric.ByteSize();
-      output.WriteVarint32(size);
-    }
-
-    auto buffer = std::string{};
-    metric.SerializeToString(&buffer);
-    ss << buffer;
-  }
-  return ss.str();
-}
-
-static std::string serializeToJson(
-    const std::vector<io::prometheus::client::MetricFamily>& metrics) {
-  using google::protobuf::util::MessageDifferencer;
-
-  std::stringstream ss;
-  ss << "[";
-
-  for (auto&& metric : metrics) {
-    std::string result;
-    google::protobuf::util::MessageToJsonString(
-        metric, &result, google::protobuf::util::JsonPrintOptions());
-    ss << result;
-    if (!MessageDifferencer::Equals(metric, metrics.back())) {
-      ss << ",";
-    }
-  }
-  ss << "]";
-  return ss.str();
-}
-
-static std::string serializeToHumanReadable(
-    const std::vector<io::prometheus::client::MetricFamily>& metrics) {
-  auto result = std::string{};
-  for (auto&& metric : metrics) {
-    result += metric.DebugString() + "\n";
-  }
-  return result;
-}
-
 static std::string getAcceptedEncoding(struct mg_connection* conn) {
   auto request_info = mg_get_request_info(conn);
   for (int i = 0; i < request_info->num_headers; i++) {
@@ -102,24 +51,26 @@ bool MetricsHandler::handleGet(CivetServer* server,
   auto acceptedEncoding = getAcceptedEncoding(conn);
   auto metrics = collectMetrics();
 
-  auto body = std::string{};
   auto contentType = std::string{};
+
+  auto serializer = std::unique_ptr<Serializer>{};
 
   if (acceptedEncoding.find("application/vnd.google.protobuf") !=
       std::string::npos) {
-    body = serializeToDelimitedProtobuf(metrics);
+    serializer.reset(new ProtobufDelimitedSerializer());
     contentType =
         "application/vnd.google.protobuf; "
         "proto=io.prometheus.client.MetricFamily; "
         "encoding=delimited";
   } else if (acceptedEncoding.find("application/json") != std::string::npos) {
-    body = serializeToJson(metrics);
+    serializer.reset(new JsonSerializer());
     contentType = "application/json";
   } else {
-    body = serializeToHumanReadable(metrics);
+    serializer.reset(new TextSerializer());
     contentType = "text/plain";
   }
 
+  auto body = serializer->Serialize(metrics);
   mg_printf(conn,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: %s\r\n",

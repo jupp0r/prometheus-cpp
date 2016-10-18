@@ -10,7 +10,7 @@
 int main(int argc, char** argv) {
   using namespace prometheus;
 
-  auto exposer = Exposer{8080};
+  auto exposer = Exposer{"127.0.0.1:8080"};
   auto registry = std::make_shared<Registry>(std::map<std::string, std::string>{{"component", "main"}});
   auto counterFamily = registry->add_counter(
       "time_running_seconds", "How many seconds is this server running?", {});

@@ -8,7 +8,7 @@
 static void BM_Registry_CreateFamily(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
-  auto registry = Registry{{}};
+  Registry registry{{}};
 
   while (state.KeepRunning()) registry.add_counter("benchmark counter", "", {});
 }
@@ -17,7 +17,7 @@ BENCHMARK(BM_Registry_CreateFamily);
 static void BM_Registry_CreateCounter(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
-  auto registry = Registry{generateRandomLabels(10)};
+  Registry registry{generateRandomLabels(10)};
   auto counterFamily =
       registry.add_counter("benchmark counter", "", generateRandomLabels(10));
 

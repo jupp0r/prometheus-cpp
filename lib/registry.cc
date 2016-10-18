@@ -8,6 +8,7 @@ Registry::Registry(const std::map<std::string, std::string>& constLabels)
 Family<Counter>* Registry::add_counter(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto counterFamily = new Family<Counter>(name, help, labels);
   collectables_.push_back(std::unique_ptr<Collectable>{counterFamily});
   return counterFamily;
@@ -16,6 +17,7 @@ Family<Counter>* Registry::add_counter(
 Family<Gauge>* Registry::add_gauge(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto gaugeFamily = new Family<Gauge>(name, help, labels);
   collectables_.push_back(std::unique_ptr<Collectable>{gaugeFamily});
   return gaugeFamily;
@@ -24,12 +26,14 @@ Family<Gauge>* Registry::add_gauge(
 Family<Histogram>* Registry::add_histogram(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
-    auto histogramFamily = new Family<Histogram>(name, help, labels);
-    collectables_.push_back(std::unique_ptr<Collectable>{histogramFamily});
-    return histogramFamily;
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto histogramFamily = new Family<Histogram>(name, help, labels);
+  collectables_.push_back(std::unique_ptr<Collectable>{histogramFamily});
+  return histogramFamily;
 }
 
 std::vector<io::prometheus::client::MetricFamily> Registry::collect() {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto results = std::vector<io::prometheus::client::MetricFamily>{};
   for (auto&& collectable : collectables_) {
     auto metrics = collectable->collect();

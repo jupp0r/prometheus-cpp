@@ -85,6 +85,7 @@ cc_library(
          "include",
     ],
     copts = [
+          "-DUSE_IPV6",
           "-DNDEBUG",
           "-DNO_CGI",
           "-DNO_CACHING",

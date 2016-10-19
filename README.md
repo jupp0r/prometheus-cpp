@@ -32,12 +32,14 @@ int main(int argc, char** argv) {
       std::map<std::string, std::string>{{"component", "main"}});
 
   // add a new counter family to the registry (families combine values with the
-  // same name, but  distinct labels)
+  // same name, but distinct label dimenstions)
   auto counterFamily = registry->add_counter(
-      "time_running_seconds", "How many seconds is this server running?", {});
+      "time_running_seconds", "How many seconds is this server running?",
+      {{"label", "value"}});
 
-  // add a counter to the metric
-  auto secondCounter = counterFamily->add({});
+  // add a counter to the metric family
+  auto secondCounter = counterFamily->add(
+      {{"another_label", "value"}, {"yet_another_label", "value"}});
 
   // ask the exposer to scrape the registry on incoming scrapes
   exposer.registerCollectable(registry);

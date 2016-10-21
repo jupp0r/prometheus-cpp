@@ -33,21 +33,21 @@ int main(int argc, char** argv) {
 
   // add a new counter family to the registry (families combine values with the
   // same name, but distinct label dimenstions)
-  auto counterFamily = registry->add_counter(
+  auto counter_family = registry->AddCounter(
       "time_running_seconds", "How many seconds is this server running?",
       {{"label", "value"}});
 
   // add a counter to the metric family
-  auto secondCounter = counterFamily->add(
+  auto second_counter = counter_family->Add(
       {{"another_label", "value"}, {"yet_another_label", "value"}});
 
   // ask the exposer to scrape the registry on incoming scrapes
-  exposer.registerCollectable(registry);
+  exposer.RegisterCollectable(registry);
 
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // increment the counter by one (second)
-    secondCounter->inc();
+    second_counter->Increment();
   }
   return 0;
 }

@@ -15,6 +15,6 @@ namespace prometheus {
 class Collectable {
  public:
   virtual ~Collectable() = default;
-  virtual std::vector<io::prometheus::client::MetricFamily> collect() = 0;
+  virtual std::vector<io::prometheus::client::MetricFamily> Collect() = 0;
 };
 }

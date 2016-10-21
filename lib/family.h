@@ -17,13 +17,13 @@ template <typename T>
 class Family : public Collectable {
  public:
   Family(const std::string& name, const std::string& help,
-         const std::map<std::string, std::string>& constantLabels);
+         const std::map<std::string, std::string>& constant_labels);
   template <typename... Args>
-  T* add(const std::map<std::string, std::string>& labels, Args&&... args);
-  void remove(T* metric);
+  T* Add(const std::map<std::string, std::string>& labels, Args&&... args);
+  void Remove(T* metric);
 
   // Collectable
-  std::vector<io::prometheus::client::MetricFamily> collect() override;
+  std::vector<io::prometheus::client::MetricFamily> Collect() override;
 
  private:
   std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
@@ -32,7 +32,7 @@ class Family : public Collectable {
 
   const std::string name_;
   const std::string help_;
-  const std::map<std::string, std::string> constantLabels_;
+  const std::map<std::string, std::string> constant_labels_;
   std::mutex mutex_;
 
   io::prometheus::client::Metric collect_metric(std::size_t hash, T* metric);
@@ -43,12 +43,12 @@ class Family : public Collectable {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const std::map<std::string, std::string>& constantLabels)
-    : name_(name), help_(help), constantLabels_(constantLabels) {}
+                  const std::map<std::string, std::string>& constant_labels)
+    : name_(name), help_(help), constant_labels_(constant_labels) {}
 
 template <typename T>
 template <typename... Args>
-T* Family<T>::add(const std::map<std::string, std::string>& labels,
+T* Family<T>::Add(const std::map<std::string, std::string>& labels,
                   Args&&... args) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hash_labels(labels);
@@ -63,17 +63,17 @@ T* Family<T>::add(const std::map<std::string, std::string>& labels,
 template <typename T>
 std::size_t Family<T>::hash_labels(
     const std::map<std::string, std::string>& labels) {
-  auto combined =
-      std::accumulate(labels.begin(), labels.end(), std::string{},
-                      [](const std::string& acc,
-                         const std::pair<std::string, std::string>& labelPair) {
-                        return acc + labelPair.first + labelPair.second;
-                      });
+  auto combined = std::accumulate(
+      labels.begin(), labels.end(), std::string{},
+      [](const std::string& acc,
+         const std::pair<std::string, std::string>& label_pair) {
+        return acc + label_pair.first + label_pair.second;
+      });
   return std::hash<std::string>{}(combined);
 }
 
 template <typename T>
-void Family<T>::remove(T* metric) {
+void Family<T>::Remove(T* metric) {
   std::lock_guard<std::mutex> lock{mutex_};
   if (labels_reverse_lookup_.count(metric) == 0) {
     return;
@@ -86,7 +86,7 @@ void Family<T>::remove(T* metric) {
 }
 
 template <typename T>
-std::vector<io::prometheus::client::MetricFamily> Family<T>::collect() {
+std::vector<io::prometheus::client::MetricFamily> Family<T>::Collect() {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = io::prometheus::client::MetricFamily{};
   family.set_name(name_);
@@ -101,16 +101,16 @@ std::vector<io::prometheus::client::MetricFamily> Family<T>::collect() {
 template <typename T>
 io::prometheus::client::Metric Family<T>::collect_metric(std::size_t hash,
                                                          T* metric) {
-  auto collected = metric->collect();
-  auto addLabel =
-      [&collected](const std::pair<std::string, std::string>& labelPair) {
+  auto collected = metric->Collect();
+  auto add_label =
+      [&collected](const std::pair<std::string, std::string>& label_pair) {
         auto pair = collected.add_label();
-        pair->set_name(labelPair.first);
-        pair->set_value(labelPair.second);
+        pair->set_name(label_pair.first);
+        pair->set_value(label_pair.second);
       };
-  std::for_each(constantLabels_.cbegin(), constantLabels_.cend(), addLabel);
-  const auto& metricLabels = labels_.at(hash);
-  std::for_each(metricLabels.cbegin(), metricLabels.cend(), addLabel);
+  std::for_each(constant_labels_.cbegin(), constant_labels_.cend(), add_label);
+  const auto& metric_labels = labels_.at(hash);
+  std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
 }

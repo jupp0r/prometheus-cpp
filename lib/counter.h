@@ -13,11 +13,11 @@ class Counter : Metric {
   static const io::prometheus::client::MetricType metric_type =
       io::prometheus::client::COUNTER;
 
-  void inc();
-  void inc(double);
-  double value() const;
+  void Increment();
+  void Increment(double);
+  double Value() const;
 
-  io::prometheus::client::Metric collect();
+  io::prometheus::client::Metric Collect();
 
  private:
   Gauge gauge_;

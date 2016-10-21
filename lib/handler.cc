@@ -11,23 +11,23 @@ MetricsHandler::MetricsHandler(
     const std::vector<std::weak_ptr<Collectable>>& collectables,
     Registry& registry)
     : collectables_(collectables),
-      bytesTransferedFamily_(registry.add_counter(
+      bytes_transfered_family_(registry.AddCounter(
           "exposer_bytes_transfered", "bytesTransferred to metrics services",
           {{"component", "exposer"}})),
-      bytesTransfered_(bytesTransferedFamily_->add({})),
-      numScrapesFamily_(registry.add_counter(
+      bytes_transfered_(bytes_transfered_family_->Add({})),
+      num_scrapes_family_(registry.AddCounter(
           "exposer_total_scrapes", "Number of times metrics were scraped",
           {{"component", "exposer"}})),
-      numScrapes_(numScrapesFamily_->add({})),
-      requestLatenciesFamily_(registry.add_histogram(
+      num_scrapes_(num_scrapes_family_->Add({})),
+      request_latencies_family_(registry.AddHistogram(
           "exposer_request_latencies",
           "Latencies of serving scrape requests, in milliseconds",
           {{"component", "exposer"}})),
-      requestLatencies_(requestLatenciesFamily_->add(
+      request_latencies_(request_latencies_family_->Add(
           {}, Histogram::BucketBoundaries{1, 5, 10, 20, 40, 80, 160, 320, 640,
                                           1280, 2560})) {}
 
-static std::string getAcceptedEncoding(struct mg_connection* conn) {
+static std::string GetAcceptedEncoding(struct mg_connection* conn) {
   auto request_info = mg_get_request_info(conn);
   for (int i = 0; i < request_info->num_headers; i++) {
     auto header = request_info->http_headers[i];
@@ -42,50 +42,50 @@ bool MetricsHandler::handleGet(CivetServer* server,
                                struct mg_connection* conn) {
   using namespace io::prometheus::client;
 
-  auto startTimeOfRequest = std::chrono::steady_clock::now();
+  auto start_time_of_request = std::chrono::steady_clock::now();
 
-  auto acceptedEncoding = getAcceptedEncoding(conn);
-  auto metrics = collectMetrics();
+  auto accepted_encoding = GetAcceptedEncoding(conn);
+  auto metrics = CollectMetrics();
 
-  auto contentType = std::string{};
+  auto content_type = std::string{};
 
   auto serializer = std::unique_ptr<Serializer>{};
 
-  if (acceptedEncoding.find("application/vnd.google.protobuf") !=
+  if (accepted_encoding.find("application/vnd.google.protobuf") !=
       std::string::npos) {
     serializer.reset(new ProtobufDelimitedSerializer());
-    contentType =
+    content_type =
         "application/vnd.google.protobuf; "
         "proto=io.prometheus.client.MetricFamily; "
         "encoding=delimited";
-  } else if (acceptedEncoding.find("application/json") != std::string::npos) {
+  } else if (accepted_encoding.find("application/json") != std::string::npos) {
     serializer.reset(new JsonSerializer());
-    contentType = "application/json";
+    content_type = "application/json";
   } else {
     serializer.reset(new TextSerializer());
-    contentType = "text/plain";
+    content_type = "text/plain";
   }
 
   auto body = serializer->Serialize(metrics);
   mg_printf(conn,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: %s\r\n",
-            contentType.c_str());
+            content_type.c_str());
   mg_printf(conn, "Content-Length: %lu\r\n\r\n", body.size());
   mg_write(conn, body.data(), body.size());
 
-  auto stopTimeOfRequest = std::chrono::steady_clock::now();
+  auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-      stopTimeOfRequest - startTimeOfRequest);
-  requestLatencies_->observe(duration.count());
+      stop_time_of_request - start_time_of_request);
+  request_latencies_->Observe(duration.count());
 
-  bytesTransfered_->inc(body.size());
-  numScrapes_->inc();
+  bytes_transfered_->Increment(body.size());
+  num_scrapes_->Increment();
   return true;
 }
 std::vector<io::prometheus::client::MetricFamily>
-MetricsHandler::collectMetrics() const {
-  auto collectedMetrics = std::vector<io::prometheus::client::MetricFamily>{};
+MetricsHandler::CollectMetrics() const {
+  auto collected_metrics = std::vector<io::prometheus::client::MetricFamily>{};
 
   for (auto&& wcollectable : collectables_) {
     auto collectable = wcollectable.lock();
@@ -93,12 +93,12 @@ MetricsHandler::collectMetrics() const {
       continue;
     }
 
-    for (auto metric : collectable->collect()) {
-      collectedMetrics.push_back(metric);
+    for (auto metric : collectable->Collect()) {
+      collected_metrics.push_back(metric);
     }
   }
 
-  return collectedMetrics;
+  return collected_metrics;
 }
 }
 }

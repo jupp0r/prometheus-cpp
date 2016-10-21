@@ -7,42 +7,42 @@ Gauge::Gauge() : value_{0} {}
 
 Gauge::Gauge(double value) : value_{value} {}
 
-void Gauge::inc() { inc(1.0); }
-void Gauge::inc(double value) {
+void Gauge::Increment() { Increment(1.0); }
+void Gauge::Increment(double value) {
   if (value < 0.0) {
     return;
   }
-  change(value);
+  Change(value);
 }
 
-void Gauge::dec() { dec(1.0); }
+void Gauge::Decrement() { Decrement(1.0); }
 
-void Gauge::dec(double value) {
+void Gauge::Decrement(double value) {
   if (value < 0.0) {
     return;
   }
-  change(-1.0 * value);
+  Change(-1.0 * value);
 }
 
-void Gauge::set(double value) { value_.store(value); }
+void Gauge::Set(double value) { value_.store(value); }
 
-void Gauge::change(double value) {
+void Gauge::Change(double value) {
   auto current = value_.load();
   while (!value_.compare_exchange_weak(current, current + value))
     ;
 }
 
-void Gauge::set_to_current_time() {
+void Gauge::SetToCurrentTime() {
   auto time = std::time(nullptr);
-  set(static_cast<double>(time));
+  Set(static_cast<double>(time));
 }
 
-double Gauge::value() const { return value_; }
+double Gauge::Value() const { return value_; }
 
-io::prometheus::client::Metric Gauge::collect() {
+io::prometheus::client::Metric Gauge::Collect() {
   io::prometheus::client::Metric metric;
   auto gauge = metric.mutable_gauge();
-  gauge->set_value(value());
+  gauge->set_value(Value());
   return metric;
 }
 }

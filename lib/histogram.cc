@@ -6,35 +6,35 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucketBoundaries_{buckets}, bucketCounts_(buckets.size() + 1) {}
+    : bucket_boundaries_{buckets}, bucket_counts_(buckets.size() + 1) {}
 
-void Histogram::observe(double value) {
+void Histogram::Observe(double value) {
   // TODO: determine bucket list size at which binary search would be faster
-  auto bucketIndex = std::max(
-      0L, std::find_if(bucketBoundaries_.begin(), bucketBoundaries_.end(),
+  auto bucket_index = std::max(
+      0L, std::find_if(bucket_boundaries_.begin(), bucket_boundaries_.end(),
                        [value](double boundary) { return boundary > value; }) -
-              bucketBoundaries_.begin());
-  sum_.inc(value);
-  bucketCounts_[bucketIndex].inc();
+              bucket_boundaries_.begin());
+  sum_.Increment(value);
+  bucket_counts_[bucket_index].Increment();
 }
 
-io::prometheus::client::Metric Histogram::collect() {
+io::prometheus::client::Metric Histogram::Collect() {
   auto metric = io::prometheus::client::Metric{};
   auto histogram = metric.mutable_histogram();
 
-  auto sampleCount = std::accumulate(
-      bucketCounts_.begin(), bucketCounts_.end(), double{0},
-      [](double sum, const Counter& counter) { return sum + counter.value(); });
-  histogram->set_sample_count(sampleCount);
-  histogram->set_sample_sum(sum_.value());
+  auto sample_count = std::accumulate(
+      bucket_counts_.begin(), bucket_counts_.end(), double{0},
+      [](double sum, const Counter& counter) { return sum + counter.Value(); });
+  histogram->set_sample_count(sample_count);
+  histogram->set_sample_sum(sum_.Value());
 
-  for (int i = 0; i < bucketCounts_.size(); i++) {
-    auto& count = bucketCounts_[i];
+  for (int i = 0; i < bucket_counts_.size(); i++) {
+    auto& count = bucket_counts_[i];
     auto bucket = histogram->add_bucket();
-    bucket->set_cumulative_count(count.value());
-    bucket->set_upper_bound(i == bucketBoundaries_.size()
+    bucket->set_cumulative_count(count.Value());
+    bucket->set_upper_bound(i == bucket_boundaries_.size()
                                 ? std::numeric_limits<double>::infinity()
-                                : bucketBoundaries_[i]);
+                                : bucket_boundaries_[i]);
   }
   return metric;
 }

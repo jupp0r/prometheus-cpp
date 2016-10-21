@@ -16,13 +16,13 @@ class Histogram : public Metric {
 
   Histogram(const BucketBoundaries& buckets);
 
-  void observe(double value);
+  void Observe(double value);
 
-  io::prometheus::client::Metric collect();
+  io::prometheus::client::Metric Collect();
 
  private:
-  const BucketBoundaries bucketBoundaries_;
-  std::vector<Counter> bucketCounts_;
+  const BucketBoundaries bucket_boundaries_;
+  std::vector<Counter> bucket_counts_;
   Counter sum_;
 };
 }

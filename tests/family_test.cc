@@ -23,29 +23,29 @@ bool operator==(const io::prometheus::client::LabelPair& a,
 }
 
 TEST_F(FamilyTest, labels) {
-  auto constLabel = io::prometheus::client::LabelPair{};
-  constLabel.set_name("component");
-  constLabel.set_value("test");
-  auto dynamicLabel = io::prometheus::client::LabelPair{};
-  dynamicLabel.set_name("status");
-  dynamicLabel.set_value("200");
+  auto const_label = io::prometheus::client::LabelPair{};
+  const_label.set_name("component");
+  const_label.set_value("test");
+  auto dynamic_label = io::prometheus::client::LabelPair{};
+  dynamic_label.set_name("status");
+  dynamic_label.set_value("200");
 
   Family<Counter> family{"total_requests",
                          "Counts all requests",
-                         {{constLabel.name(), constLabel.value()}}};
-  family.add({{dynamicLabel.name(), dynamicLabel.value()}});
-  auto collected = family.collect();
+                         {{const_label.name(), const_label.value()}}};
+  family.Add({{dynamic_label.name(), dynamic_label.value()}});
+  auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
   ASSERT_GE(collected[0].metric_size(), 1);
   EXPECT_THAT(collected[0].metric(0).label(),
-              ElementsAre(constLabel, dynamicLabel));
+              ElementsAre(const_label, dynamic_label));
 }
 
 TEST_F(FamilyTest, counter_value) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto counter = family.add({});
-  counter->inc();
-  auto collected = family.collect();
+  auto counter = family.Add({});
+  counter->Increment();
+  auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
   ASSERT_GE(collected[0].metric_size(), 1);
   EXPECT_THAT(collected[0].metric(0).counter().value(), Eq(1));
@@ -53,20 +53,20 @@ TEST_F(FamilyTest, counter_value) {
 
 TEST_F(FamilyTest, remove) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto counter1 = family.add({{"name", "counter1"}});
-  family.add({{"name", "counter2"}});
-  family.remove(counter1);
-  auto collected = family.collect();
+  auto counter1 = family.Add({{"name", "counter1"}});
+  family.Add({{"name", "counter2"}});
+  family.Remove(counter1);
+  auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
   EXPECT_EQ(collected[0].metric_size(), 1);
 }
 
-TEST_F(FamilyTest, histogram) {
+TEST_F(FamilyTest, Histogram) {
   Family<Histogram> family{"request_latency", "Latency Histogram", {}};
-  auto histogram1 = family.add({{"name", "histogram1"}},
+  auto histogram1 = family.Add({{"name", "histogram1"}},
                                Histogram::BucketBoundaries{0, 1, 2});
-  histogram1->observe(0);
-  auto collected = family.collect();
+  histogram1->Observe(0);
+  auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1);
   ASSERT_GE(collected[0].metric_size(), 1);
   ASSERT_TRUE(collected[0].metric(0).has_histogram());

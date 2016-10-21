@@ -7,6 +7,6 @@ namespace prometheus {
 class Metric {
  public:
   virtual ~Metric() = default;
-  virtual io::prometheus::client::Metric collect() = 0;
+  virtual io::prometheus::client::Metric Collect() = 0;
 };
 }

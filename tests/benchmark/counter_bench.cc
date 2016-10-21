@@ -5,10 +5,10 @@ static void BM_Counter_Increment(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
   Registry registry{{}};
-  auto counterFamily = registry.add_counter("benchmark counter", "", {});
-  auto counter = counterFamily->add({});
+  auto counter_family = registry.AddCounter("benchmark counter", "", {});
+  auto counter = counter_family->Add({});
 
-  while (state.KeepRunning()) counter->inc();
+  while (state.KeepRunning()) counter->Increment();
 }
 BENCHMARK(BM_Counter_Increment);
 
@@ -16,11 +16,11 @@ static void BM_Counter_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
   Registry registry{{}};
-  auto counterFamily = registry.add_counter("benchmark counter", "", {});
-  auto counter = counterFamily->add({});
+  auto counter_family = registry.AddCounter("benchmark counter", "", {});
+  auto counter = counter_family->Add({});
 
   while (state.KeepRunning()) {
-    benchmark::DoNotOptimize(counter->collect());
+    benchmark::DoNotOptimize(counter->Collect());
   };
 }
 BENCHMARK(BM_Counter_Collect);

@@ -15,18 +15,18 @@ class MetricsHandler : public CivetHandler {
   MetricsHandler(const std::vector<std::weak_ptr<Collectable>>& collectables,
                  Registry& registry);
 
-  bool handleGet(CivetServer* server, struct mg_connection* conn);
+  bool handleGet(CivetServer* server, struct mg_connection* conn) override;
 
  private:
-  std::vector<io::prometheus::client::MetricFamily> collectMetrics() const;
+  std::vector<io::prometheus::client::MetricFamily> CollectMetrics() const;
 
   const std::vector<std::weak_ptr<Collectable>>& collectables_;
-  Family<Counter>* bytesTransferedFamily_;
-  Counter* bytesTransfered_;
-  Family<Counter>* numScrapesFamily_;
-  Counter* numScrapes_;
-  Family<Histogram>* requestLatenciesFamily_;
-  Histogram* requestLatencies_;
+  Family<Counter>* bytes_transfered_family_;
+  Counter* bytes_transfered_;
+  Family<Counter>* num_scrapes_family_;
+  Counter* num_scrapes_;
+  Family<Histogram>* request_latencies_family_;
+  Histogram* request_latencies_;
 };
 }
 }

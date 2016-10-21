@@ -6,33 +6,33 @@
 
 using prometheus::Histogram;
 
-static Histogram::BucketBoundaries createLinearBuckets(double start, double end,
+static Histogram::BucketBoundaries CreateLinearBuckets(double start, double end,
                                                        double step) {
-  auto bucketBoundaries = Histogram::BucketBoundaries{};
+  auto bucket_boundaries = Histogram::BucketBoundaries{};
   for (auto i = start; i < end; i += step) {
-    bucketBoundaries.push_back(i);
+    bucket_boundaries.push_back(i);
   }
-  return bucketBoundaries;
+  return bucket_boundaries;
 }
 
 static void BM_Histogram_Observe(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Histogram;
 
-  const auto numberOfBuckets = state.range(0);
+  const auto number_of_buckets = state.range(0);
 
   Registry registry{{}};
-  auto counterFamily = registry.add_histogram("benchmark histogram", "", {});
-  auto bucketBoundaries = createLinearBuckets(0, numberOfBuckets - 1, 1);
-  auto histogram = counterFamily->add({}, bucketBoundaries);
+  auto counter_family = registry.AddHistogram("benchmark histogram", "", {});
+  auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
+  auto histogram = counter_family->Add({}, bucket_boundaries);
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<> d(0, numberOfBuckets);
+  std::uniform_real_distribution<> d(0, number_of_buckets);
 
   while (state.KeepRunning()) {
     auto observation = d(gen);
     auto start = std::chrono::high_resolution_clock::now();
-    histogram->observe(observation);
+    histogram->Observe(observation);
     auto end = std::chrono::high_resolution_clock::now();
 
     auto elapsed_seconds =
@@ -46,15 +46,15 @@ static void BM_Histogram_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Histogram;
 
-  const auto numberOfBuckets = state.range(0);
+  const auto number_of_buckets = state.range(0);
 
   Registry registry{{}};
-  auto counterFamily = registry.add_histogram("benchmark histogram", "", {});
-  auto bucketBoundaries = createLinearBuckets(0, numberOfBuckets - 1, 1);
-  auto histogram = counterFamily->add({}, bucketBoundaries);
+  auto counter_family = registry.AddHistogram("benchmark histogram", "", {});
+  auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
+  auto histogram = counter_family->Add({}, bucket_boundaries);
 
   while (state.KeepRunning()) {
-    benchmark::DoNotOptimize(histogram->collect());
+    benchmark::DoNotOptimize(histogram->Collect());
   }
 }
 BENCHMARK(BM_Histogram_Collect)->Range(0, 4096);

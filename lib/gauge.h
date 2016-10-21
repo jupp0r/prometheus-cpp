@@ -2,6 +2,7 @@
 
 #include <atomic>
 
+#include "collectable.h"
 #include "cpp/metrics.pb.h"
 #include "metric.h"
 
@@ -14,18 +15,18 @@ class Gauge : public Metric {
 
   Gauge();
   Gauge(double);
-  void inc();
-  void inc(double);
-  void dec();
-  void dec(double);
-  void set(double);
-  void set_to_current_time();
-  double value() const;
+  void Increment();
+  void Increment(double);
+  void Decrement();
+  void Decrement(double);
+  void Set(double);
+  void SetToCurrentTime();
+  double Value() const;
 
-  io::prometheus::client::Metric collect();
+  io::prometheus::client::Metric Collect();
 
  private:
-  void change(double);
+  void Change(double);
   std::atomic<double> value_;
 };
 }

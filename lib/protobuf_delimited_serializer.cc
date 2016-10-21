@@ -13,8 +13,8 @@ std::string ProtobufDelimitedSerializer::Serialize(
   std::ostringstream ss;
   for (auto&& metric : metrics) {
     {
-      google::protobuf::io::OstreamOutputStream rawOutput{&ss};
-      google::protobuf::io::CodedOutputStream output(&rawOutput);
+      google::protobuf::io::OstreamOutputStream raw_output{&ss};
+      google::protobuf::io::CodedOutputStream output(&raw_output);
 
       const int size = metric.ByteSize();
       output.WriteVarint32(size);

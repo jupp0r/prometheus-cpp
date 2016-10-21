@@ -3,16 +3,16 @@
 
 namespace prometheus {
 
-void Counter::inc() { gauge_.inc(); }
+void Counter::Increment() { gauge_.Increment(); }
 
-void Counter::inc(double val) { gauge_.inc(val); }
+void Counter::Increment(double val) { gauge_.Increment(val); }
 
-double Counter::value() const { return gauge_.value(); }
+double Counter::Value() const { return gauge_.Value(); }
 
-io::prometheus::client::Metric Counter::collect() {
+io::prometheus::client::Metric Counter::Collect() {
   io::prometheus::client::Metric metric;
   auto counter = metric.mutable_counter();
-  counter->set_value(value());
+  counter->set_value(Value());
   return metric;
 }
 }

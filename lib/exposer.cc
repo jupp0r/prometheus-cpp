@@ -8,16 +8,16 @@
 
 namespace prometheus {
 
-Exposer::Exposer(const std::string& bindAddress)
-    : server_({"listening_ports", bindAddress.c_str()}),
-      exposerRegistry_(
+Exposer::Exposer(const std::string& bind_address)
+    : server_({"listening_ports", bind_address.c_str()}),
+      exposer_registry_(
           std::make_shared<Registry>(std::map<std::string, std::string>{})),
-      metricsHandler_(collectables_, *exposerRegistry_) {
-  registerCollectable(exposerRegistry_);
-  server_.addHandler("/metrics", &metricsHandler_);
+      metrics_handler_(collectables_, *exposer_registry_) {
+  RegisterCollectable(exposer_registry_);
+  server_.addHandler("/metrics", &metrics_handler_);
 }
 
-void Exposer::registerCollectable(
+void Exposer::RegisterCollectable(
     const std::weak_ptr<Collectable>& collectable) {
   collectables_.push_back(collectable);
 }

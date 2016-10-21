@@ -10,22 +10,22 @@ static void BM_Registry_CreateFamily(benchmark::State& state) {
   using prometheus::Counter;
   Registry registry{{}};
 
-  while (state.KeepRunning()) registry.add_counter("benchmark counter", "", {});
+  while (state.KeepRunning()) registry.AddCounter("benchmark counter", "", {});
 }
 BENCHMARK(BM_Registry_CreateFamily);
 
 static void BM_Registry_CreateCounter(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Counter;
-  Registry registry{generateRandomLabels(10)};
+  Registry registry{GenerateRandomLabels(10)};
   auto counterFamily =
-      registry.add_counter("benchmark counter", "", generateRandomLabels(10));
+      registry.AddCounter("benchmark counter", "", GenerateRandomLabels(10));
 
   while (state.KeepRunning()) {
-    auto labels = generateRandomLabels(state.range(0));
+    auto labels = GenerateRandomLabels(state.range(0));
 
     auto start = std::chrono::high_resolution_clock::now();
-    counterFamily->add(labels);
+    counterFamily->Add(labels);
     auto end = std::chrono::high_resolution_clock::now();
 
     auto elapsed_seconds =

@@ -10,18 +10,18 @@ using namespace prometheus;
 
 class MockCollectable : public Collectable {
  public:
-  MOCK_METHOD0(collect, std::vector<io::prometheus::client::MetricFamily>());
+  MOCK_METHOD0(Collect, std::vector<io::prometheus::client::MetricFamily>());
 };
 
 class RegistryTest : public Test {};
 
-TEST_F(RegistryTest, collectsSingleMetricFamily) {
+TEST_F(RegistryTest, collect_single_metric_family) {
   Registry registry{{}};
 
-  auto counterFamily = registry.add_counter("test", "a test", {});
-  counterFamily->add({{"name", "counter1"}});
-  counterFamily->add({{"name", "counter2"}});
-  auto collected = registry.collect();
+  auto counter_family = registry.AddCounter("test", "a test", {});
+  counter_family->Add({{"name", "counter1"}});
+  counter_family->Add({{"name", "counter2"}});
+  auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1);
   EXPECT_EQ(collected[0].name(), "test");
   EXPECT_EQ(collected[0].help(), "a test");

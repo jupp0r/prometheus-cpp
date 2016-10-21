@@ -12,5 +12,5 @@ class Metric;
 
 class MockMetric : public prometheus::Metric {
  public:
-  MOCK_METHOD0(collect, io::prometheus::client::Metric());
+  MOCK_METHOD0(Collect, io::prometheus::client::Metric());
 };

@@ -14,13 +14,13 @@ namespace prometheus {
 
 class Exposer {
  public:
-  Exposer(const std::string& bindAddress);
-  void registerCollectable(const std::weak_ptr<Collectable>& collectable);
+  Exposer(const std::string& bind_address);
+  void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 
  private:
   CivetServer server_;
   std::vector<std::weak_ptr<Collectable>> collectables_;
-  std::shared_ptr<Registry> exposerRegistry_;
-  detail::MetricsHandler metricsHandler_;
+  std::shared_ptr<Registry> exposer_registry_;
+  detail::MetricsHandler metrics_handler_;
 };
 }

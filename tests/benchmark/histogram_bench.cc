@@ -22,7 +22,7 @@ static void BM_Histogram_Observe(benchmark::State& state) {
 
   const auto number_of_buckets = state.range(0);
 
-  Registry registry{{}};
+  Registry registry;
   auto& histogram_family =
       BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
@@ -51,7 +51,7 @@ static void BM_Histogram_Collect(benchmark::State& state) {
 
   const auto number_of_buckets = state.range(0);
 
-  Registry registry{{}};
+  Registry registry;
   auto& histogram_family =
       BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);

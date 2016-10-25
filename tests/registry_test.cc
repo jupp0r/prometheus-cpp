@@ -16,8 +16,9 @@ class MockCollectable : public Collectable {
 class RegistryTest : public Test {};
 
 TEST_F(RegistryTest, collect_single_metric_family) {
-  Registry registry{{}};
-  auto& counter_family = BuildCounter().Name("test").Help("a test").Register(registry);
+  Registry registry{};
+  auto& counter_family =
+      BuildCounter().Name("test").Help("a test").Register(registry);
   counter_family.Add({{"name", "counter1"}});
   counter_family.Add({{"name", "counter2"}});
   auto collected = registry.Collect();

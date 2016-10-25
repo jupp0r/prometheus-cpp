@@ -2,9 +2,6 @@
 
 namespace prometheus {
 
-Registry::Registry(const std::map<std::string, std::string>& const_labels)
-    : const_labels_(const_labels) {}
-
 Family<Counter>& Registry::AddCounter(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
@@ -38,16 +35,6 @@ std::vector<io::prometheus::client::MetricFamily> Registry::Collect() {
   for (auto&& collectable : collectables_) {
     auto metrics = collectable->Collect();
     results.insert(results.end(), metrics.begin(), metrics.end());
-  }
-
-  for (auto&& metric_family : results) {
-    for (auto&& metric : *metric_family.mutable_metric()) {
-      for (auto&& const_label_pair : const_labels_) {
-        auto label = metric.add_label();
-        label->set_name(const_label_pair.first);
-        label->set_value(const_label_pair.second);
-      }
-    }
   }
 
   return results;

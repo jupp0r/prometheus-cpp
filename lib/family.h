@@ -10,16 +10,23 @@
 
 #include "collectable.h"
 #include "metric.h"
+#include "counter_builder.h"
+#include "gauge_builder.h"
+#include "histogram_builder.h"
 
 namespace prometheus {
 
 template <typename T>
 class Family : public Collectable {
  public:
+  friend class detail::CounterBuilder;
+  friend class detail::GaugeBuilder;
+  friend class detail::HistogramBuilder;
+
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
   template <typename... Args>
-  T* Add(const std::map<std::string, std::string>& labels, Args&&... args);
+  T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
   void Remove(T* metric);
 
   // Collectable
@@ -35,7 +42,7 @@ class Family : public Collectable {
   const std::map<std::string, std::string> constant_labels_;
   std::mutex mutex_;
 
-  io::prometheus::client::Metric collect_metric(std::size_t hash, T* metric);
+  io::prometheus::client::Metric CollectMetric(std::size_t hash, T* metric);
 
   static std::size_t hash_labels(
       const std::map<std::string, std::string>& labels);
@@ -48,7 +55,7 @@ Family<T>::Family(const std::string& name, const std::string& help,
 
 template <typename T>
 template <typename... Args>
-T* Family<T>::Add(const std::map<std::string, std::string>& labels,
+T& Family<T>::Add(const std::map<std::string, std::string>& labels,
                   Args&&... args) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hash_labels(labels);
@@ -57,7 +64,7 @@ T* Family<T>::Add(const std::map<std::string, std::string>& labels,
   metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
   labels_.insert({hash, labels});
   labels_reverse_lookup_.insert({metric, hash});
-  return metric;
+  return *metric;
 }
 
 template <typename T>
@@ -93,14 +100,14 @@ std::vector<io::prometheus::client::MetricFamily> Family<T>::Collect() {
   family.set_help(help_);
   family.set_type(T::metric_type);
   for (const auto& m : metrics_) {
-    *family.add_metric() = std::move(collect_metric(m.first, m.second.get()));
+    *family.add_metric() = std::move(CollectMetric(m.first, m.second.get()));
   }
   return {family};
 }
 
 template <typename T>
-io::prometheus::client::Metric Family<T>::collect_metric(std::size_t hash,
-                                                         T* metric) {
+io::prometheus::client::Metric Family<T>::CollectMetric(std::size_t hash,
+                                                        T* metric) {
   auto collected = metric->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {

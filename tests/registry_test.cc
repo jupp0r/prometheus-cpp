@@ -17,10 +17,9 @@ class RegistryTest : public Test {};
 
 TEST_F(RegistryTest, collect_single_metric_family) {
   Registry registry{{}};
-
-  auto counter_family = registry.AddCounter("test", "a test", {});
-  counter_family->Add({{"name", "counter1"}});
-  counter_family->Add({{"name", "counter2"}});
+  auto& counter_family = BuildCounter().Name("test").Help("a test").Register(registry);
+  counter_family.Add({{"name", "counter1"}});
+  counter_family.Add({{"name", "counter2"}});
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1);
   EXPECT_EQ(collected[0].name(), "test");

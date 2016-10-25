@@ -28,17 +28,18 @@ int main(int argc, char** argv) {
 
   // create a metrics registry with component=main labels applied to all its
   // metrics
-  auto registry = std::make_shared<Registry>(
-      std::map<std::string, std::string>{{"component", "main"}});
+  auto registry = std::make_shared<Registry>();
 
   // add a new counter family to the registry (families combine values with the
   // same name, but distinct label dimenstions)
-  auto counter_family = registry->AddCounter(
-      "time_running_seconds", "How many seconds is this server running?",
-      {{"label", "value"}});
+  auto& counter_family = BuildCounter()
+                             .Name("time_running_seconds")
+                             .Help("How many seconds is this server running?")
+                             .Labels({{"label", "value"}})
+                             .Register(*registry);
 
   // add a counter to the metric family
-  auto second_counter = counter_family->Add(
+  auto& second_counter = counter_family.Add(
       {{"another_label", "value"}, {"yet_another_label", "value"}});
 
   // ask the exposer to scrape the registry on incoming scrapes
@@ -47,7 +48,7 @@ int main(int argc, char** argv) {
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // increment the counter by one (second)
-    second_counter->Increment();
+    second_counter.Increment();
   }
   return 0;
 }

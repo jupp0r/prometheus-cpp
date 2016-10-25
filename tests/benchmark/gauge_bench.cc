@@ -5,7 +5,7 @@ static void BM_Gauge_Increment(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
   using prometheus::BuildGauge;
-  Registry registry{{}};
+  Registry registry;
   auto& gauge_family = BuildGauge().Name("benchmark gauge").Help("").Register(registry);
   auto& gauge = gauge_family.Add({});
 
@@ -17,7 +17,7 @@ static void BM_Gauge_Decrement(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
   using prometheus::BuildGauge;
-  Registry registry{{}};
+  Registry registry;
   auto& gauge_family = BuildGauge().Name("benchmark gauge").Help("").Register(registry);
   auto& gauge = gauge_family.Add({});
 
@@ -29,7 +29,7 @@ static void BM_Gauge_SetToCurrentTime(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
   using prometheus::BuildGauge;
-  Registry registry{{}};
+  Registry registry;
   auto& gauge_family = BuildGauge().Name("benchmark gauge").Help("").Register(registry);
   auto& gauge = gauge_family.Add({});
 
@@ -41,7 +41,7 @@ static void BM_Gauge_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Gauge;
   using prometheus::BuildGauge;
-  Registry registry{{}};
+  Registry registry;
   auto& gauge_family = BuildGauge().Name("benchmark gauge").Help("").Register(registry);
   auto& gauge = gauge_family.Add({});
 

@@ -19,9 +19,6 @@ class Registry : public Collectable {
   friend class detail::GaugeBuilder;
   friend class detail::HistogramBuilder;
 
-  Registry() = default;
-  Registry(const std::map<std::string, std::string>& const_labels);
-
   // collectable
   std::vector<io::prometheus::client::MetricFamily> Collect() override;
 
@@ -35,7 +32,6 @@ class Registry : public Collectable {
       const std::map<std::string, std::string>& labels);
 
   std::vector<std::unique_ptr<Collectable>> collectables_;
-  std::map<std::string, std::string> const_labels_;
   std::mutex mutex_;
 };
 }

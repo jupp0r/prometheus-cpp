@@ -18,13 +18,15 @@ static Histogram::BucketBoundaries CreateLinearBuckets(double start, double end,
 static void BM_Histogram_Observe(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Histogram;
+  using prometheus::BuildHistogram;
 
   const auto number_of_buckets = state.range(0);
 
   Registry registry{{}};
-  auto counter_family = registry.AddHistogram("benchmark histogram", "", {});
+  auto& histogram_family =
+      BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
-  auto histogram = counter_family->Add({}, bucket_boundaries);
+  auto& histogram = histogram_family.Add({}, bucket_boundaries);
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<> d(0, number_of_buckets);
@@ -32,7 +34,7 @@ static void BM_Histogram_Observe(benchmark::State& state) {
   while (state.KeepRunning()) {
     auto observation = d(gen);
     auto start = std::chrono::high_resolution_clock::now();
-    histogram->Observe(observation);
+    histogram.Observe(observation);
     auto end = std::chrono::high_resolution_clock::now();
 
     auto elapsed_seconds =
@@ -45,16 +47,18 @@ BENCHMARK(BM_Histogram_Observe)->Range(0, 4096);
 static void BM_Histogram_Collect(benchmark::State& state) {
   using prometheus::Registry;
   using prometheus::Histogram;
+  using prometheus::BuildHistogram;
 
   const auto number_of_buckets = state.range(0);
 
   Registry registry{{}};
-  auto counter_family = registry.AddHistogram("benchmark histogram", "", {});
+  auto& histogram_family =
+      BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
-  auto histogram = counter_family->Add({}, bucket_boundaries);
+  auto& histogram = histogram_family.Add({}, bucket_boundaries);
 
   while (state.KeepRunning()) {
-    benchmark::DoNotOptimize(histogram->Collect());
+    benchmark::DoNotOptimize(histogram.Collect());
   }
 }
 BENCHMARK(BM_Histogram_Collect)->Range(0, 4096);

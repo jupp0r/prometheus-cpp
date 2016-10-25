@@ -11,19 +11,22 @@ MetricsHandler::MetricsHandler(
     const std::vector<std::weak_ptr<Collectable>>& collectables,
     Registry& registry)
     : collectables_(collectables),
-      bytes_transfered_family_(registry.AddCounter(
-          "exposer_bytes_transfered", "bytesTransferred to metrics services",
-          {{"component", "exposer"}})),
-      bytes_transfered_(bytes_transfered_family_->Add({})),
-      num_scrapes_family_(registry.AddCounter(
-          "exposer_total_scrapes", "Number of times metrics were scraped",
-          {{"component", "exposer"}})),
-      num_scrapes_(num_scrapes_family_->Add({})),
-      request_latencies_family_(registry.AddHistogram(
-          "exposer_request_latencies",
-          "Latencies of serving scrape requests, in milliseconds",
-          {{"component", "exposer"}})),
-      request_latencies_(request_latencies_family_->Add(
+      bytes_transfered_family_(BuildCounter()
+                                   .Name("exposer_bytes_transfered")
+                                   .Help("bytesTransferred to metrics services")
+                                   .Register(registry)),
+      bytes_transfered_(bytes_transfered_family_.Add({})),
+      num_scrapes_family_(BuildCounter()
+                              .Name("exposer_total_scrapes")
+                              .Help("Number of times metrics were scraped")
+                              .Register(registry)),
+      num_scrapes_(num_scrapes_family_.Add({})),
+      request_latencies_family_(
+          BuildHistogram()
+              .Name("exposer_request_latencies")
+              .Help("Latencies of serving scrape requests, in milliseconds")
+              .Register(registry)),
+      request_latencies_(request_latencies_family_.Add(
           {}, Histogram::BucketBoundaries{1, 5, 10, 20, 40, 80, 160, 320, 640,
                                           1280, 2560})) {}
 
@@ -77,10 +80,10 @@ bool MetricsHandler::handleGet(CivetServer* server,
   auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
       stop_time_of_request - start_time_of_request);
-  request_latencies_->Observe(duration.count());
+  request_latencies_.Observe(duration.count());
 
-  bytes_transfered_->Increment(body.size());
-  num_scrapes_->Increment();
+  bytes_transfered_.Increment(body.size());
+  num_scrapes_.Increment();
   return true;
 }
 std::vector<io::prometheus::client::MetricFamily>

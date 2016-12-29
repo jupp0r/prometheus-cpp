@@ -56,19 +56,93 @@ int main(int argc, char** argv) {
 
 ## Building
 
-Install [bazel](https://www.bazel.io).  Bazel makes it trivial to add
-this repo to your project as a dependency. Just add the following to
-your WORKSPACE
+Install [bazel](https://www.bazel.io).  Bazel makes it easy to add
+this repo to your project as a dependency. Unfortunately some of the
+direct and transitive dependencies do not provide bazel files. You need
+to add the following to your WORKSPACE:
 
 ```
+new_git_repository(
+    name = "prometheus_client_model",
+    remote = "https://github.com/prometheus/client_model.git",
+    commit = "e2da43a",
+    build_file_content = """
+cc_library(
+    name = "prometheus_client_model",
+    srcs = [
+        "cpp/metrics.pb.cc",
+    ],
+    hdrs = [
+         "cpp/metrics.pb.h",
+    ],
+    includes = [
+         "cpp",
+    ],
+    visibility = ["//visibility:public"],
+    deps = ["@protobuf//:protobuf"],
+)
+    """,
+)
+
 git_repository(
-    name = "prometheus-cpp",
+    name = "protobuf",
+    remote = "https://github.com/google/protobuf.git",
+    tag = "v3.0.0",
+    )
+
+new_git_repository(
+    name = "civetweb",
+    remote = "https://github.com/civetweb/civetweb.git",
+    commit = "fbdee74",
+    build_file_content = """
+cc_library(
+    name = "civetweb",
+    srcs = [
+         "src/civetweb.c",
+         "src/CivetServer.cpp",
+    ],
+    hdrs = [
+         "include/civetweb.h",
+         "include/CivetServer.h",
+         "src/md5.inl",
+         "src/handle_form.inl",
+    ],
+    includes = [
+         "include",
+    ],
+    copts = [
+          "-DUSE_IPV6",
+          "-DNDEBUG",
+          "-DNO_CGI",
+          "-DNO_CACHING",
+          "-DNO_SSL",
+          "-DNO_FILES",
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+)
+
+git_repository(
+    name = "prometheus_cpp",
     remote = "https://github.com/jupp0r/prometheus-cpp.git",
-    branch = "master",
+    commit = "9c865b1c1a4234fa063e91225bb228111ee922ac",
     )
 ```
 
-You can also check out this repo and build the library using
+Then, you can reference this library in your own BUILD file:
+
+```
+cc_binary(
+    name = "sample_server",
+    srcs = ["sample_server.cc"],
+    deps = ["@prometheus_cpp//lib:prometheus-cpp"],
+)
+```
+
+## Contributing
+
+You can check out this repo and build the library using
 ``` bash
 bazel build lib:all
 ```

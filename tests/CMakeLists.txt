@@ -1,0 +1,22 @@
+if(GoogleBenchmark_FOUND)
+  add_subdirectory(benchmark)
+endif()
+
+add_subdirectory(integration)
+
+add_executable(prometheus_test
+  counter_test.cc
+  family_test.cc
+  gauge_test.cc
+  histogram_test.cc
+  mock_metric.h
+  registry_test.cc
+)
+
+target_link_libraries(prometheus_test PRIVATE prometheus-cpp)
+target_include_directories(prometheus_test PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
+
+target_link_libraries(prometheus_test PRIVATE ${GOOGLEMOCK_MAIN_LIBRARIES})
+target_include_directories(prometheus_test PRIVATE ${GOOGLEMOCK_INCLUDE_DIRS})
+
+add_test(NAME prometheus_test COMMAND $<TARGET_FILE:prometheus_test>)

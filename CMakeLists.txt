@@ -49,11 +49,20 @@ target_include_directories(civetweb PUBLIC
 
 # google mock
 
-add_subdirectory(3rdparty/googletest EXCLUDE_FROM_ALL)
-set(GOOGLEMOCK_INCLUDE_DIRS
-  ${PROJECT_SOURCE_DIR}/3rdparty/googletest/googletest/include
-  ${PROJECT_SOURCE_DIR}/3rdparty/googletest/googlemock/include)
-set(GOOGLEMOCK_MAIN_LIBRARIES gmock_main)
+add_library(gmock_main STATIC EXCLUDE_FROM_ALL
+  3rdparty/googletest/googletest/src/gtest-all.cc
+  3rdparty/googletest/googlemock/src/gmock-all.cc
+  3rdparty/googletest/googlemock/src/gmock_main.cc
+)
+
+target_include_directories(gmock_main
+  PUBLIC
+    3rdparty/googletest/googletest/include
+    3rdparty/googletest/googlemock/include
+  PRIVATE
+    3rdparty/googletest/googletest
+    3rdparty/googletest/googlemock
+)
 
 # prometheus-cpp
 

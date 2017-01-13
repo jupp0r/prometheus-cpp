@@ -8,9 +8,9 @@ file(MAKE_DIRECTORY ${METRICS_BINARY_DIR})
 add_custom_command(
   OUTPUT "${METRICS_BINARY_DIR}/metrics.pb.cc"
          "${METRICS_BINARY_DIR}/metrics.pb.h"
-  COMMAND  ${Protobuf_PROTOC_EXECUTABLE}
+  COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
   ARGS --cpp_out ${METRICS_BINARY_DIR} -I ${METRICS_SOURCE_DIR} ${METRICS_SOURCE_FILE}
-  DEPENDS ${METRICS_PROTO} ${Protobuf_PROTOC_EXECUTABLE}
+  DEPENDS ${METRICS_PROTO} ${PROTOBUF_PROTOC_EXECUTABLE}
   COMMENT "Running C++ protocol buffer compiler for metrics"
   VERBATIM)
 
@@ -52,8 +52,8 @@ add_library(prometheus-cpp
 )
 
 # TODO(gj) make both PRIVATE
-target_link_libraries(prometheus-cpp PUBLIC ${Protobuf_LIBRARIES})
-target_include_directories(prometheus-cpp PUBLIC ${Protobuf_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES})
+target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 # TODO(gj) make PRIVATE
 target_link_libraries(prometheus-cpp PUBLIC civetweb)

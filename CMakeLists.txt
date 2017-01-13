@@ -1,17 +1,13 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
-
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 11)
-endif()
-
-if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
+cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
 project(prometheus-cpp)
 enable_testing()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 
 find_package(GoogleBenchmark)
 find_package(Protobuf REQUIRED)
@@ -20,7 +16,7 @@ find_package(Telegraf)
 # suppress warnings
 
 if(APPLE)
-  string(APPEND CMAKE_CXX_FLAGS " -Wno-deprecated-declarations")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif()
 
 # civetweb

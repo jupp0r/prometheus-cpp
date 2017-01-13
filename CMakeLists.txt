@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
 project(prometheus-cpp)
 enable_testing()
+include(GNUInstallDirs)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
@@ -21,7 +22,9 @@ endif()
 
 # civetweb
 
-add_library(civetweb
+set(CIVETWEB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/civetweb/include)
+
+add_library(civetweb OBJECT
   3rdparty/civetweb/include/CivetServer.h
   3rdparty/civetweb/include/civetweb.h
   3rdparty/civetweb/src/CivetServer.cpp
@@ -40,7 +43,7 @@ target_compile_definitions(civetweb PRIVATE
 )
 
 target_include_directories(civetweb PUBLIC
-  3rdparty/civetweb/include
+  ${CIVETWEB_INCLUDE_DIR}
 )
 
 # google mock

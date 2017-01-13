@@ -44,6 +44,10 @@ add_library(prometheus-cpp
   text_serializer.cc
   text_serializer.h
 
+  # civetweb
+
+  $<TARGET_OBJECTS:civetweb>
+
   # Metrics Protocol
 
   ${METRICS_SOURCE_FILE}
@@ -51,9 +55,51 @@ add_library(prometheus-cpp
   ${METRICS_BINARY_DIR}/metrics.pb.h
 )
 
-# TODO(gj) make both PRIVATE
+# TODO(gj) make all PRIVATE
 target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES})
-target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CIVETWEB_INCLUDE_DIR}>)
 
-# TODO(gj) make PRIVATE
-target_link_libraries(prometheus-cpp PUBLIC civetweb)
+install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets
+  RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION  ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+  FILES
+    ${METRICS_BINARY_DIR}/metrics.pb.h
+  DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus-cpp/cpp
+)
+
+install(
+  FILES
+    collectable.h
+    counter_builder.h
+    exposer.h
+    family.h
+    gauge_builder.h
+    histogram.h
+    histogram_builder.h
+    registry.h
+
+    ${CIVETWEB_INCLUDE_DIR}/CivetServer.h # TODO remove
+    ${CIVETWEB_INCLUDE_DIR}/civetweb.h # TODO remove
+  DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus-cpp
+)
+
+  set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+  include(CMakePackageConfigHelpers)
+  configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/prometheus-cpp-config.cmake.in prometheus-cpp-config.cmake
+    INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+  )
+  install(EXPORT prometheus-cpp-targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE prometheus-cpp::)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-config.cmake" DESTINATION ${CMAKECONFIG_INSTALL_DIR})
+
+

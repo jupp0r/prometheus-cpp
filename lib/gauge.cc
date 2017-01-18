@@ -1,6 +1,6 @@
 #include <ctime>
 
-#include "gauge.h"
+#include <prometheus/gauge.h>
 
 namespace prometheus {
 Gauge::Gauge() : value_{0} {}

@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include "lib/registry.h"
+#include <prometheus/registry.h>
 
 static void BM_Counter_Increment(benchmark::State& state) {
   using prometheus::Registry;

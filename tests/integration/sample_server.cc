@@ -4,8 +4,8 @@
 #include <string>
 #include <thread>
 
-#include "lib/exposer.h"
-#include "lib/registry.h"
+#include <prometheus/exposer.h>
+#include <prometheus/registry.h>
 
 int main(int argc, char** argv) {
   using namespace prometheus;

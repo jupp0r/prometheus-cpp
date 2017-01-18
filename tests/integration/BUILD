@@ -1,12 +1,12 @@
 cc_binary(
-    name = "sample_server",
+    name = "sample-server",
     srcs = ["sample_server.cc"],
-    deps = ["//lib:prometheus-cpp"],
+    deps = ["//:prometheus-cpp"],
 )
 
 sh_test(
-    name = "scrape_test",
+    name = "scrape-test",
     srcs = ["scrape.sh"],
     size = "small",
-    data = ["scrape.conf", "sample_server"],
+    data = ["scrape.conf", "sample-server"],
 )

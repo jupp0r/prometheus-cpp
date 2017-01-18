@@ -3,10 +3,11 @@
 #include <map>
 #include <mutex>
 
+#include <prometheus/family.h>
+
 #include "collectable.h"
 #include "counter_builder.h"
 #include "cpp/metrics.pb.h"
-#include "family.h"
 #include "gauge_builder.h"
 #include "histogram.h"
 #include "histogram_builder.h"

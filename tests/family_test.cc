@@ -1,10 +1,12 @@
 #include <memory>
 
 #include <gmock/gmock.h>
+
+#include <prometheus/exposer.h>
+#include <prometheus/family.h>
+#include <prometheus/histogram.h>
+
 #include "cpp/metrics.pb.h"
-#include "lib/counter.h"
-#include "lib/family.h"
-#include "lib/histogram.h"
 
 using namespace testing;
 using namespace prometheus;

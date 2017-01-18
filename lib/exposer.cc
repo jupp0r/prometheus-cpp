@@ -2,9 +2,9 @@
 #include <string>
 #include <thread>
 
-#include "cpp/metrics.pb.h"
+#include <prometheus/exposer.h>
 
-#include "exposer.h"
+#include "cpp/metrics.pb.h"
 
 namespace prometheus {
 

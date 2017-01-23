@@ -61,25 +61,18 @@ install(
   FILES
     ${METRICS_BINARY_DIR}/metrics.pb.h
   DESTINATION
-    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus-cpp/cpp
+    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
 )
 
 install(
   FILES
-    collectable.h
-    counter_builder.h
-    exposer.h
-    family.h
-    gauge_builder.h
-    histogram.h
-    histogram_builder.h
-    registry.h
-
     ${CIVETWEB_INCLUDE_DIR}/CivetServer.h # TODO remove
     ${CIVETWEB_INCLUDE_DIR}/civetweb.h # TODO remove
   DESTINATION
-    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus-cpp
+    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
 )
+
+install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
   set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
   include(CMakePackageConfigHelpers)

@@ -39,6 +39,8 @@ script:
   - cmake ..
   - make -j 4
   - ctest -V
+  - mkdir -p deploy
+  - make DESTDIR=`pwd`/deploy install
 
 addons:
   coverity_scan:

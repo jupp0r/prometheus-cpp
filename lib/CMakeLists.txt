@@ -49,6 +49,7 @@ target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRE
 target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS})
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CIVETWEB_INCLUDE_DIR}>)
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)
 
 install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "cpp/metrics.pb.h"
+#include "metrics.pb.h"
 
 namespace prometheus {
 

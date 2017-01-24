@@ -6,7 +6,10 @@ cc_binary(
 
 sh_test(
     name = "scrape-test",
-    srcs = ["scrape.sh"],
     size = "small",
-    data = ["scrape.conf", "sample-server"],
+    srcs = ["scrape.sh"],
+    data = [
+        "sample-server",
+        "scrape.conf",
+    ],
 )

@@ -1,5 +1,5 @@
-#include <prometheus/gauge_builder.h>
-#include <prometheus/registry.h>
+#include "prometheus/gauge_builder.h"
+#include "prometheus/registry.h"
 
 namespace prometheus {
 

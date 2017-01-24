@@ -3,10 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include <prometheus/collectable.h>
-#include <prometheus/registry.h>
 
 #include "CivetServer.h"
+#include "prometheus/registry.h"
 
 namespace prometheus {
 namespace detail {

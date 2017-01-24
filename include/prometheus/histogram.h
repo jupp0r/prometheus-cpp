@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "cpp/metrics.pb.h"
+#include "prometheus/counter.h"
 
-#include "counter.h"
+#include "metrics.pb.h"
 
 namespace prometheus {
 class Histogram : public Metric {

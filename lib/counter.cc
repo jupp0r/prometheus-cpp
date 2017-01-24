@@ -1,5 +1,4 @@
-#include <prometheus/counter.h>
-#include "cpp/metrics.pb.h"
+#include "prometheus/counter.h"
 
 namespace prometheus {
 

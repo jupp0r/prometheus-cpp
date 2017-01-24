@@ -1,8 +1,17 @@
 cc_test(
     name = "prometheus-test",
-    srcs = ["counter_test.cc", "gauge_test.cc", "mock_metric.h", "family_test.cc", "registry_test.cc", "histogram_test.cc"],
+    srcs = [
+        "counter_test.cc",
+        "family_test.cc",
+        "gauge_test.cc",
+        "histogram_test.cc",
+        "mock_metric.h",
+        "registry_test.cc",
+    ],
     copts = ["-Iexternal/googletest/include"],
-    deps = ["@googletest//:main",
-            "//:prometheus-cpp"],
-            linkstatic = 1,
+    linkstatic = 1,
+    deps = [
+        "//:prometheus-cpp",
+        "@googletest//:main",
+    ],
 )

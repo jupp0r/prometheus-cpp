@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include <prometheus/histogram.h>
+#include "prometheus/histogram.h"
 
 namespace prometheus {
 

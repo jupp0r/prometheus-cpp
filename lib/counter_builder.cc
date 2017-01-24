@@ -1,5 +1,5 @@
-#include <prometheus/counter_builder.h>
-#include <prometheus/registry.h>
+#include "prometheus/counter_builder.h"
+#include "prometheus/registry.h"
 
 namespace prometheus {
 

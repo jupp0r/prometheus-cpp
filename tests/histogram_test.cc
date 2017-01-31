@@ -1,8 +1,8 @@
 #include <limits>
 
-#include "gmock/gmock.h"
+#include <gmock/gmock.h>
 
-#include "lib/histogram.h"
+#include <prometheus/histogram.h>
 
 using namespace testing;
 using namespace prometheus;

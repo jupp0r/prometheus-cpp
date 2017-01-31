@@ -2,9 +2,10 @@
 
 #include <atomic>
 
-#include "collectable.h"
-#include "cpp/metrics.pb.h"
-#include "metric.h"
+#include "prometheus/collectable.h"
+#include "prometheus/metric.h"
+
+#include "metrics.pb.h"
 
 namespace prometheus {
 

@@ -2,8 +2,8 @@
 
 #include <gmock/gmock.h>
 
-#include "lib/collectable.h"
-#include "lib/registry.h"
+#include <prometheus/collectable.h>
+#include <prometheus/registry.h>
 
 using namespace testing;
 using namespace prometheus;

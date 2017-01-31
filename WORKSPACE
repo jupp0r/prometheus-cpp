@@ -49,9 +49,7 @@ cc_library(
     hdrs = [
          "cpp/metrics.pb.h",
     ],
-    includes = [
-         "cpp",
-    ],
+    strip_include_prefix = "cpp",
     visibility = ["//visibility:public"],
     deps = ["@protobuf//:protobuf"],
 )
@@ -78,6 +76,8 @@ cc_library(
     hdrs = [
          "include/civetweb.h",
          "include/CivetServer.h",
+    ],
+    textual_hdrs = [
          "src/md5.inl",
          "src/handle_form.inl",
     ],

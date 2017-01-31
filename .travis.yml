@@ -31,14 +31,16 @@ install:
   - sudo dpkg -i telegraf_1.0.1_amd64.deb
 
 script:
-  - bazel test --test_output=all --spawn_strategy=standalone //tests:prometheus_test
-  - bazel test --test_output=all --spawn_strategy=standalone //tests/integration:scrape_test
-  - bazel run -c opt --spawn_strategy=standalone //tests/benchmark:benchmarks
+  - bazel test --test_output=all //tests:prometheus-test
+  - bazel test --test_output=all //tests/integration:scrape-test
+  - bazel run -c opt //tests/benchmark:benchmarks
   - mkdir _build
   - cd _build
   - cmake ..
   - make -j 4
   - ctest -V
+  - mkdir -p deploy
+  - make DESTDIR=`pwd`/deploy install
 
 addons:
   coverity_scan:

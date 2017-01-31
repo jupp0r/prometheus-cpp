@@ -3,13 +3,14 @@
 #include <map>
 #include <mutex>
 
-#include "collectable.h"
-#include "counter_builder.h"
-#include "cpp/metrics.pb.h"
-#include "family.h"
-#include "gauge_builder.h"
-#include "histogram.h"
-#include "histogram_builder.h"
+#include "prometheus/collectable.h"
+#include "prometheus/counter_builder.h"
+#include "prometheus/family.h"
+#include "prometheus/gauge_builder.h"
+#include "prometheus/histogram.h"
+#include "prometheus/histogram_builder.h"
+
+#include "metrics.pb.h"
 
 namespace prometheus {
 

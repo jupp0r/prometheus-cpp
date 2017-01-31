@@ -1,4 +1,4 @@
-#include "registry.h"
+#include "prometheus/registry.h"
 
 namespace prometheus {
 

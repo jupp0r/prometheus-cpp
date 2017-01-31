@@ -2,7 +2,7 @@
 #include <random>
 
 #include <benchmark/benchmark.h>
-#include "lib/registry.h"
+#include <prometheus/registry.h>
 
 using prometheus::Histogram;
 

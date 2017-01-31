@@ -1,7 +1,7 @@
 #include <chrono>
 
 #include <benchmark/benchmark.h>
-#include "lib/registry.h"
+#include <prometheus/registry.h>
 
 #include "benchmark_helpers.h"
 

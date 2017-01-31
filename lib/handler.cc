@@ -1,4 +1,5 @@
-#include "handler.h"
+#include "prometheus/handler.h"
+
 #include "json_serializer.h"
 #include "protobuf_delimited_serializer.h"
 #include "serializer.h"

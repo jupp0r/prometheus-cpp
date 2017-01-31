@@ -2,10 +2,10 @@
 
 #include <atomic>
 
-#include "cpp/metrics.pb.h"
+#include "metrics.pb.h"
 
-#include "gauge.h"
-#include "metric.h"
+#include "prometheus/gauge.h"
+#include "prometheus/metric.h"
 
 namespace prometheus {
 class Counter : Metric {

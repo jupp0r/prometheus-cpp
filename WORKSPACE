@@ -41,17 +41,13 @@ new_git_repository(
     remote = "https://github.com/prometheus/client_model.git",
     commit = "e2da43a",
     build_file_content = """
-cc_library(
+load("@protobuf//:protobuf.bzl", "cc_proto_library")
+cc_proto_library(
     name = "prometheus_client_model",
-    srcs = [
-        "cpp/metrics.pb.cc",
-    ],
-    hdrs = [
-         "cpp/metrics.pb.h",
-    ],
-    strip_include_prefix = "cpp",
+    srcs = ["metrics.proto"],
+    protoc = "@protobuf//:protoc",
+    default_runtime = "@protobuf//:protobuf",
     visibility = ["//visibility:public"],
-    deps = ["@protobuf//:protobuf"],
 )
     """,
 )
@@ -59,7 +55,7 @@ cc_library(
 git_repository(
     name = "protobuf",
     remote = "https://github.com/google/protobuf.git",
-    tag = "v3.0.0",
+    tag = "v3.2.0",
     )
 
 new_git_repository(

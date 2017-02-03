@@ -21,6 +21,7 @@ add_library(prometheus-cpp
   gauge.cc
   gauge_builder.cc
   handler.cc
+  handler.h
   histogram.cc
   histogram_builder.cc
   json_serializer.cc
@@ -48,8 +49,9 @@ target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES})
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> $<INSTALL_INTERFACE:include>)
 target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS})
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CIVETWEB_INCLUDE_DIR}>)
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)
+
+target_include_directories(prometheus-cpp PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
 install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
@@ -61,14 +63,6 @@ install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets
 install(
   FILES
     ${METRICS_BINARY_DIR}/metrics.pb.h
-  DESTINATION
-    ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
-)
-
-install(
-  FILES
-    ${CIVETWEB_INCLUDE_DIR}/CivetServer.h # TODO remove
-    ${CIVETWEB_INCLUDE_DIR}/civetweb.h # TODO remove
   DESTINATION
     ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
 )

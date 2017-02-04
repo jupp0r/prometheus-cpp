@@ -4,6 +4,7 @@ cc_library(
             "lib/gauge.cc",
             "lib/exposer.cc",
             "lib/handler.cc",
+            "lib/handler.h",
             "lib/histogram.cc",
             "lib/registry.cc",
             "lib/text_serializer.cc",

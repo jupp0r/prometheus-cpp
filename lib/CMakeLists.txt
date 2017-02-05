@@ -46,7 +46,7 @@ add_library(prometheus-cpp
 
 # TODO(gj) make all PRIVATE
 target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES})
-target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> $<INSTALL_INTERFACE:include>)
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS})
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)

@@ -42,11 +42,11 @@ script:
   - mkdir -p deploy
   - make DESTDIR=`pwd`/deploy install
 
-addons:
-  coverity_scan:
-    project:
-      name: "jupp0r/prometheus-cpp"
-    notification_email: jupp0r@gmail.com
-    build_command_prepend: ""
-    build_command:   "bazel build --spawn_strategy=standalone //lib:all"
-    branch_pattern:  "master"
+# addons:
+#   coverity_scan:
+#     project:
+#       name: "jupp0r/prometheus-cpp"
+#     notification_email: jupp0r@gmail.com
+#     build_command_prepend: ""
+#     build_command:   "bazel build --spawn_strategy=standalone //lib:all"
+#     branch_pattern:  "master"

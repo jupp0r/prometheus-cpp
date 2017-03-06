@@ -19,8 +19,6 @@ detail::GaugeBuilder BuildGauge();
 namespace detail {
 class GaugeBuilder {
  public:
-  friend GaugeBuilder BuildGauge();
-
   GaugeBuilder& Labels(const std::map<std::string, std::string>& labels);
   GaugeBuilder& Name(const std::string&);
   GaugeBuilder& Help(const std::string&);

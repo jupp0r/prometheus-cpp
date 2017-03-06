@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <numeric>
 
 #include "prometheus/histogram.h"
@@ -10,10 +11,10 @@ Histogram::Histogram(const BucketBoundaries& buckets)
 
 void Histogram::Observe(double value) {
   // TODO: determine bucket list size at which binary search would be faster
-  auto bucket_index = std::max(
-      0L, std::find_if(bucket_boundaries_.begin(), bucket_boundaries_.end(),
-                       [value](double boundary) { return boundary > value; }) -
-              bucket_boundaries_.begin());
+  auto bucket_index = static_cast<std::size_t>(std::distance(
+      bucket_boundaries_.begin(),
+      std::find_if(bucket_boundaries_.begin(), bucket_boundaries_.end(),
+                   [value](double boundary) { return boundary > value; })));
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
 }

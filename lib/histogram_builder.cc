@@ -1,4 +1,4 @@
-#include "prometheus/gauge_builder.h"
+#include "prometheus/histogram_builder.h"
 #include "prometheus/registry.h"
 
 namespace prometheus {

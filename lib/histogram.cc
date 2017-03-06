@@ -6,7 +6,7 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucket_boundaries_{buckets}, bucket_counts_(buckets.size() + 1) {}
+    : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1) {}
 
 void Histogram::Observe(double value) {
   // TODO: determine bucket list size at which binary search would be faster

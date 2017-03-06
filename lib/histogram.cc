@@ -28,7 +28,7 @@ io::prometheus::client::Metric Histogram::Collect() {
   histogram->set_sample_count(sample_count);
   histogram->set_sample_sum(sum_.Value());
 
-  for (int i = 0; i < bucket_counts_.size(); i++) {
+  for (std::size_t i = 0; i < bucket_counts_.size(); i++) {
     auto& count = bucket_counts_[i];
     auto bucket = histogram->add_bucket();
     bucket->set_cumulative_count(count.Value());

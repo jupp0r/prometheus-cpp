@@ -74,7 +74,7 @@ bool MetricsHandler::handleGet(CivetServer* server,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: %s\r\n",
             content_type.c_str());
-  mg_printf(conn, "Content-Length: %lu\r\n\r\n", body.size());
+  mg_printf(conn, "Content-Length: %lu\r\n\r\n", static_cast<unsigned long>(body.size()));
   mg_write(conn, body.data(), body.size());
 
   auto stop_time_of_request = std::chrono::steady_clock::now();

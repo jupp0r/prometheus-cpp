@@ -20,8 +20,6 @@ detail::HistogramBuilder BuildHistogram();
 namespace detail {
 class HistogramBuilder {
  public:
-  friend HistogramBuilder BuildHistogram();
-
   HistogramBuilder& Labels(const std::map<std::string, std::string>& labels);
   HistogramBuilder& Name(const std::string&);
   HistogramBuilder& Help(const std::string&);

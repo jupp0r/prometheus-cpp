@@ -21,7 +21,7 @@ std::map<std::string, std::string> GenerateRandomLabels(
     std::size_t number_of_pairs) {
   const auto label_character_count = 10;
   auto label_pairs = std::map<std::string, std::string>{};
-  for (int i = 0; i < number_of_pairs; i++) {
+  for (std::size_t i = 0; i < number_of_pairs; i++) {
     label_pairs.insert({GenerateRandomString(label_character_count),
                         GenerateRandomString(label_character_count)});
   }

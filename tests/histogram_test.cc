@@ -76,3 +76,15 @@ TEST_F(HistogramTest, bucket_bounds) {
   EXPECT_EQ(h.bucket(1).upper_bound(), 2);
   EXPECT_EQ(h.bucket(2).upper_bound(), std::numeric_limits<double>::infinity());
 }
+
+TEST_F(HistogramTest, cumulative_bucket_counts_not_reset_by_collection) {
+  Histogram histogram{{1, 2}};
+  histogram.Observe(1.5);
+  histogram.Collect();
+  histogram.Observe(1.5);
+  auto metric = histogram.Collect();
+  ASSERT_TRUE(metric.has_histogram());
+  auto h = metric.histogram();
+  ASSERT_EQ(h.bucket_size(), 3);
+  EXPECT_EQ(h.bucket(1).cumulative_count(), 2);
+}

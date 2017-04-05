@@ -47,25 +47,6 @@ TEST_F(HistogramTest, bucket_size) {
   EXPECT_EQ(h.bucket_size(), 3);
 }
 
-TEST_F(HistogramTest, bucket_count) {
-  Histogram histogram{{1, 2}};
-  histogram.Observe(0);
-  histogram.Observe(0.5);
-  histogram.Observe(1.5);
-  histogram.Observe(1.5);
-  histogram.Observe(3);
-  auto metric = histogram.Collect();
-  ASSERT_TRUE(metric.has_histogram());
-  auto h = metric.histogram();
-  ASSERT_EQ(h.bucket_size(), 3);
-  auto firstBucket = h.bucket(0);
-  EXPECT_EQ(firstBucket.cumulative_count(), 2);
-  auto secondBucket = h.bucket(1);
-  EXPECT_EQ(secondBucket.cumulative_count(), 2);
-  auto thirdBucket = h.bucket(2);
-  EXPECT_EQ(thirdBucket.cumulative_count(), 1);
-}
-
 TEST_F(HistogramTest, bucket_bounds) {
   Histogram histogram{{1, 2}};
   auto metric = histogram.Collect();
@@ -77,7 +58,7 @@ TEST_F(HistogramTest, bucket_bounds) {
   EXPECT_EQ(h.bucket(2).upper_bound(), std::numeric_limits<double>::infinity());
 }
 
-TEST_F(HistogramTest, cumulative_bucket_counts_not_reset_by_collection) {
+TEST_F(HistogramTest, bucket_counts_not_reset_by_collection) {
   Histogram histogram{{1, 2}};
   histogram.Observe(1.5);
   histogram.Collect();
@@ -87,4 +68,20 @@ TEST_F(HistogramTest, cumulative_bucket_counts_not_reset_by_collection) {
   auto h = metric.histogram();
   ASSERT_EQ(h.bucket_size(), 3);
   EXPECT_EQ(h.bucket(1).cumulative_count(), 2);
+}
+
+TEST_F(HistogramTest, cumulative_bucket_count) {
+  Histogram histogram{{1, 2}};
+  histogram.Observe(0);
+  histogram.Observe(0.5);
+  histogram.Observe(1.5);
+  histogram.Observe(1.5);
+  histogram.Observe(3);
+  auto metric = histogram.Collect();
+  ASSERT_TRUE(metric.has_histogram());
+  auto h = metric.histogram();
+  ASSERT_EQ(h.bucket_size(), 3);
+  EXPECT_EQ(h.bucket(0).cumulative_count(), 2);
+  EXPECT_EQ(h.bucket(1).cumulative_count(), 4);
+  EXPECT_EQ(h.bucket(2).cumulative_count(), 5);
 }

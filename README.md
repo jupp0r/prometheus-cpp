@@ -56,6 +56,46 @@ int main(int argc, char** argv) {
 
 ## Building
 
+There are two supported ways to build
+`prometheus-cpp` - [CMake](https://cmake.org)
+and [bazel](https://bazel.io). Both are tested in CI and should work
+on master and for all releases.
+
+In case these instructions don't work for you, looking at
+the [travis build script](.travis.yml) might help.
+
+### via CMake
+
+One prerequisite for performing the build using CMake is
+having [Protocol Buffers](https://github.com/google/protobuf) >= 3.0
+installed. See the [travis build script](.travis.yml) for how to build
+it from source, or use your operating systems package manager to
+install it.
+
+``` shell
+# fetch third-party dependencies
+git submodule init
+git submodule update
+
+mkdir _build
+cd _build
+
+# run cmake
+cmake ..
+
+# build
+make -j 4
+
+# run tests
+ctest -V
+
+# install the libraries and headers
+mkdir -p deploy
+make DESTDIR=`pwd`/deploy install
+```
+
+### via Bazel
+
 Install [bazel](https://www.bazel.io).  Bazel makes it easy to add
 this repo to your project as a dependency. Unfortunately some of the
 direct and transitive dependencies do not provide bazel files. You need
@@ -130,7 +170,8 @@ git_repository(
     )
 ```
 
-Then, you can reference this library in your own BUILD file:
+Then, you can reference this library in your own BUILD file, as
+demonstrated with the sample server included in this repository:
 
 ```
 cc_binary(
@@ -144,10 +185,10 @@ cc_binary(
 
 You can check out this repo and build the library using
 ``` bash
-bazel build lib:all
+bazel build //:prometheus-cpp
 ```
 
-or run the unit tests using
+Run the unit tests using
 ```
 bazel test //tests:prometheus_test
 ```
@@ -213,5 +254,19 @@ Alpha
 * gauge, counter and histogram metrics are implemented, summaries
   aren't
 
+## FAQ
+
+### Why do you not provide a `protobuf` version as a submodule in `3rdparty`?
+
+We opted against the submodule solution for protobuf, because
+otherwise ABI compatibiliy issues would force all consumers of
+`prometheus-cpp` to use exactly the same protobuf version as the one
+inside the submodule if they were using protobuf on its own.
+
+To phrase it differently, this library should not control the exact
+version, but the executable linking against it should determine a
+version that other libraries also link against.
+
 ## License
+
 MIT

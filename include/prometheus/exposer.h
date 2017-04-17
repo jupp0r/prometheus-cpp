@@ -17,7 +17,7 @@ class MetricsHandler;
 
 class Exposer {
  public:
-  Exposer(const std::string& bind_address);
+  explicit Exposer(const std::string& bind_address);
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 

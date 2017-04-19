@@ -23,12 +23,6 @@ HistogramBuilder& HistogramBuilder::Help(const std::string& help) {
   return *this;
 }
 
-HistogramBuilder& HistogramBuilder::Buckets(
-    const std::vector<double>& buckets) {
-  buckets_ = buckets;
-  return *this;
-}
-
 Family<Histogram>& HistogramBuilder::Register(Registry& registry) {
   return registry.AddHistogram(name_, help_, labels_);
 }

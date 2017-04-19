@@ -1,6 +1,7 @@
 cc_library(
     name = "prometheus-cpp",
-    srcs = ["lib/counter.cc",
+    srcs = ["lib/check_names.cc",
+            "lib/counter.cc",
             "lib/gauge.cc",
             "lib/exposer.cc",
             "lib/handler.cc",
@@ -27,6 +28,6 @@ cc_library(
             "@prometheus_client_model//:prometheus_client_model",
             "@civetweb//:civetweb",
            ],
-           linkstatic = 1,
-           copts = ["-I."],
+    linkstatic = 1,
+    copts = ["-I."],
 )

@@ -15,6 +15,7 @@ add_custom_command(
   VERBATIM)
 
 add_library(prometheus-cpp
+  check_names.cc
   counter.cc
   counter_builder.cc
   exposer.cc

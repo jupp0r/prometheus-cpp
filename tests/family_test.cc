@@ -66,7 +66,7 @@ TEST_F(FamilyTest, remove) {
 TEST_F(FamilyTest, Histogram) {
   Family<Histogram> family{"request_latency", "Latency Histogram", {}};
   auto& histogram1 = family.Add({{"name", "histogram1"}},
-                               Histogram::BucketBoundaries{0, 1, 2});
+                                Histogram::BucketBoundaries{0, 1, 2});
   histogram1.Observe(0);
   auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1);
@@ -74,3 +74,20 @@ TEST_F(FamilyTest, Histogram) {
   ASSERT_TRUE(collected[0].metric(0).has_histogram());
   EXPECT_THAT(collected[0].metric(0).histogram().sample_count(), Eq(1));
 }
+
+#ifndef NDEBUG
+TEST_F(FamilyTest, should_assert_on_invalid_metric_name) {
+  auto create_family_with_invalid_name = []() {
+    new Family<Counter>("", "empty name", {});
+  };
+  EXPECT_DEATH(create_family_with_invalid_name(), ".*");
+}
+
+TEST_F(FamilyTest, should_assert_on_invalid_labels) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  auto add_metric_with_invalid_label_name = [&family]() {
+    family.Add({{"__invalid", "counter1"}});
+  };
+  EXPECT_DEATH(add_metric_with_invalid_label_name(), ".*");
+}
+#endif

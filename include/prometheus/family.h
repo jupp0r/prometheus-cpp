@@ -8,11 +8,12 @@
 #include <string>
 #include <unordered_map>
 
+#include "check_names.h"
 #include "collectable.h"
-#include "metric.h"
 #include "counter_builder.h"
 #include "gauge_builder.h"
 #include "histogram_builder.h"
+#include "metric.h"
 
 namespace prometheus {
 
@@ -51,12 +52,21 @@ class Family : public Collectable {
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
                   const std::map<std::string, std::string>& constant_labels)
-    : name_(name), help_(help), constant_labels_(constant_labels) {}
+    : name_(name), help_(help), constant_labels_(constant_labels) {
+  assert(CheckMetricName(name_));
+}
 
 template <typename T>
 template <typename... Args>
 T& Family<T>::Add(const std::map<std::string, std::string>& labels,
                   Args&&... args) {
+#ifndef NDEBUG
+  for (auto& label_pair : labels) {
+    auto& label_name = label_pair.first;
+    assert(CheckLabelName(label_name));
+  }
+#endif
+
   std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hash_labels(labels);
   auto metric = new T(std::forward<Args>(args)...);

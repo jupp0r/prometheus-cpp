@@ -31,3 +31,14 @@ TEST_F(RegistryTest, collect_single_metric_family) {
   ASSERT_EQ(collected[0].metric(1).label_size(), 1);
   EXPECT_EQ(collected[0].metric(1).label(0).name(), "name");
 }
+
+TEST_F(RegistryTest, build_histogram_family) {
+  Registry registry{};
+  auto& histogram_family =
+      BuildHistogram().Name("hist").Help("Test Histogram").Register(registry);
+  auto& histogram = histogram_family.Add({{"name", "test_histogram_1"}},
+                                         Histogram::BucketBoundaries{0, 1, 2});
+  histogram.Observe(1.1);
+  auto collected = registry.Collect();
+  ASSERT_EQ(collected.size(), 1);
+}

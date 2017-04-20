@@ -5,6 +5,7 @@ endif()
 add_subdirectory(integration)
 
 add_executable(prometheus_test
+  check_names_test.cc
   counter_test.cc
   family_test.cc
   gauge_test.cc

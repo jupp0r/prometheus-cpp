@@ -24,7 +24,7 @@ static void BM_Histogram_Observe(benchmark::State& state) {
 
   Registry registry;
   auto& histogram_family =
-      BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
+      BuildHistogram().Name("benchmark_histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
   auto& histogram = histogram_family.Add({}, bucket_boundaries);
   std::random_device rd;
@@ -53,7 +53,7 @@ static void BM_Histogram_Collect(benchmark::State& state) {
 
   Registry registry;
   auto& histogram_family =
-      BuildHistogram().Name("benchmark histogram").Help("").Register(registry);
+      BuildHistogram().Name("benchmark_histogram").Help("").Register(registry);
   auto bucket_boundaries = CreateLinearBuckets(0, number_of_buckets - 1, 1);
   auto& histogram = histogram_family.Add({}, bucket_boundaries);
 

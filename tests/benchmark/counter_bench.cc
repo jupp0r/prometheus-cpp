@@ -6,7 +6,8 @@ static void BM_Counter_Increment(benchmark::State& state) {
   using prometheus::Counter;
   using prometheus::BuildCounter;
   Registry registry;
-  auto& counter_family = BuildCounter().Name("benchmark counter").Help("").Register(registry);
+  auto& counter_family =
+      BuildCounter().Name("benchmark_counter").Help("").Register(registry);
   auto& counter = counter_family.Add({});
 
   while (state.KeepRunning()) counter.Increment();
@@ -18,7 +19,8 @@ static void BM_Counter_Collect(benchmark::State& state) {
   using prometheus::Counter;
   using prometheus::BuildCounter;
   Registry registry;
-  auto& counter_family = BuildCounter().Name("benchmark counter").Help("").Register(registry);
+  auto& counter_family =
+      BuildCounter().Name("benchmark_counter").Help("").Register(registry);
   auto& counter = counter_family.Add({});
 
   while (state.KeepRunning()) {

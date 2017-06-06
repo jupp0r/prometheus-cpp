@@ -12,7 +12,7 @@ static void BM_Registry_CreateFamily(benchmark::State& state) {
   Registry registry;
 
   while (state.KeepRunning())
-    BuildCounter().Name("benchmark counter").Help("").Register(registry);
+    BuildCounter().Name("benchmark_counter").Help("").Register(registry);
 }
 BENCHMARK(BM_Registry_CreateFamily);
 
@@ -22,10 +22,10 @@ static void BM_Registry_CreateCounter(benchmark::State& state) {
   using prometheus::BuildCounter;
   Registry registry;
   auto& counter_family = BuildCounter()
-                           .Labels(GenerateRandomLabels(10))
-                           .Name("benchmark counter")
-                           .Help("")
-                           .Register(registry);
+                             .Labels(GenerateRandomLabels(10))
+                             .Name("benchmark_counter")
+                             .Help("")
+                             .Register(registry);
 
   while (state.KeepRunning()) {
     auto labels = GenerateRandomLabels(state.range(0));

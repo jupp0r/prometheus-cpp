@@ -5,10 +5,7 @@
 
 std::string GenerateRandomString(size_t length) {
   auto randchar = []() -> char {
-    const char charset[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
+    const char charset[] = "abcdefghijklmnopqrstuvwxyz";
     const size_t max_index = (sizeof(charset) - 1);
     return charset[rand() % max_index];
   };

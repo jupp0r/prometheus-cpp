@@ -2,10 +2,10 @@
 
 This library aims to enable
 [Metrics-Driven Development](https://sookocheff.com/post/mdd/mdd/) for
-C++ serivices. It implements the
+C++ services. It implements the
 [Prometheus Data Model](https://prometheus.io/docs/concepts/data_model/),
 a powerful abstraction on which to collect and expose metrics. We
-offer the possibility for metrics to collected by Prometheus, but
+offer the possibility for metrics to be collected by Prometheus, but
 other push/pull collections can be added as plugins.
 
 ## Usage

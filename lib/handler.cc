@@ -11,11 +11,12 @@ MetricsHandler::MetricsHandler(
     const std::vector<std::weak_ptr<Collectable>>& collectables,
     Registry& registry)
     : collectables_(collectables),
-      bytes_transfered_family_(BuildCounter()
-                                   .Name("exposer_bytes_transfered")
-                                   .Help("bytesTransferred to metrics services")
-                                   .Register(registry)),
-      bytes_transfered_(bytes_transfered_family_.Add({})),
+      bytes_transferred_family_(
+          BuildCounter()
+              .Name("exposer_bytes_transferred")
+              .Help("bytesTransferred to metrics services")
+              .Register(registry)),
+      bytes_transferred_(bytes_transferred_family_.Add({})),
       num_scrapes_family_(BuildCounter()
                               .Name("exposer_total_scrapes")
                               .Help("Number of times metrics were scraped")
@@ -82,7 +83,7 @@ bool MetricsHandler::handleGet(CivetServer* server,
       stop_time_of_request - start_time_of_request);
   request_latencies_.Observe(duration.count());
 
-  bytes_transfered_.Increment(body.size());
+  bytes_transferred_.Increment(body.size());
   num_scrapes_.Increment();
   return true;
 }

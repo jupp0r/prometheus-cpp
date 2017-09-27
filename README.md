@@ -17,14 +17,14 @@ other push/pull collections can be added as plugins.
 #include <string>
 #include <thread>
 
-#include "lib/exposer.h"
-#include "lib/registry.h"
+#include <prometheus/exposer.h>
+#include <prometheus/registry.h>
 
 int main(int argc, char** argv) {
   using namespace prometheus;
 
   // create an http server running on port 8080
-  auto exposer = Exposer{"127.0.0.1:8080"};
+  Exposer exposer{"127.0.0.1:8080"};
 
   // create a metrics registry with component=main labels applied to all its
   // metrics
@@ -97,107 +97,63 @@ make DESTDIR=`pwd`/deploy install
 ### via Bazel
 
 Install [bazel](https://www.bazel.io).  Bazel makes it easy to add
-this repo to your project as a dependency. Unfortunately some of the
-direct and transitive dependencies do not provide bazel files. You need
-to add the following to your WORKSPACE:
+this repo to your project as a dependency. Just add the following
+to your `WORKSPACE`:
 
-```
-new_git_repository(
-    name = "prometheus_client_model",
-    remote = "https://github.com/prometheus/client_model.git",
-    commit = "e2da43a",
-    build_file_content = """
-cc_library(
-    name = "prometheus_client_model",
-    srcs = [
-        "cpp/metrics.pb.cc",
-    ],
-    hdrs = [
-         "cpp/metrics.pb.h",
-    ],
-    includes = [
-         "cpp",
-    ],
-    visibility = ["//visibility:public"],
-    deps = ["@protobuf//:protobuf"],
-)
-    """,
-)
-
-git_repository(
-    name = "protobuf",
-    remote = "https://github.com/google/protobuf.git",
-    tag = "v3.0.0",
-    )
-
-new_git_repository(
-    name = "civetweb",
-    remote = "https://github.com/civetweb/civetweb.git",
-    commit = "fbdee74",
-    build_file_content = """
-cc_library(
-    name = "civetweb",
-    srcs = [
-         "src/civetweb.c",
-         "src/CivetServer.cpp",
-    ],
-    hdrs = [
-         "include/civetweb.h",
-         "include/CivetServer.h",
-         "src/md5.inl",
-         "src/handle_form.inl",
-    ],
-    includes = [
-         "include",
-    ],
-    copts = [
-          "-DUSE_IPV6",
-          "-DNDEBUG",
-          "-DNO_CGI",
-          "-DNO_CACHING",
-          "-DNO_SSL",
-          "-DNO_FILES",
-    ],
-    visibility = ["//visibility:public"],
-)
-"""
-)
-
+```python
 git_repository(
     name = "prometheus_cpp",
-    remote = "https://github.com/jupp0r/prometheus-cpp.git",
-    commit = "9c865b1c1a4234fa063e91225bb228111ee922ac",
-    )
+    remote = https://github.com/jupp0r/prometheus-cpp.git",
+)
+
+load("@prometheus_cpp//:repositories.bzl", "prometheus_cpp_repositories")
+
+prometheus_cpp_repositories()
 ```
 
-Then, you can reference this library in your own BUILD file, as
+Then, you can reference this library in your own `BUILD` file, as
 demonstrated with the sample server included in this repository:
 
-```
+```python
 cc_binary(
     name = "sample_server",
     srcs = ["sample_server.cc"],
-    deps = ["@prometheus_cpp//lib:prometheus-cpp"],
+    deps = ["@prometheus_cpp//:prometheus_cpp"],
 )
 ```
+
+When you call `prometheus_cpp_repositories()` in your `WORKSPACE` file,
+you introduce the following dependencies to your project:
+
+* `load_com_google_protobuf()` for Google protobuf
+* `load_prometheus_client_model()` for Prometheus data model artifacts
+* `load_civetweb()` for Civetweb
+* `load_com_google_googletest()` for Google gtest
+* `load_com_google_googlebenchmark()` for Googlebenchmark
+
+You may load them individually and replace some of them with your custom
+dependency version.
+
+The list of dependencies is also available from file `repositories.bzl`.
+
 
 ## Contributing
 
 You can check out this repo and build the library using
 ``` bash
-bazel build //:prometheus-cpp
+bazel build //:prometheus_cpp
 ```
 
 Run the unit tests using
 ```
-bazel test //tests:prometheus_test
+bazel test //tests:prometheus-test
 ```
 
 There is also an integration test that
 uses [telegraf](https://github.com/influxdata/telegraf) to scrape a
 sample server. With telegraf installed, it can be run using
 ```
-bazel test //tests/integration:scrape_test
+bazel test //tests/integration:scrape-test
 ```
 
 ## Benchmarks

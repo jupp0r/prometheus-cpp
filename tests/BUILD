@@ -12,7 +12,7 @@ cc_test(
     copts = ["-Iexternal/googletest/include"],
     linkstatic = 1,
     deps = [
-        "//:prometheus-cpp",
-        "@googletest//:main",
+        "//:prometheus_cpp",
+        "@com_google_googletest//:gtest_main",
     ],
 )

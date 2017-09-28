@@ -1,7 +1,7 @@
 cc_binary(
     name = "sample-server",
     srcs = ["sample_server.cc"],
-    deps = ["//:prometheus-cpp"],
+    deps = ["//:prometheus_cpp"],
 )
 
 sh_test(

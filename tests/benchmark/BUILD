@@ -11,7 +11,7 @@ cc_binary(
     ],
     linkstatic = 1,
     deps = [
-        "//:prometheus-cpp",
-        "@googlebenchmark//:googlebenchmark",
+        "//:prometheus_cpp",
+        "@com_google_googlebenchmark//:googlebenchmark",
     ],
 )

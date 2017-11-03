@@ -67,14 +67,26 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
   }
 #endif
 
-  std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hash_labels(labels);
-  auto metric = new T(std::forward<Args>(args)...);
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto metrics_iter = metrics_.find(hash);
 
-  metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
-  labels_.insert({hash, labels});
-  labels_reverse_lookup_.insert({metric, hash});
-  return *metric;
+  if (metrics_iter != metrics_.end()) {
+#ifndef NDEBUG
+    auto labels_iter = labels_.find(hash);
+    assert(labels_iter != labels_.end());
+    const auto &old_labels = labels_iter->second;
+    assert(labels == old_labels);
+#endif
+    return *metrics_iter->second;
+  } else {
+    auto metric = new T(std::forward<Args>(args)...);
+    metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
+    labels_.insert({hash, labels});
+    labels_reverse_lookup_.insert({metric, hash});
+    return *metric;
+  }
+
 }
 
 template <typename T>

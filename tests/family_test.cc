@@ -75,6 +75,13 @@ TEST_F(FamilyTest, Histogram) {
   EXPECT_THAT(collected[0].metric(0).histogram().sample_count(), Eq(1));
 }
 
+TEST_F(FamilyTest, add_twice) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  auto& counter = family.Add({{"name", "counter1"}});
+  auto& counter1 = family.Add({{"name", "counter1"}});
+  ASSERT_EQ(&counter, &counter1);
+}
+
 #ifndef NDEBUG
 TEST_F(FamilyTest, should_assert_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {

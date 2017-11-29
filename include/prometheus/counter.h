@@ -16,6 +16,7 @@ class Counter : Metric {
   void Increment();
   void Increment(double);
   double Value() const;
+  void Set(double value);
 
   io::prometheus::client::Metric Collect();
 

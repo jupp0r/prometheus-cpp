@@ -4,7 +4,7 @@
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/message_differencer.h>
 
-#include "json_serializer.h"
+#include "prometheus/json_serializer.h"
 
 namespace prometheus {
 

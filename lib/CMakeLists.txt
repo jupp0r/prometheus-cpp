@@ -26,13 +26,9 @@ add_library(prometheus-cpp
   histogram.cc
   histogram_builder.cc
   json_serializer.cc
-  json_serializer.h
   protobuf_delimited_serializer.cc
-  protobuf_delimited_serializer.h
   registry.cc
-  serializer.h
   text_serializer.cc
-  text_serializer.h
 
   # civetweb
 

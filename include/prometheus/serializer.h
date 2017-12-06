@@ -13,4 +13,4 @@ class Serializer {
   virtual std::string Serialize(
       const std::vector<io::prometheus::client::MetricFamily>&) = 0;
 };
-}
+}  // namespace prometheus

@@ -1,4 +1,4 @@
-#include "text_serializer.h"
+#include "prometheus/text_serializer.h"
 #include <cmath>
 #include <iostream>
 #include <sstream>

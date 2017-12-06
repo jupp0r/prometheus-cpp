@@ -1,8 +1,8 @@
 #include "handler.h"
-#include "json_serializer.h"
-#include "protobuf_delimited_serializer.h"
-#include "serializer.h"
-#include "text_serializer.h"
+#include "prometheus/json_serializer.h"
+#include "prometheus/protobuf_delimited_serializer.h"
+#include "prometheus/serializer.h"
+#include "prometheus/text_serializer.h"
 
 namespace prometheus {
 namespace detail {

@@ -12,13 +12,9 @@ cc_library(
         "lib/histogram.cc",
         "lib/histogram_builder.cc",
         "lib/json_serializer.cc",
-        "lib/json_serializer.h",
         "lib/protobuf_delimited_serializer.cc",
-        "lib/protobuf_delimited_serializer.h",
         "lib/registry.cc",
-        "lib/serializer.h",
         "lib/text_serializer.cc",
-        "lib/text_serializer.h",
     ],
     hdrs = glob(
         ["include/prometheus/*.h"],

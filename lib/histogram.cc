@@ -17,7 +17,7 @@ void Histogram::Observe(double value) {
   auto bucket_index = static_cast<std::size_t>(std::distance(
       bucket_boundaries_.begin(),
       std::find_if(bucket_boundaries_.begin(), bucket_boundaries_.end(),
-                   [value](double boundary) { return boundary > value; })));
+                   [value](double boundary) { return boundary >= value; })));
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
 }

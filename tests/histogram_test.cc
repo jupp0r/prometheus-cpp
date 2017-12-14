@@ -74,14 +74,16 @@ TEST_F(HistogramTest, cumulative_bucket_count) {
   Histogram histogram{{1, 2}};
   histogram.Observe(0);
   histogram.Observe(0.5);
+  histogram.Observe(1);
   histogram.Observe(1.5);
   histogram.Observe(1.5);
+  histogram.Observe(2);
   histogram.Observe(3);
   auto metric = histogram.Collect();
   ASSERT_TRUE(metric.has_histogram());
   auto h = metric.histogram();
   ASSERT_EQ(h.bucket_size(), 3);
-  EXPECT_EQ(h.bucket(0).cumulative_count(), 2);
-  EXPECT_EQ(h.bucket(1).cumulative_count(), 4);
-  EXPECT_EQ(h.bucket(2).cumulative_count(), 5);
+  EXPECT_EQ(h.bucket(0).cumulative_count(), 3);
+  EXPECT_EQ(h.bucket(1).cumulative_count(), 6);
+  EXPECT_EQ(h.bucket(2).cumulative_count(), 7);
 }

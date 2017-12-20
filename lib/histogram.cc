@@ -26,12 +26,6 @@ io::prometheus::client::Metric Histogram::Collect() {
   auto metric = io::prometheus::client::Metric{};
   auto histogram = metric.mutable_histogram();
 
-  auto sample_count = std::accumulate(
-      bucket_counts_.begin(), bucket_counts_.end(), double{0},
-      [](double sum, const Counter& counter) { return sum + counter.Value(); });
-  histogram->set_sample_count(sample_count);
-  histogram->set_sample_sum(sum_.Value());
-
   auto cumulative_count = 0ULL;
   for (std::size_t i = 0; i < bucket_counts_.size(); i++) {
     cumulative_count += bucket_counts_[i].Value();
@@ -41,7 +35,9 @@ io::prometheus::client::Metric Histogram::Collect() {
                                 ? std::numeric_limits<double>::infinity()
                                 : bucket_boundaries_[i]);
   }
+  histogram->set_sample_count(cumulative_count);
+  histogram->set_sample_sum(sum_.Value());
+
   return metric;
 }
 }
-

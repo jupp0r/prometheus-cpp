@@ -91,7 +91,7 @@ def load_prometheus_client_model():
     native.new_git_repository(
         name = "prometheus_client_model",
         remote = "https://github.com/prometheus/client_model.git",
-        commit = "e2da43a",
+        commit = "e2da43ae71fe22f457da00bb0b1f4fcaec9113c2",
         build_file_content = _PROMETHEUS_CLIENT_MODEL_BUILD_FILE,
     )
 

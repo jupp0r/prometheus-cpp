@@ -23,6 +23,8 @@ Exposer::Exposer(const std::string& bind_address, const std::string& uri)
 
 Exposer::~Exposer() { server_->removeHandler(uri_); }
 
+std::shared_ptr<CivetServer> Exposer::GetServer() { return server_; }
+
 void Exposer::RegisterCollectable(
     const std::weak_ptr<Collectable>& collectable) {
   collectables_.push_back(collectable);

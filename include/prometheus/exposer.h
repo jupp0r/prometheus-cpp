@@ -23,8 +23,10 @@ class Exposer {
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 
+  std::shared_ptr<CivetServer> GetServer();
+
  private:
-  std::unique_ptr<CivetServer> server_;
+  std::shared_ptr<CivetServer> server_;
   std::vector<std::weak_ptr<Collectable>> collectables_;
   std::shared_ptr<Registry> exposer_registry_;
   std::unique_ptr<detail::MetricsHandler> metrics_handler_;

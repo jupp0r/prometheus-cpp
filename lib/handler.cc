@@ -1,5 +1,7 @@
 #include "handler.h"
-#include "prometheus/json_serializer.h"
+#if GOOGLE_PROTOBUF_VERSION >= 3000000
+#  include "prometheus/json_serializer.h"
+#endif
 #include "prometheus/protobuf_delimited_serializer.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
@@ -62,9 +64,11 @@ bool MetricsHandler::handleGet(CivetServer* server,
         "application/vnd.google.protobuf; "
         "proto=io.prometheus.client.MetricFamily; "
         "encoding=delimited";
+#if GOOGLE_PROTOBUF_VERSION >= 3000000
   } else if (accepted_encoding.find("application/json") != std::string::npos) {
     serializer.reset(new JsonSerializer());
     content_type = "application/json";
+#endif
   } else {
     serializer.reset(new TextSerializer());
     content_type = "text/plain";

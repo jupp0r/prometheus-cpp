@@ -14,6 +14,16 @@ add_custom_command(
   COMMENT "Running C++ protocol buffer compiler for metrics"
   VERBATIM)
 
+execute_process(
+  COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+  ARGS --version
+  OUTPUT_VARIABLE PROTOBUF_VERSION_STRING
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+string(REPLACE "libprotoc " "" PROTOBUF_VERSION ${PROTOBUF_VERSION_STRING})
+message(STATUS "Found protobuf version: ${PROTOBUF_VERSION}")
+
 add_library(prometheus-cpp
   check_names.cc
   counter.cc
@@ -25,7 +35,7 @@ add_library(prometheus-cpp
   handler.h
   histogram.cc
   histogram_builder.cc
-  json_serializer.cc
+  $<$<NOT:$<VERSION_LESS:${PROTOBUF_VERSION},3>>:json_serializer.cc>
   protobuf_delimited_serializer.cc
   registry.cc
   text_serializer.cc

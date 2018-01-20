@@ -1,1 +1,4 @@
 bazel-*
+
+/.idea/
+/cmake-build-*/

@@ -12,6 +12,7 @@ add_executable(prometheus_test
   histogram_test.cc
   mock_metric.h
   registry_test.cc
+  summary_test.cc
 )
 
 target_link_libraries(prometheus_test PRIVATE prometheus-cpp)

@@ -23,13 +23,12 @@ MetricsHandler::MetricsHandler(
                               .Register(registry)),
       num_scrapes_(num_scrapes_family_.Add({})),
       request_latencies_family_(
-          BuildHistogram()
+          BuildSummary()
               .Name("exposer_request_latencies")
               .Help("Latencies of serving scrape requests, in milliseconds")
               .Register(registry)),
       request_latencies_(request_latencies_family_.Add(
-          {}, Histogram::BucketBoundaries{1, 5, 10, 20, 40, 80, 160, 320, 640,
-                                          1280, 2560})) {}
+          {}, Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}})) {}
 
 static std::string GetAcceptedEncoding(struct mg_connection* conn) {
   auto request_info = mg_get_request_info(conn);

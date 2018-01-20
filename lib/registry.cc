@@ -29,6 +29,15 @@ Family<Histogram>& Registry::AddHistogram(
   return *histogram_family;
 }
 
+Family<Summary>& Registry::AddSummary(
+    const std::string& name, const std::string& help,
+    const std::map<std::string, std::string>& labels) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto histogram_family = new Family<Summary>(name, help, labels);
+  collectables_.push_back(std::unique_ptr<Collectable>{histogram_family});
+  return *histogram_family;
+}
+
 std::vector<io::prometheus::client::MetricFamily> Registry::Collect() {
   std::lock_guard<std::mutex> lock{mutex_};
   auto results = std::vector<io::prometheus::client::MetricFamily>{};

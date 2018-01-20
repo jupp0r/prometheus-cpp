@@ -207,8 +207,6 @@ Alpha
   number of scrapes, scrape request latencies)
 * there is a working [example](tests/integration/sample_server.cc)
   that prometheus successfully scrapes
-* gauge, counter and histogram metrics are implemented, summaries
-  aren't
 
 ## FAQ
 

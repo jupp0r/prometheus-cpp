@@ -28,6 +28,8 @@ add_library(prometheus-cpp
   json_serializer.cc
   protobuf_delimited_serializer.cc
   registry.cc
+  summary.cc
+  summary_builder.cc
   text_serializer.cc
 
   # civetweb

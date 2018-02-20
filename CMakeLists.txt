@@ -12,6 +12,7 @@ endif()
 
 find_package(GoogleBenchmark)
 find_package(Protobuf REQUIRED)
+find_package(ZLIB REQUIRED)
 find_package(Telegraf)
 
 # suppress warnings

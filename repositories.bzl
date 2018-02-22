@@ -16,13 +16,11 @@ _CIVETWEB_BUILD_FILE = """
 licenses(["notice"])  # MIT license
 
 cc_library(
-    name = "civetweb",
+    name = "libcivetweb",
     srcs = [
-        "src/CivetServer.cpp",
         "src/civetweb.c",
     ],
     hdrs = [
-        "include/CivetServer.h",
         "include/civetweb.h",
     ],
     copts = [
@@ -39,6 +37,31 @@ cc_library(
     textual_hdrs = [
         "src/md5.inl",
         "src/handle_form.inl",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "civetweb",
+    srcs = [
+        "src/CivetServer.cpp",
+    ],
+    hdrs = [
+        "include/CivetServer.h",
+    ],
+    deps = [
+        ":libcivetweb",
+    ],
+    copts = [
+        "-DUSE_IPV6",
+        "-DNDEBUG",
+        "-DNO_CGI",
+        "-DNO_CACHING",
+        "-DNO_SSL",
+        "-DNO_FILES",
+    ],
+    includes = [
+        "include",
     ],
     visibility = ["//visibility:public"],
 )

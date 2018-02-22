@@ -101,9 +101,10 @@ this repo to your project as a dependency. Just add the following
 to your `WORKSPACE`:
 
 ```python
-git_repository(
+http_archive(
     name = "prometheus_cpp",
-    remote = https://github.com/jupp0r/prometheus-cpp.git",
+    strip_prefix = "prometheus-cpp-master",
+    urls = ["https://github.com/jupp0r/prometheus-cpp/archive/master.zip"],
 )
 
 load("@prometheus_cpp//:repositories.bzl", "prometheus_cpp_repositories")

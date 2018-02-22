@@ -6,6 +6,7 @@ add_executable(benchmarks
   gauge_bench.cc
   histogram_bench.cc
   registry_bench.cc
+  summary_bench.cc
 )
 
 target_link_libraries(benchmarks PRIVATE prometheus-cpp)

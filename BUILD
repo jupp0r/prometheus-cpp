@@ -14,6 +14,8 @@ cc_library(
         "lib/json_serializer.cc",
         "lib/protobuf_delimited_serializer.cc",
         "lib/registry.cc",
+        "lib/summary.cc",
+        "lib/summary_builder.cc",
         "lib/text_serializer.cc",
     ],
     hdrs = glob(

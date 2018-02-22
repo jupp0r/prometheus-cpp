@@ -24,8 +24,8 @@ class MetricsHandler : public CivetHandler {
   Counter& bytes_transferred_;
   Family<Counter>& num_scrapes_family_;
   Counter& num_scrapes_;
-  Family<Histogram>& request_latencies_family_;
-  Histogram& request_latencies_;
+  Family<Summary>& request_latencies_family_;
+  Summary& request_latencies_;
 };
 }
 }

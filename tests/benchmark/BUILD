@@ -8,6 +8,7 @@ cc_binary(
         "histogram_bench.cc",
         "main.cc",
         "registry_bench.cc",
+        "summary_bench.cc",
     ],
     linkstatic = 1,
     deps = [

@@ -25,7 +25,6 @@ add_library(prometheus-cpp
   handler.h
   histogram.cc
   histogram_builder.cc
-  json_serializer.cc
   protobuf_delimited_serializer.cc
   registry.cc
   summary.cc

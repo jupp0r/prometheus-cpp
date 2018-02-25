@@ -1,5 +1,4 @@
 #include "handler.h"
-#include "prometheus/json_serializer.h"
 #include "prometheus/protobuf_delimited_serializer.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
@@ -61,9 +60,6 @@ bool MetricsHandler::handleGet(CivetServer* server,
         "application/vnd.google.protobuf; "
         "proto=io.prometheus.client.MetricFamily; "
         "encoding=delimited";
-  } else if (accepted_encoding.find("application/json") != std::string::npos) {
-    serializer.reset(new JsonSerializer());
-    content_type = "application/json";
   } else {
     serializer.reset(new TextSerializer());
     content_type = "text/plain";
@@ -74,7 +70,8 @@ bool MetricsHandler::handleGet(CivetServer* server,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: %s\r\n",
             content_type.c_str());
-  mg_printf(conn, "Content-Length: %lu\r\n\r\n", static_cast<unsigned long>(body.size()));
+  mg_printf(conn, "Content-Length: %lu\r\n\r\n",
+            static_cast<unsigned long>(body.size()));
   mg_write(conn, body.data(), body.size());
 
   auto stop_time_of_request = std::chrono::steady_clock::now();
@@ -103,5 +100,5 @@ MetricsHandler::CollectMetrics() const {
 
   return collected_metrics;
 }
-}
-}
+}  // namespace detail
+}  // namespace prometheus

@@ -11,7 +11,6 @@ cc_library(
         "lib/handler.h",
         "lib/histogram.cc",
         "lib/histogram_builder.cc",
-        "lib/json_serializer.cc",
         "lib/protobuf_delimited_serializer.cc",
         "lib/registry.cc",
         "lib/summary.cc",

@@ -1,5 +1,7 @@
 #pragma once
 
+#if GOOGLE_PROTOBUF_VERSION >= 3000000
+
 #include <string>
 #include <vector>
 
@@ -15,3 +17,5 @@ class JsonSerializer : public Serializer {
       const std::vector<io::prometheus::client::MetricFamily>& metrics);
 };
 }
+
+#endif

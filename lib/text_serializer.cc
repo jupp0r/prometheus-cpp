@@ -1,6 +1,7 @@
 #include "prometheus/text_serializer.h"
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <sstream>
 
 namespace prometheus {

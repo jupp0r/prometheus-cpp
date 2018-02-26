@@ -11,7 +11,7 @@ using namespace prometheus;
 class SummaryTest : public Test {};
 
 TEST_F(SummaryTest, initialize_with_zero) {
-  Summary summary{{{}}};
+  Summary summary{Summary::Quantiles{}};
   auto metric = summary.Collect();
   ASSERT_TRUE(metric.has_summary());
   auto s = metric.summary();
@@ -20,7 +20,7 @@ TEST_F(SummaryTest, initialize_with_zero) {
 }
 
 TEST_F(SummaryTest, sample_count) {
-  Summary summary{{{0.5, 0.05}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}}};
   summary.Observe(0);
   summary.Observe(200);
   auto metric = summary.Collect();
@@ -30,7 +30,7 @@ TEST_F(SummaryTest, sample_count) {
 }
 
 TEST_F(SummaryTest, sample_sum) {
-  Summary summary{{{0.5, 0.05}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}}};
   summary.Observe(0);
   summary.Observe(1);
   summary.Observe(101);
@@ -41,7 +41,7 @@ TEST_F(SummaryTest, sample_sum) {
 }
 
 TEST_F(SummaryTest, quantile_size) {
-  Summary summary{{{0.5, 0.05}, {0.90, 0.01}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}}};
   auto metric = summary.Collect();
   ASSERT_TRUE(metric.has_summary());
   auto s = metric.summary();
@@ -49,7 +49,7 @@ TEST_F(SummaryTest, quantile_size) {
 }
 
 TEST_F(SummaryTest, quantile_bounds) {
-  Summary summary{{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}};
   auto metric = summary.Collect();
   ASSERT_TRUE(metric.has_summary());
   auto s = metric.summary();
@@ -62,7 +62,7 @@ TEST_F(SummaryTest, quantile_bounds) {
 TEST_F(SummaryTest, quantile_values) {
   static const int SAMPLES = 1000000;
 
-  Summary summary{{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}}};
   for (int i = 1; i <= SAMPLES; ++i) summary.Observe(i);
 
   auto metric = summary.Collect();
@@ -76,7 +76,7 @@ TEST_F(SummaryTest, quantile_values) {
 }
 
 TEST_F(SummaryTest, max_age) {
-  Summary summary{{{0.99, 0.001}}, std::chrono::seconds(1), 2};
+  Summary summary{Summary::Quantiles{{0.99, 0.001}}, std::chrono::seconds(1), 2};
   summary.Observe(8.0);
 
   static const auto test_value = [&summary](double ref) {

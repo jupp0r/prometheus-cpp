@@ -102,12 +102,12 @@ to your `WORKSPACE`:
 
 ```python
 http_archive(
-    name = "prometheus_cpp",
+    name = "com_github_jupp0r_prometheus_cpp",
     strip_prefix = "prometheus-cpp-master",
     urls = ["https://github.com/jupp0r/prometheus-cpp/archive/master.zip"],
 )
 
-load("@prometheus_cpp//:repositories.bzl", "prometheus_cpp_repositories")
+load("@com_github_jupp0r_prometheus_cpp//:repositories.bzl", "prometheus_cpp_repositories")
 
 prometheus_cpp_repositories()
 ```
@@ -119,7 +119,7 @@ demonstrated with the sample server included in this repository:
 cc_binary(
     name = "sample_server",
     srcs = ["sample_server.cc"],
-    deps = ["@prometheus_cpp//:prometheus_cpp"],
+    deps = ["@com_github_jupp0r_prometheus_cpp//:prometheus_cpp"],
 )
 ```
 

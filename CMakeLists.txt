@@ -15,6 +15,12 @@ find_package(Protobuf REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Telegraf)
 
+
+if(DEFINED MAKE_SHARED AND MAKE_SHARED EQUAL 1)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+endif()
+
 # suppress warnings
 
 if(APPLE)

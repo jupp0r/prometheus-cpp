@@ -14,7 +14,7 @@ add_custom_command(
   COMMENT "Running C++ protocol buffer compiler for metrics"
   VERBATIM)
 
-add_library(prometheus-cpp
+add_library(prometheus-cpp-object OBJECT
   check_names.cc
   counter.cc
   counter_builder.cc
@@ -31,16 +31,36 @@ add_library(prometheus-cpp
   summary_builder.cc
   text_serializer.cc
 
-  # civetweb
-
-  $<TARGET_OBJECTS:civetweb>
-
   # Metrics Protocol
 
   ${METRICS_SOURCE_FILE}
   ${METRICS_BINARY_DIR}/metrics.pb.cc
   ${METRICS_BINARY_DIR}/metrics.pb.h
-)
+)  
+
+
+if(DEFINED MAKE_SHARED AND MAKE_SHARED EQUAL 1)
+  add_library(prometheus-cpp SHARED
+    $<TARGET_OBJECTS:prometheus-cpp-object>
+
+    # civetweb
+    $<TARGET_OBJECTS:civetweb>
+  )
+
+else()
+  add_library(prometheus-cpp
+    $<TARGET_OBJECTS:prometheus-cpp-object>
+
+    # civetweb
+    $<TARGET_OBJECTS:civetweb>
+  )
+endif()
+
+target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
+target_include_directories(prometheus-cpp-object PRIVATE ${PROTOBUF_INCLUDE_DIRS})
+target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)
+target_include_directories(prometheus-cpp-object PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
 # TODO(gj) make all PRIVATE
 target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES} ${ZLIB_LIBRARIES} )

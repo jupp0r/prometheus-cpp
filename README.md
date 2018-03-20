@@ -81,7 +81,11 @@ mkdir _build
 cd _build
 
 # run cmake
+# to build static library
 cmake ..
+
+# to build dynamic library
+cmake .. -DMAKE_SHARED=1
 
 # build
 make -j 4

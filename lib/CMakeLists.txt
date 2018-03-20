@@ -56,15 +56,20 @@ else()
   )
 endif()
 
-# TODO(gj) make all PRIVATE
 target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus-cpp-object PRIVATE ${PROTOBUF_INCLUDE_DIRS})
 target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_include_directories(prometheus-cpp-object PRIVATE $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)
 target_include_directories(prometheus-cpp-object PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
+# TODO(gj) make all PRIVATE
 target_link_libraries(prometheus-cpp PUBLIC ${PROTOBUF_LIBRARIES} ${ZLIB_LIBRARIES} )
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
+target_include_directories(prometheus-cpp PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${METRICS_BINARY_DIR}>)
+
+target_include_directories(prometheus-cpp PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
 install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}

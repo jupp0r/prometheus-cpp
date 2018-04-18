@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <functional>
 #include <map>
 #include <memory>
@@ -15,6 +16,7 @@
 #include "gauge_builder.h"
 #include "histogram_builder.h"
 #include "metric.h"
+#include "metric_family.h"
 
 namespace prometheus {
 
@@ -32,7 +34,7 @@ class Family : public Collectable {
   void Remove(T* metric);
 
   // Collectable
-  std::vector<io::prometheus::client::MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect() override;
 
  private:
   std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
@@ -44,7 +46,7 @@ class Family : public Collectable {
   const std::map<std::string, std::string> constant_labels_;
   std::mutex mutex_;
 
-  io::prometheus::client::Metric CollectMetric(std::size_t hash, T* metric);
+  ClientMetric CollectMetric(std::size_t hash, T* metric);
 
   static std::size_t hash_labels(
       const std::map<std::string, std::string>& labels);
@@ -116,27 +118,27 @@ void Family<T>::Remove(T* metric) {
 }
 
 template <typename T>
-std::vector<io::prometheus::client::MetricFamily> Family<T>::Collect() {
+std::vector<MetricFamily> Family<T>::Collect() {
   std::lock_guard<std::mutex> lock{mutex_};
-  auto family = io::prometheus::client::MetricFamily{};
-  family.set_name(name_);
-  family.set_help(help_);
-  family.set_type(T::metric_type);
+  auto family = MetricFamily{};
+  family.name = name_;
+  family.help = help_;
+  family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    *family.add_metric() = std::move(CollectMetric(m.first, m.second.get()));
+    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
   }
   return {family};
 }
 
 template <typename T>
-io::prometheus::client::Metric Family<T>::CollectMetric(std::size_t hash,
-                                                        T* metric) {
+ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   auto collected = metric->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {
-        auto pair = collected.add_label();
-        pair->set_name(label_pair.first);
-        pair->set_value(label_pair.second);
+        auto label = ClientMetric::Label{};
+        label.name = label_pair.first;
+        label.value = label_pair.second;
+        collected.label.push_back(std::move(label));
       };
   std::for_each(constant_labels_.cbegin(), constant_labels_.cend(), add_label);
   const auto& metric_labels = labels_.at(hash);

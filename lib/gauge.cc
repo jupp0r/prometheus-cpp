@@ -39,10 +39,9 @@ void Gauge::SetToCurrentTime() {
 
 double Gauge::Value() const { return value_; }
 
-io::prometheus::client::Metric Gauge::Collect() {
-  io::prometheus::client::Metric metric;
-  auto gauge = metric.mutable_gauge();
-  gauge->set_value(Value());
+ClientMetric Gauge::Collect() {
+  ClientMetric metric;
+  metric.gauge.value = Value();
   return metric;
 }
 }

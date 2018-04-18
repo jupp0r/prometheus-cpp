@@ -2,11 +2,11 @@
 #include <string>
 #include <thread>
 
+#include "prometheus/client_metric.h"
 #include "prometheus/exposer.h"
 
 #include "CivetServer.h"
 #include "handler.h"
-#include "metrics.pb.h"
 
 namespace prometheus {
 

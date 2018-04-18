@@ -4,6 +4,3 @@
 [submodule "civetweb"]
 	path = 3rdparty/civetweb
 	url = https://github.com/civetweb/civetweb.git
-[submodule "prometheus_client_model"]
-	path = 3rdparty/prometheus_client_model
-	url = https://github.com/prometheus/client_model.git

@@ -11,7 +11,6 @@ if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
 endif()
 
 find_package(GoogleBenchmark)
-find_package(Protobuf REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Telegraf)
 

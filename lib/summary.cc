@@ -181,19 +181,19 @@ void Summary::Observe(double value) {
   quantile_values_.insert(value);
 }
 
-io::prometheus::client::Metric Summary::Collect() {
-  auto metric = io::prometheus::client::Metric{};
-  auto summary = metric.mutable_summary();
+ClientMetric Summary::Collect() {
+  auto metric = ClientMetric{};
 
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (const auto& quantile : quantiles_) {
-    auto entry = summary->add_quantile();
-    entry->set_quantile(quantile.quantile);
-    entry->set_value(quantile_values_.get(quantile.quantile));
+    auto metricQuantile = ClientMetric::Quantile{};
+    metricQuantile.quantile = quantile.quantile;
+    metricQuantile.value = quantile_values_.get(quantile.quantile);
+    metric.summary.quantile.push_back(std::move(metricQuantile));
   }
-  summary->set_sample_count(count_);
-  summary->set_sample_sum(sum_);
+  metric.summary.sample_count = count_;
+  metric.summary.sample_sum = sum_;
 
   return metric;
 }

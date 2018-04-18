@@ -10,7 +10,7 @@ using namespace prometheus;
 
 class MockCollectable : public Collectable {
  public:
-  MOCK_METHOD0(Collect, std::vector<io::prometheus::client::MetricFamily>());
+  MOCK_METHOD0(Collect, std::vector<prometheus::MetricFamily>());
 };
 
 class RegistryTest : public Test {};
@@ -23,13 +23,13 @@ TEST_F(RegistryTest, collect_single_metric_family) {
   counter_family.Add({{"name", "counter2"}});
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1);
-  EXPECT_EQ(collected[0].name(), "test");
-  EXPECT_EQ(collected[0].help(), "a test");
-  ASSERT_EQ(collected[0].metric_size(), 2);
-  ASSERT_EQ(collected[0].metric(0).label_size(), 1);
-  EXPECT_EQ(collected[0].metric(0).label(0).name(), "name");
-  ASSERT_EQ(collected[0].metric(1).label_size(), 1);
-  EXPECT_EQ(collected[0].metric(1).label(0).name(), "name");
+  EXPECT_EQ(collected[0].name, "test");
+  EXPECT_EQ(collected[0].help, "a test");
+  ASSERT_EQ(collected[0].metric.size(), 2);
+  ASSERT_EQ(collected[0].metric.at(0).label.size(), 1);
+  EXPECT_EQ(collected[0].metric.at(0).label.at(0).name, "name");
+  ASSERT_EQ(collected[0].metric.at(1).label.size(), 1);
+  EXPECT_EQ(collected[0].metric.at(1).label.at(0).name, "name");
 }
 
 TEST_F(RegistryTest, build_histogram_family) {

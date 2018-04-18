@@ -2,23 +2,21 @@
 
 #include <vector>
 
+#include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
 
-#include "metrics.pb.h"
-
 namespace prometheus {
-class Histogram : public Metric {
+class Histogram {
  public:
   using BucketBoundaries = std::vector<double>;
 
-  static const io::prometheus::client::MetricType metric_type =
-      io::prometheus::client::HISTOGRAM;
+  static const MetricType metric_type = MetricType::Histogram;
 
   Histogram(const BucketBoundaries& buckets);
 
   void Observe(double value);
 
-  io::prometheus::client::Metric Collect();
+  ClientMetric Collect();
 
  private:
   const BucketBoundaries bucket_boundaries_;

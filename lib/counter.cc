@@ -8,10 +8,9 @@ void Counter::Increment(double val) { gauge_.Increment(val); }
 
 double Counter::Value() const { return gauge_.Value(); }
 
-io::prometheus::client::Metric Counter::Collect() {
-  io::prometheus::client::Metric metric;
-  auto counter = metric.mutable_counter();
-  counter->set_value(Value());
+ClientMetric Counter::Collect() {
+  ClientMetric metric;
+  metric.counter.value = Value();
   return metric;
 }
 }

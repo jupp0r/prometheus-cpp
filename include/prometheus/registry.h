@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 
+#include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
 #include "prometheus/counter_builder.h"
 #include "prometheus/family.h"
@@ -12,8 +13,6 @@
 #include "prometheus/histogram_builder.h"
 #include "prometheus/summary.h"
 #include "prometheus/summary_builder.h"
-
-#include "metrics.pb.h"
 
 namespace prometheus {
 
@@ -25,7 +24,7 @@ class Registry : public Collectable {
   friend class detail::SummaryBuilder;
 
   // collectable
-  std::vector<io::prometheus::client::MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect() override;
 
  private:
   Family<Counter>& AddCounter(const std::string& name, const std::string& help,

@@ -2,44 +2,28 @@
 
 #include <gmock/gmock.h>
 
+#include <prometheus/client_metric.h>
 #include <prometheus/exposer.h>
 #include <prometheus/family.h>
 #include <prometheus/histogram.h>
-
-#include "metrics.pb.h"
 
 using namespace testing;
 using namespace prometheus;
 
 class FamilyTest : public Test {};
 
-namespace io {
-namespace prometheus {
-namespace client {
-bool operator==(const io::prometheus::client::LabelPair& a,
-                const io::prometheus::client::LabelPair& b) {
-  return std::tie(a.name(), a.value()) == std::tie(b.name(), b.value());
-}
-}
-}
-}
-
 TEST_F(FamilyTest, labels) {
-  auto const_label = io::prometheus::client::LabelPair{};
-  const_label.set_name("component");
-  const_label.set_value("test");
-  auto dynamic_label = io::prometheus::client::LabelPair{};
-  dynamic_label.set_name("status");
-  dynamic_label.set_value("200");
+  auto const_label = ClientMetric::Label{"component", "test"};
+  auto dynamic_label = ClientMetric::Label{"status", "200"};
 
   Family<Counter> family{"total_requests",
                          "Counts all requests",
-                         {{const_label.name(), const_label.value()}}};
-  family.Add({{dynamic_label.name(), dynamic_label.value()}});
+                         {{const_label.name, const_label.value}}};
+  family.Add({{dynamic_label.name, dynamic_label.value}});
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
-  ASSERT_GE(collected[0].metric_size(), 1);
-  EXPECT_THAT(collected[0].metric(0).label(),
+  ASSERT_GE(collected.at(0).metric.size(), 1);
+  EXPECT_THAT(collected.at(0).metric.at(0).label,
               ElementsAre(const_label, dynamic_label));
 }
 
@@ -49,8 +33,8 @@ TEST_F(FamilyTest, counter_value) {
   counter.Increment();
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
-  ASSERT_GE(collected[0].metric_size(), 1);
-  EXPECT_THAT(collected[0].metric(0).counter().value(), Eq(1));
+  ASSERT_GE(collected[0].metric.size(), 1);
+  EXPECT_THAT(collected[0].metric.at(0).counter.value, Eq(1));
 }
 
 TEST_F(FamilyTest, remove) {
@@ -60,7 +44,7 @@ TEST_F(FamilyTest, remove) {
   family.Remove(&counter1);
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
-  EXPECT_EQ(collected[0].metric_size(), 1);
+  EXPECT_EQ(collected[0].metric.size(), 1);
 }
 
 TEST_F(FamilyTest, Histogram) {
@@ -70,9 +54,8 @@ TEST_F(FamilyTest, Histogram) {
   histogram1.Observe(0);
   auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1);
-  ASSERT_GE(collected[0].metric_size(), 1);
-  ASSERT_TRUE(collected[0].metric(0).has_histogram());
-  EXPECT_THAT(collected[0].metric(0).histogram().sample_count(), Eq(1));
+  ASSERT_GE(collected[0].metric.size(), 1);
+  EXPECT_THAT(collected[0].metric.at(0).histogram.sample_count, Eq(1));
 }
 
 TEST_F(FamilyTest, add_twice) {

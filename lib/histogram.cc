@@ -22,21 +22,21 @@ void Histogram::Observe(double value) {
   bucket_counts_[bucket_index].Increment();
 }
 
-io::prometheus::client::Metric Histogram::Collect() {
-  auto metric = io::prometheus::client::Metric{};
-  auto histogram = metric.mutable_histogram();
+ClientMetric Histogram::Collect() {
+  auto metric = ClientMetric{};
 
   auto cumulative_count = 0ULL;
   for (std::size_t i = 0; i < bucket_counts_.size(); i++) {
     cumulative_count += bucket_counts_[i].Value();
-    auto bucket = histogram->add_bucket();
-    bucket->set_cumulative_count(cumulative_count);
-    bucket->set_upper_bound(i == bucket_boundaries_.size()
-                                ? std::numeric_limits<double>::infinity()
-                                : bucket_boundaries_[i]);
+    auto bucket = ClientMetric::Bucket{};
+    bucket.cumulative_count = cumulative_count;
+    bucket.upper_bound = (i == bucket_boundaries_.size()
+                              ? std::numeric_limits<double>::infinity()
+                              : bucket_boundaries_[i]);
+    metric.histogram.bucket.push_back(std::move(bucket));
   }
-  histogram->set_sample_count(cumulative_count);
-  histogram->set_sample_sum(sum_.Value());
+  metric.histogram.sample_count = cumulative_count;
+  metric.histogram.sample_sum = sum_.Value();
 
   return metric;
 }

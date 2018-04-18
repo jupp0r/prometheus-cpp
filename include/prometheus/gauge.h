@@ -2,17 +2,15 @@
 
 #include <atomic>
 
+#include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
 #include "prometheus/metric.h"
 
-#include "metrics.pb.h"
-
 namespace prometheus {
 
-class Gauge : public Metric {
+class Gauge {
  public:
-  static const io::prometheus::client::MetricType metric_type =
-      io::prometheus::client::GAUGE;
+  static const MetricType metric_type = MetricType::Gauge;
 
   Gauge();
   Gauge(double);
@@ -24,7 +22,7 @@ class Gauge : public Metric {
   void SetToCurrentTime();
   double Value() const;
 
-  io::prometheus::client::Metric Collect();
+  ClientMetric Collect();
 
  private:
   void Change(double);

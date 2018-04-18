@@ -2,22 +2,20 @@
 
 #include <atomic>
 
-#include "metrics.pb.h"
-
+#include "prometheus/client_metric.h"
 #include "prometheus/gauge.h"
 #include "prometheus/metric.h"
 
 namespace prometheus {
-class Counter : Metric {
+class Counter {
  public:
-  static const io::prometheus::client::MetricType metric_type =
-      io::prometheus::client::COUNTER;
+  static const MetricType metric_type = MetricType::Counter;
 
   void Increment();
   void Increment(double);
   double Value() const;
 
-  io::prometheus::client::Metric Collect();
+  ClientMetric Collect();
 
  private:
   Gauge gauge_;

@@ -1,5 +1,4 @@
 #include "handler.h"
-#include "prometheus/protobuf_delimited_serializer.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
@@ -42,28 +41,13 @@ static std::string GetAcceptedEncoding(struct mg_connection* conn) {
 
 bool MetricsHandler::handleGet(CivetServer* server,
                                struct mg_connection* conn) {
-  using namespace io::prometheus::client;
-
   auto start_time_of_request = std::chrono::steady_clock::now();
 
   auto accepted_encoding = GetAcceptedEncoding(conn);
   auto metrics = CollectMetrics();
 
-  auto content_type = std::string{};
-
-  auto serializer = std::unique_ptr<Serializer>{};
-
-  if (accepted_encoding.find("application/vnd.google.protobuf") !=
-      std::string::npos) {
-    serializer.reset(new ProtobufDelimitedSerializer());
-    content_type =
-        "application/vnd.google.protobuf; "
-        "proto=io.prometheus.client.MetricFamily; "
-        "encoding=delimited";
-  } else {
-    serializer.reset(new TextSerializer());
-    content_type = "text/plain";
-  }
+  auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
+  auto content_type = std::string{"text/plain"};
 
   auto body = serializer->Serialize(metrics);
   mg_printf(conn,
@@ -83,9 +67,8 @@ bool MetricsHandler::handleGet(CivetServer* server,
   num_scrapes_.Increment();
   return true;
 }
-std::vector<io::prometheus::client::MetricFamily>
-MetricsHandler::CollectMetrics() const {
-  auto collected_metrics = std::vector<io::prometheus::client::MetricFamily>{};
+std::vector<MetricFamily> MetricsHandler::CollectMetrics() const {
+  auto collected_metrics = std::vector<MetricFamily>{};
 
   for (auto&& wcollectable : collectables_) {
     auto collectable = wcollectable.lock();

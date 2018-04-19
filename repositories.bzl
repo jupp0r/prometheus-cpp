@@ -22,6 +22,7 @@ cc_library(
     ],
     linkopts = [
         "-lpthread",
+        "-lrt",
     ],
     textual_hdrs = [
         "src/md5.inl",
@@ -54,6 +55,7 @@ cc_library(
     ],
     linkopts = [
         "-lpthread",
+        "-lrt",
     ],
     visibility = ["//visibility:public"],
 )

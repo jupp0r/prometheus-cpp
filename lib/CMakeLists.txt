@@ -20,8 +20,11 @@ add_library(prometheus-cpp
 )
 
 target_link_libraries(prometheus-cpp PRIVATE ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
-target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
+if(UNIX)
+  target_link_libraries(prometheus-cpp PRIVATE rt)
+endif()
 
+target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus-cpp PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
 install(TARGETS prometheus-cpp EXPORT prometheus-cpp-targets

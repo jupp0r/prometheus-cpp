@@ -7,8 +7,7 @@
 #include <mutex>
 #include <vector>
 
-#include "metrics.pb.h"
-
+#include "prometheus/client_metric.h"
 #include "prometheus/metric.h"
 
 namespace prometheus {
@@ -77,12 +76,11 @@ class TimeWindowQuantiles {
 };
 }  // namespace detail
 
-class Summary : public Metric {
+class Summary {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
 
-  static const io::prometheus::client::MetricType metric_type =
-      io::prometheus::client::SUMMARY;
+  static const MetricType metric_type = MetricType::Summary;
 
   Summary(const Quantiles& quantiles,
           std::chrono::milliseconds max_age_seconds = std::chrono::seconds(60),
@@ -90,7 +88,7 @@ class Summary : public Metric {
 
   void Observe(double value);
 
-  io::prometheus::client::Metric Collect();
+  ClientMetric Collect();
 
  private:
   const Quantiles quantiles_;

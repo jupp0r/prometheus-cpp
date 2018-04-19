@@ -11,7 +11,6 @@ cc_library(
         "lib/handler.h",
         "lib/histogram.cc",
         "lib/histogram_builder.cc",
-        "lib/protobuf_delimited_serializer.cc",
         "lib/registry.cc",
         "lib/summary.cc",
         "lib/summary_builder.cc",
@@ -25,7 +24,5 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@civetweb//:civetweb",
-        "@com_google_protobuf//:protobuf",
-        "@prometheus_client_model//:prometheus_client_model",
     ],
 )

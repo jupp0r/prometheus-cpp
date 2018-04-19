@@ -1,17 +1,3 @@
-_PROMETHEUS_CLIENT_MODEL_BUILD_FILE = """
-licenses(["notice"])  # BSD license
-
-load("@com_google_protobuf//:protobuf.bzl", "cc_proto_library")
-
-cc_proto_library(
-    name = "prometheus_client_model",
-    srcs = ["metrics.proto"],
-    default_runtime = "@com_google_protobuf//:protobuf",
-    protoc = "@com_google_protobuf//:protoc",
-    visibility = ["//visibility:public"],
-)
-"""
-
 _CIVETWEB_BUILD_FILE = """
 licenses(["notice"])  # MIT license
 
@@ -33,6 +19,10 @@ cc_library(
     ],
     includes = [
         "include",
+    ],
+    linkopts = [
+        "-lpthread",
+        "-lrt",
     ],
     textual_hdrs = [
         "src/md5.inl",
@@ -62,6 +52,10 @@ cc_library(
     ],
     includes = [
         "include",
+    ],
+    linkopts = [
+        "-lpthread",
+        "-lrt",
     ],
     visibility = ["//visibility:public"],
 )
@@ -110,24 +104,6 @@ def load_civetweb():
        build_file_content = _CIVETWEB_BUILD_FILE,
     )
 
-def load_prometheus_client_model():
-    native.new_git_repository(
-        name = "prometheus_client_model",
-        remote = "https://github.com/prometheus/client_model.git",
-        commit = "e2da43ae71fe22f457da00bb0b1f4fcaec9113c2",
-        build_file_content = _PROMETHEUS_CLIENT_MODEL_BUILD_FILE,
-    )
-
-def load_com_google_protobuf():
-    native.http_archive(
-        name = "com_google_protobuf",
-        sha256 = "8e0236242106e680b4f9f576cc44b8cd711e948b20a9fc07769b0a20ceab9cc4",
-        strip_prefix = "protobuf-3.4.1",
-        urls = [
-            "https://github.com/google/protobuf/archive/v3.4.1.tar.gz",
-        ],
-    )
-
 def load_com_google_googletest():
     native.http_archive(
         name = "com_google_googletest",
@@ -149,8 +125,6 @@ def load_com_google_googlebenchmark():
     )
 
 def prometheus_cpp_repositories():
-    load_com_google_protobuf()
-    load_prometheus_client_model()
     load_civetweb()
     load_com_google_googletest()
     load_com_google_googlebenchmark()

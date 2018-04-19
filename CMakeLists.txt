@@ -10,8 +10,10 @@ if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+find_package(Threads)
+
 find_package(GoogleBenchmark)
-find_package(Protobuf REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Telegraf)
 
@@ -62,6 +64,10 @@ target_include_directories(gmock_main
   PRIVATE
     3rdparty/googletest/googletest
     3rdparty/googletest/googlemock
+)
+
+target_link_libraries(gmock_main PRIVATE
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # prometheus-cpp

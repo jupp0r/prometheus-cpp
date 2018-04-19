@@ -13,10 +13,9 @@ class SummaryTest : public Test {};
 TEST_F(SummaryTest, initialize_with_zero) {
   Summary summary{Summary::Quantiles{}};
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  EXPECT_EQ(s.sample_count(), 0);
-  EXPECT_EQ(s.sample_sum(), 0);
+  auto s = metric.summary;
+  EXPECT_EQ(s.sample_count, 0);
+  EXPECT_EQ(s.sample_sum, 0);
 }
 
 TEST_F(SummaryTest, sample_count) {
@@ -24,9 +23,8 @@ TEST_F(SummaryTest, sample_count) {
   summary.Observe(0);
   summary.Observe(200);
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  EXPECT_EQ(s.sample_count(), 2);
+  auto s = metric.summary;
+  EXPECT_EQ(s.sample_count, 2);
 }
 
 TEST_F(SummaryTest, sample_sum) {
@@ -35,28 +33,25 @@ TEST_F(SummaryTest, sample_sum) {
   summary.Observe(1);
   summary.Observe(101);
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  EXPECT_EQ(s.sample_sum(), 102);
+  auto s = metric.summary;
+  EXPECT_EQ(s.sample_sum, 102);
 }
 
 TEST_F(SummaryTest, quantile_size) {
   Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}}};
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  EXPECT_EQ(s.quantile_size(), 2);
+  auto s = metric.summary;
+  EXPECT_EQ(s.quantile.size(), 2);
 }
 
 TEST_F(SummaryTest, quantile_bounds) {
   Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}};
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  ASSERT_EQ(s.quantile_size(), 3);
-  EXPECT_DOUBLE_EQ(s.quantile(0).quantile(), 0.5);
-  EXPECT_DOUBLE_EQ(s.quantile(1).quantile(), 0.9);
-  EXPECT_DOUBLE_EQ(s.quantile(2).quantile(), 0.99);
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 3);
+  EXPECT_DOUBLE_EQ(s.quantile.at(0).quantile, 0.5);
+  EXPECT_DOUBLE_EQ(s.quantile.at(1).quantile, 0.9);
+  EXPECT_DOUBLE_EQ(s.quantile.at(2).quantile, 0.99);
 }
 
 TEST_F(SummaryTest, quantile_values) {
@@ -66,13 +61,12 @@ TEST_F(SummaryTest, quantile_values) {
   for (int i = 1; i <= SAMPLES; ++i) summary.Observe(i);
 
   auto metric = summary.Collect();
-  ASSERT_TRUE(metric.has_summary());
-  auto s = metric.summary();
-  ASSERT_EQ(s.quantile_size(), 3);
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 3);
 
-  EXPECT_NEAR(s.quantile(0).value(), 0.5 * SAMPLES, 0.05 * SAMPLES);
-  EXPECT_NEAR(s.quantile(1).value(), 0.9 * SAMPLES, 0.01 * SAMPLES);
-  EXPECT_NEAR(s.quantile(2).value(), 0.99 * SAMPLES, 0.001 * SAMPLES);
+  EXPECT_NEAR(s.quantile.at(0).value, 0.5 * SAMPLES, 0.05 * SAMPLES);
+  EXPECT_NEAR(s.quantile.at(1).value, 0.9 * SAMPLES, 0.01 * SAMPLES);
+  EXPECT_NEAR(s.quantile.at(2).value, 0.99 * SAMPLES, 0.001 * SAMPLES);
 }
 
 TEST_F(SummaryTest, max_age) {
@@ -81,14 +75,13 @@ TEST_F(SummaryTest, max_age) {
 
   static const auto test_value = [&summary](double ref) {
     auto metric = summary.Collect();
-    ASSERT_TRUE(metric.has_summary());
-    auto s = metric.summary();
-    ASSERT_EQ(s.quantile_size(), 1);
+    auto s = metric.summary;
+    ASSERT_EQ(s.quantile.size(), 1);
 
     if (std::isnan(ref))
-      EXPECT_TRUE(std::isnan(s.quantile(0).value()));
+      EXPECT_TRUE(std::isnan(s.quantile.at(0).value));
     else
-      EXPECT_DOUBLE_EQ(s.quantile(0).value(), ref);
+      EXPECT_DOUBLE_EQ(s.quantile.at(0).value, ref);
   };
 
   test_value(8.0);

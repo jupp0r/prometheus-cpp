@@ -1,12 +1,12 @@
 #pragma once
 
-#include "metrics.pb.h"
+#include "prometheus/client_metric.h"
 
 namespace prometheus {
 
 class Metric {
  public:
   virtual ~Metric() = default;
-  virtual io::prometheus::client::Metric Collect() = 0;
+  virtual ClientMetric Collect() = 0;
 };
 }

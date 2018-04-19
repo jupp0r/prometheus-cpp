@@ -66,11 +66,7 @@ the [travis build script](.travis.yml) might help.
 
 ### via CMake
 
-One prerequisite for performing the build using CMake is
-having [Protocol Buffers](https://github.com/google/protobuf) >= 3.0
-installed. See the [travis build script](.travis.yml) for how to build
-it from source, or use your operating systems package manager to
-install it.
+For CMake builds don't forget to fetch the submodules first. Then build as usual.
 
 ``` shell
 # fetch third-party dependencies
@@ -126,8 +122,6 @@ cc_binary(
 When you call `prometheus_cpp_repositories()` in your `WORKSPACE` file,
 you introduce the following dependencies to your project:
 
-* `load_com_google_protobuf()` for Google protobuf
-* `load_prometheus_client_model()` for Prometheus data model artifacts
 * `load_civetweb()` for Civetweb
 * `load_com_google_googletest()` for Google gtest
 * `load_com_google_googlebenchmark()` for Googlebenchmark
@@ -210,17 +204,6 @@ Alpha
   that prometheus successfully scrapes
 
 ## FAQ
-
-### Why do you not provide a `protobuf` version as a submodule in `3rdparty`?
-
-We opted against the submodule solution for protobuf, because
-otherwise ABI compatibiliy issues would force all consumers of
-`prometheus-cpp` to use exactly the same protobuf version as the one
-inside the submodule if they were using protobuf on its own.
-
-To phrase it differently, this library should not control the exact
-version, but the executable linking against it should determine a
-version that other libraries also link against.
 
 ## License
 

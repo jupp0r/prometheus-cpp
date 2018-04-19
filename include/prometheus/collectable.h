@@ -2,12 +2,8 @@
 
 #include <vector>
 
-namespace io {
 namespace prometheus {
-namespace client {
-class MetricFamily;
-}
-}
+struct MetricFamily;
 }
 
 namespace prometheus {
@@ -15,6 +11,6 @@ namespace prometheus {
 class Collectable {
  public:
   virtual ~Collectable() = default;
-  virtual std::vector<io::prometheus::client::MetricFamily> Collect() = 0;
+  virtual std::vector<MetricFamily> Collect() = 0;
 };
 }

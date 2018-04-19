@@ -20,6 +20,9 @@ cc_library(
     includes = [
         "include",
     ],
+    linkopts = [
+        "-lpthread",
+    ],
     textual_hdrs = [
         "src/md5.inl",
         "src/handle_form.inl",
@@ -48,6 +51,9 @@ cc_library(
     ],
     includes = [
         "include",
+    ],
+    linkopts = [
+        "-lpthread",
     ],
     visibility = ["//visibility:public"],
 )

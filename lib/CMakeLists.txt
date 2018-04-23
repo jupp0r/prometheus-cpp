@@ -20,7 +20,7 @@ add_library(prometheus-cpp
 )
 
 target_link_libraries(prometheus-cpp PRIVATE ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
-if(UNIX)
+if(UNIX AND NOT APPLE)
   target_link_libraries(prometheus-cpp PRIVATE rt)
 endif()
 

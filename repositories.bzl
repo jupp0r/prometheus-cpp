@@ -1,6 +1,15 @@
 _CIVETWEB_BUILD_FILE = """
 licenses(["notice"])  # MIT license
 
+config_setting(
+    name = "darwin",
+    values = {"cpu": "darwin"},)
+
+config_setting(
+    name = "darwin_x86_64",
+    values = {"cpu": "darwin_x86_64"},
+)
+
 cc_library(
     name = "libcivetweb",
     srcs = [
@@ -22,8 +31,11 @@ cc_library(
     ],
     linkopts = [
         "-lpthread",
-        "-lrt",
-    ],
+    ] + select({
+        ":darwin": [],
+        ":darwin_x86_64": [],
+        "//conditions:default": ["-lrt"],
+    }),
     textual_hdrs = [
         "src/md5.inl",
         "src/handle_form.inl",
@@ -55,8 +67,11 @@ cc_library(
     ],
     linkopts = [
         "-lpthread",
-        "-lrt",
-    ],
+    ] + select({
+        ":darwin": [],
+        ":darwin_x86_64": [],
+        "//conditions:default": ["-lrt"],
+    }),
     visibility = ["//visibility:public"],
 )
 """

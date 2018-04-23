@@ -10,9 +10,6 @@
 int main(int argc, char** argv) {
   using namespace prometheus;
 
-  // create an http server running on port 8080
-  Exposer exposer{"127.0.0.1:8080"};
-
   // create a metrics registry with component=main labels applied to all its
   // metrics
   auto registry = std::make_shared<Registry>();
@@ -29,8 +26,12 @@ int main(int argc, char** argv) {
   auto& second_counter = counter_family.Add(
       {{"another_label", "value"}, {"yet_another_label", "value"}});
 
-  // ask the exposer to scrape the registry on incoming scrapes
-  exposer.RegisterCollectable(registry);
+  // create container which must contain all registry which will be scraped
+  Exposer::CollectableContainer collectable_container;
+  collectable_container.emplace_back(registry);
+
+  //create exposer and start scrape the registry from container collectable_container on incoming scrapes on port 8080
+  Exposer exposer(std::move(collectable_container), "127.0.0.1:8080");
 
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));

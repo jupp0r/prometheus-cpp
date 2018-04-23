@@ -18,7 +18,10 @@ class MetricsHandler;
 
 class Exposer {
  public:
-  explicit Exposer(const std::string& bind_address,
+  using CollectableContainer = std::vector<std::weak_ptr<Collectable>>;
+
+  explicit Exposer(CollectableContainer&& collectables,
+                   const std::string& bind_address,
                    const std::string& uri = std::string("/metrics"));
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);

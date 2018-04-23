@@ -10,14 +10,17 @@
 
 namespace prometheus {
 
-Exposer::Exposer(const std::string& bind_address, const std::string& uri)
+Exposer::Exposer(CollectableContainer&& collectables,
+                 const std::string& bind_address,
+                 const std::string& uri)
     : server_(new CivetServer{
           {"listening_ports", bind_address.c_str(), "num_threads", "2"}}),
+      collectables_(std::move(collectables)),
       exposer_registry_(std::make_shared<Registry>()),
       metrics_handler_(
           new detail::MetricsHandler{collectables_, *exposer_registry_}),
       uri_(uri) {
-  RegisterCollectable(exposer_registry_);
+  collectables_.emplace_back(exposer_registry_);
   server_->addHandler(uri, metrics_handler_.get());
 }
 

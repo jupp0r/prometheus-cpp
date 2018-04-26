@@ -134,6 +134,12 @@ The list of dependencies is also available from file `repositories.bzl`.
 
 ## Contributing
 
+Please adhere to the [Google C++ Style
+Guide](https://google.github.io/styleguide/cppguide.html). Make sure
+to clang-format your patches before opening a PR. Also make sure to
+adhere to [these commit message
+guidelines](https://chris.beams.io/posts/git-commit/).
+
 You can check out this repo and build the library using
 ``` bash
 bazel build //:prometheus_cpp

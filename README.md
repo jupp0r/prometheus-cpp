@@ -134,6 +134,12 @@ The list of dependencies is also available from file `repositories.bzl`.
 
 ## Contributing
 
+Please adhere to the [Google C++ Style
+Guide](https://google.github.io/styleguide/cppguide.html). Make sure
+to clang-format your patches before opening a PR. Also make sure to
+adhere to [these commit message
+guidelines](https://chris.beams.io/posts/git-commit/).
+
 You can check out this repo and build the library using
 ``` bash
 bazel build //:prometheus_cpp
@@ -196,14 +202,21 @@ BM_Registry_CreateCounter/4k    18246638 ns   18150525 ns         40
 ```
 
 ## Project Status
-Alpha
-
-* parts of the library are instrumented by itself (bytes scraped,
-  number of scrapes, scrape request latencies)
-* there is a working [example](tests/integration/sample_server.cc)
-  that prometheus successfully scrapes
+Beta, getting ready for 1.0. The library is pretty stable and used in
+production. There are some small breaking API changes that might
+happen before 1.0 Parts of the library are instrumented by itself
+(bytes scraped, number of scrapes, scrape request latencies).  There
+is a working [example](tests/integration/sample_server.cc) that's
+scraped by telegraf as part of integration tests.
 
 ## FAQ
+
+### What scrape formats do you support
+
+Only the [Prometheus Text Exposition
+Format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-format-details).
+Support for the protobuf format was removed because it's been removed
+from Prometheus 2.0.
 
 ## License
 

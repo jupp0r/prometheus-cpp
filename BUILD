@@ -5,6 +5,7 @@ cc_library(
         "lib/counter.cc",
         "lib/counter_builder.cc",
         "lib/exposer.cc",
+        "lib/gateway.cc",
         "lib/gauge.cc",
         "lib/gauge_builder.cc",
         "lib/handler.cc",
@@ -24,5 +25,6 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@civetweb//:civetweb",
+        "@com_github_whoshuu_cpr//:cpr",
     ],
 )

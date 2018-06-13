@@ -77,13 +77,17 @@ int Gateway::push(bool replacing) {
 
     auto body = serializer->Serialize(metrics);
 
-    auto res = replacing
-                   ? cpr::Post(cpr::Url{uri.str()},
-                               cpr::Header{{"Content-Type", CONTENT_TYPE}},
-                               cpr::Body{body})
-                   : cpr::Put(cpr::Url{uri.str()},
-                              cpr::Header{{"Content-Type", CONTENT_TYPE}},
-                              cpr::Body{body});
+    cpr::Session session;
+
+    session.SetUrl(cpr::Url{uri.str()});
+    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
+    session.SetBody(cpr::Body{body});
+
+    if (!username_.empty()) {
+      session.SetAuth(cpr::Authentication{username_, password_});
+    }
+
+    auto res = replacing ? session.Post() : session.Put();
 
     if (res.status_code >= 400) {
       return res.status_code;
@@ -94,7 +98,7 @@ int Gateway::push(bool replacing) {
 }
 
 std::future<int> Gateway::async_push(bool replacing) {
-  std::vector<cpr::AsyncResponse> pushes;
+  std::vector<cpr::AsyncResponse> futures;
 
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
@@ -114,18 +118,24 @@ std::future<int> Gateway::async_push(bool replacing) {
 
     auto body = serializer->Serialize(metrics);
 
-    pushes.push_back(
-        replacing ? cpr::PostAsync(cpr::Url{uri.str()},
-                                   cpr::Header{{"Content-Type", CONTENT_TYPE}},
-                                   cpr::Body{body})
-                  : cpr::PutAsync(cpr::Url{uri.str()},
-                                  cpr::Header{{"Content-Type", CONTENT_TYPE}},
-                                  cpr::Body{body}));
+    cpr::Session session;
+
+    session.SetUrl(cpr::Url{uri.str()});
+    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
+    session.SetBody(cpr::Body{body});
+
+    if (!username_.empty()) {
+      session.SetAuth(cpr::Authentication{username_, password_});
+    }
+
+    futures.push_back(std::async(std::launch::async, [&] {
+      return replacing ? session.Post() : session.Put();
+    }));
   }
 
   return std::async(std::launch::async, [&] {
-    for (auto& push : pushes) {
-      auto res = push.get();
+    for (auto& future : futures) {
+      auto res = future.get();
 
       if (res.status_code > 400) {
         return res.status_code;

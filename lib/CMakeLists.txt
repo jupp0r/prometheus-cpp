@@ -1,25 +1,32 @@
-add_library(prometheus-cpp
+set(PROMETHEUS_SOURCES 
   check_names.cc
   counter.cc
   counter_builder.cc
-  exposer.cc
   gauge.cc
   gauge_builder.cc
-  handler.cc
-  handler.h
   histogram.cc
   histogram_builder.cc
   registry.cc
   summary.cc
   summary_builder.cc
   text_serializer.cc
+	)
+if (BUILD_CIVETWEB)
+	set(PROMETHEUS_SOURCES ${PROMETHEUS_SOURCES} 
+		exposer.cc
+		handler.cc
+		$<TARGET_OBJECTS:civetweb>
+		)
+endif()
 
-  # civetweb
-
-  $<TARGET_OBJECTS:civetweb>
+add_library(prometheus-cpp
+	${PROMETHEUS_SOURCES}
 )
 
-target_link_libraries(prometheus-cpp PRIVATE ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
+target_link_libraries(prometheus-cpp PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+if (BUILD_CIVETWEB)
+	target_link_libraries(prometheus-cpp PRIVATE ${ZLIB_LIBRARIES})
+endif()
 if(UNIX AND NOT APPLE)
   target_link_libraries(prometheus-cpp PRIVATE rt)
 endif()

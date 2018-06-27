@@ -24,9 +24,6 @@ add_library(prometheus-cpp
 )
 
 target_link_libraries(prometheus-cpp PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-if (BUILD_CIVETWEB)
-	target_link_libraries(prometheus-cpp PRIVATE ${ZLIB_LIBRARIES})
-endif()
 if(UNIX AND NOT APPLE)
   target_link_libraries(prometheus-cpp PRIVATE rt)
 endif()

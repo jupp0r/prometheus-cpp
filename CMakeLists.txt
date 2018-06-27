@@ -23,7 +23,6 @@ if(APPLE)
 endif()
 
 if (BUILD_CIVETWEB)
-	find_package(ZLIB REQUIRED)
 	# civetweb
 	set(CIVETWEB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/civetweb/include)
 

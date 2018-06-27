@@ -7,7 +7,7 @@ include(GNUInstallDirs)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
-	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 OPTION(BUILD_CIVETWEB "Embed Civet webserver in prometheus" ON)

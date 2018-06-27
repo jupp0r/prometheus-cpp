@@ -14,7 +14,6 @@ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
 find_package(GoogleBenchmark)
-find_package(ZLIB REQUIRED)
 find_package(Telegraf)
 
 # suppress warnings

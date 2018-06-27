@@ -23,7 +23,7 @@ MetricsHandler::MetricsHandler(
       request_latencies_family_(
           BuildSummary()
               .Name("exposer_request_latencies")
-              .Help("Latencies of serving scrape requests, in milliseconds")
+              .Help("Latencies of serving scrape requests, in microseconds")
               .Register(registry)),
       request_latencies_(request_latencies_family_.Add(
           {}, Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}})) {}
@@ -59,7 +59,7 @@ bool MetricsHandler::handleGet(CivetServer* server,
   mg_write(conn, body.data(), body.size());
 
   auto stop_time_of_request = std::chrono::steady_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
       stop_time_of_request - start_time_of_request);
   request_latencies_.Observe(duration.count());
 

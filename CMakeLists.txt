@@ -10,9 +10,9 @@ if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
-OPTION(BUILD_CIVETWEB "Embed Civet webserver in prometheus" ON)
-ENABLE_TESTING()
-INCLUDE(CTest)
+option(BUILD_CIVETWEB "Embed Civet webserver in prometheus" ON)
+enable_testing()
+include(CTest)
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)

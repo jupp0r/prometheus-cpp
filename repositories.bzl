@@ -37,6 +37,7 @@ cc_library(
         "//conditions:default": ["-lrt"],
     }),
     textual_hdrs = [
+        "src/file_ops.inl",
         "src/md5.inl",
         "src/handle_form.inl",
     ],

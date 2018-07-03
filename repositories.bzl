@@ -10,6 +10,16 @@ config_setting(
     values = {"cpu": "darwin_x86_64"},
 )
 
+config_setting(
+    name = "windows",
+    values = { "cpu": "x64_windows" },
+)
+
+config_setting(
+    name = "windows_msvc",
+    values = {"cpu": "x64_windows_msvc"},
+)
+
 cc_library(
     name = "libcivetweb",
     srcs = [
@@ -29,11 +39,15 @@ cc_library(
     includes = [
         "include",
     ],
-    linkopts = [
-        "-lpthread",
-    ] + select({
+    linkopts = select({
+        ":windows": [],
+        ":windows_msvc": [],
+        "//conditions:default": ["-lpthread"],
+    }) + select({
         ":darwin": [],
         ":darwin_x86_64": [],
+        ":windows": [],
+        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
     textual_hdrs = [
@@ -66,45 +80,17 @@ cc_library(
     includes = [
         "include",
     ],
-    linkopts = [
-        "-lpthread",
-    ] + select({
+    linkopts = select({
+        ":windows": [],
+        ":windows_msvc": [],
+        "//conditions:default": ["-lpthread"],
+    }) + select({
         ":darwin": [],
         ":darwin_x86_64": [],
+        ":windows": [],
+        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
-    visibility = ["//visibility:public"],
-)
-"""
-
-_GOOGLEBENCHEMARK_BUILD_FILE = """
-licenses(["notice"])  # Apache-2.0 license
-
-cc_library(
-    name = "googlebenchmark",
-    srcs = glob(
-        ["src/*.cc"],
-        exclude = [
-            "src/re_posix.cc",
-            "src/gnuregex.cc",
-        ],
-    ),
-    hdrs = glob(
-        [
-            "src/*.h",
-            "include/benchmark/*.h",
-        ],
-        exclude = [
-            "src/re_posix.h",
-            "src/gnuregex.h",
-        ],
-    ),
-    copts = [
-        "-DHAVE_STD_REGEX",
-    ],
-    includes = [
-        "include",
-    ],
     visibility = ["//visibility:public"],
 )
 """
@@ -130,14 +116,13 @@ def load_com_google_googletest():
     )
 
 def load_com_google_googlebenchmark():
-    native.new_http_archive(
+    native.http_archive(
         name = "com_google_googlebenchmark",
-        sha256 = "3dcc90c158838e2ac4a7ad06af9e28eb5877cf28252a81e55eb3c836757d3070",
-        strip_prefix = "benchmark-1.2.0",
+        sha256 = "f8e525db3c42efc9c7f3bc5176a8fa893a9a9920bbd08cef30fb56a51854d60d",
+        strip_prefix = "benchmark-1.4.1",
         urls = [
-            "https://github.com/google/benchmark/archive/v1.2.0.tar.gz",
+            "https://github.com/google/benchmark/archive/v1.4.1.tar.gz",
         ],
-        build_file_content = _GOOGLEBENCHEMARK_BUILD_FILE,
     )
 
 def prometheus_cpp_repositories():

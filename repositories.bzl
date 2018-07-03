@@ -110,35 +110,38 @@ cc_library(
 """
 
 def load_civetweb():
-    native.new_http_archive(
-        name = "civetweb",
-        strip_prefix = "civetweb-1.9.1",
-        sha256 = "880d741724fd8de0ebc77bc5d98fa673ba44423dc4918361c3cd5cf80955e36d",
-        urls = [
-           "https://github.com/civetweb/civetweb/archive/v1.9.1.tar.gz",
-       ],
-       build_file_content = _CIVETWEB_BUILD_FILE,
-    )
+    if "civetweb" not in native.existing_rules():
+        native.new_http_archive(
+            name = "civetweb",
+            strip_prefix = "civetweb-1.9.1",
+            sha256 = "880d741724fd8de0ebc77bc5d98fa673ba44423dc4918361c3cd5cf80955e36d",
+            urls = [
+            "https://github.com/civetweb/civetweb/archive/v1.9.1.tar.gz",
+        ],
+        build_file_content = _CIVETWEB_BUILD_FILE,
+        )
 
 def load_com_google_googletest():
-    native.http_archive(
-        name = "com_google_googletest",
-        strip_prefix = "googletest-master",
-        urls = [
-            "https://github.com/google/googletest/archive/master.zip",
-        ],
-    )
+    if "com_google_googletest" not in native.existing_rules():
+        native.http_archive(
+            name = "com_google_googletest",
+            strip_prefix = "googletest-master",
+            urls = [
+                "https://github.com/google/googletest/archive/master.zip",
+            ],
+        )
 
 def load_com_google_googlebenchmark():
-    native.new_http_archive(
-        name = "com_google_googlebenchmark",
-        sha256 = "3dcc90c158838e2ac4a7ad06af9e28eb5877cf28252a81e55eb3c836757d3070",
-        strip_prefix = "benchmark-1.2.0",
-        urls = [
-            "https://github.com/google/benchmark/archive/v1.2.0.tar.gz",
-        ],
-        build_file_content = _GOOGLEBENCHEMARK_BUILD_FILE,
-    )
+    if "com_google_googlebenchmark" not in native.existing_rules():
+        native.new_http_archive(
+            name = "com_google_googlebenchmark",
+            sha256 = "3dcc90c158838e2ac4a7ad06af9e28eb5877cf28252a81e55eb3c836757d3070",
+            strip_prefix = "benchmark-1.2.0",
+            urls = [
+                "https://github.com/google/benchmark/archive/v1.2.0.tar.gz",
+            ],
+            build_file_content = _GOOGLEBENCHEMARK_BUILD_FILE,
+        )
 
 def prometheus_cpp_repositories():
     load_civetweb()

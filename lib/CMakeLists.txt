@@ -1,21 +1,25 @@
-add_library(prometheus-cpp
+add_library(prometheus-core OBJECT
   check_names.cc
   counter.cc
   counter_builder.cc
-  exposer.cc
   gauge.cc
   gauge_builder.cc
-  handler.cc
-  handler.h
   histogram.cc
   histogram_builder.cc
   registry.cc
   summary.cc
   summary_builder.cc
   text_serializer.cc
+)
+
+add_library(prometheus-cpp
+  exposer.cc
+  handler.cc
+  handler.h
 
   # civetweb
 
+  $<TARGET_OBJECTS:prometheus-core>
   $<TARGET_OBJECTS:civetweb>
 )
 
@@ -24,6 +28,7 @@ if(UNIX AND NOT APPLE)
   target_link_libraries(prometheus-cpp PRIVATE rt)
 endif()
 
+target_include_directories(prometheus-core PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus-cpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus-cpp PRIVATE ${CIVETWEB_INCLUDE_DIR})
 

@@ -13,9 +13,11 @@ add_executable(prometheus_test
   mock_metric.h
   registry_test.cc
   summary_test.cc
+
+  $<TARGET_OBJECTS:prometheus-core>
 )
 
-target_link_libraries(prometheus_test PRIVATE prometheus-cpp)
+target_include_directories(prometheus_test PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 target_include_directories(prometheus_test PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
 
 target_link_libraries(prometheus_test PRIVATE gmock_main)

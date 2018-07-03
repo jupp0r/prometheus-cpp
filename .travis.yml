@@ -4,6 +4,9 @@ language: c++
 
 before_install:
       - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+      - chmod 600 ${HOME}/.gnupg/gpg.conf
+      - gpg --keyserver sks-keyservers.net --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F # Launchpad Toolchain builds
+      - gpg --armor --export 60C317803A41BA51845E371A1E9377A2BA9EF27F | sudo apt-key add -
 
 env:
   global:

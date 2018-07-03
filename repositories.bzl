@@ -10,6 +10,16 @@ config_setting(
     values = {"cpu": "darwin_x86_64"},
 )
 
+config_setting(
+    name = "windows",
+    values = { "cpu": "x64_windows" },
+)
+
+config_setting(
+    name = "windows_msvc",
+    values = {"cpu": "x64_windows_msvc"},
+)
+
 cc_library(
     name = "libcivetweb",
     srcs = [
@@ -29,11 +39,15 @@ cc_library(
     includes = [
         "include",
     ],
-    linkopts = [
-        "-lpthread",
-    ] + select({
+    linkopts = select({
+        ":windows": [],
+        ":windows_msvc": [],
+        "//conditions:default": ["-lpthread"],
+    }) + select({
         ":darwin": [],
         ":darwin_x86_64": [],
+        ":windows": [],
+        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
     textual_hdrs = [
@@ -66,11 +80,15 @@ cc_library(
     includes = [
         "include",
     ],
-    linkopts = [
-        "-lpthread",
-    ] + select({
+    linkopts = select({
+        ":windows": [],
+        ":windows_msvc": [],
+        "//conditions:default": ["-lpthread"],
+    }) + select({
         ":darwin": [],
         ":darwin_x86_64": [],
+        ":windows": [],
+        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
     visibility = ["//visibility:public"],
@@ -79,6 +97,16 @@ cc_library(
 
 _GOOGLEBENCHEMARK_BUILD_FILE = """
 licenses(["notice"])  # Apache-2.0 license
+
+config_setting(
+    name = "windows",
+    values = { "cpu": "x64_windows" },
+)
+
+config_setting(
+    name = "windows_msvc",
+    values = {"cpu": "x64_windows_msvc"},
+)
 
 cc_library(
     name = "googlebenchmark",
@@ -105,6 +133,11 @@ cc_library(
     includes = [
         "include",
     ],
+    linkopts = select({
+        ":windows": ["-DEFAULTLIB:shlwapi.lib"],
+        ":windows_msvc": ["-DEFAULTLIB:shlwapi.lib"],
+        "//conditions:default": ["-lpthread"],
+    }),    
     visibility = ["//visibility:public"],
 )
 """

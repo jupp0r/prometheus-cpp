@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
+if(POLICY CMP0063)
+  cmake_policy(SET CMP0063 NEW)
+endif()
 
 project(prometheus-cpp)
 enable_testing()
@@ -36,6 +39,7 @@ add_library(civetweb OBJECT
 )
 
 target_compile_definitions(civetweb PRIVATE
+  CIVETWEB_API=
   USE_IPV6
   NDEBUG
   NO_CGI
@@ -47,6 +51,15 @@ target_compile_definitions(civetweb PRIVATE
 target_include_directories(civetweb PUBLIC
   ${CIVETWEB_INCLUDE_DIR}
 )
+
+if(BUILD_SHARED_LIBS)
+  set_target_properties(civetweb PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    C_VISIBILITY_PRESET hidden
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+  )
+endif()
 
 # google mock
 

@@ -1,44 +1,37 @@
-#include <sys/param.h>
-#include <unistd.h>
 
-#include "prometheus/client_metric.h"
 #include "prometheus/gateway.h"
+#include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
 namespace prometheus {
 
-const char* CONTENT_TYPE = "text/plain; version=0.0.4; charset=utf-8";
+static const char CONTENT_TYPE[] = "text/plain; version=0.0.4; charset=utf-8";
 
 Gateway::Gateway(const std::string& uri, const std::string jobname,
-                 const labels_t* labels, const std::string username,
+                 const Labels& labels, const std::string username,
                  const std::string password)
-    : uri_(uri), jobname_(jobname), username_(username), password_(password) {
-  if (labels) {
-    std::stringstream ss;
+    : username_(username), password_(password) {
+  std::stringstream jobUriStream;
+  jobUriStream << uri << "/metrics/job/" << jobname;
+  jobUri_ = jobUriStream.str();
 
-    if (labels) {
-      for (auto& label : *labels) {
-        ss << "/" << label.first << "/" << label.second;
-      }
-    }
-
-    labels_ = ss.str();
+  std::stringstream labelStream;
+  for (auto& label : labels) {
+    labelStream << "/" << label.first << "/" << label.second;
   }
+  labels_ = labelStream.str();
 }
 
-const Gateway::labels_t Gateway::instance_label(void) {
-  char hostname[MAXHOSTNAMELEN] = {0};
-
-  if (gethostname(hostname, MAXHOSTNAMELEN - 1)) {
-    hostname[0] = 0;
+const Gateway::Labels Gateway::GetInstanceLabel(std::string hostname) {
+  if (hostname.empty()) {
+    return Gateway::Labels{};
   }
-
-  return Gateway::labels_t{{"instance", hostname}};
+  return Gateway::Labels{{"instance", hostname}};
 }
 
 void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
-                                  const labels_t* labels) {
+                                  const Labels* labels) {
   std::stringstream ss;
 
   if (labels) {
@@ -50,15 +43,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
-std::stringstream Gateway::job_uri(void) const {
-  std::stringstream ss;
-
-  ss << uri_ << "/metrics/job/" << jobname_;
-
-  return ss;
-}
-
-int Gateway::push(bool replacing) {
+int Gateway::push(PushMode mode) {
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
     if (!collectable) {
@@ -71,7 +56,8 @@ int Gateway::push(bool replacing) {
       metrics.push_back(metric);
     }
 
-    auto uri = job_uri() << labels_ << wcollectable.second;
+    auto uri = std::stringstream{};
+    uri << jobUri_ << labels_ << wcollectable.second;
 
     auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
 
@@ -87,7 +73,7 @@ int Gateway::push(bool replacing) {
       session.SetAuth(cpr::Authentication{username_, password_});
     }
 
-    auto res = replacing ? session.Post() : session.Put();
+    auto res = mode == PushMode::Replace ? session.Post() : session.Put();
 
     if (res.status_code >= 400) {
       return res.status_code;
@@ -97,7 +83,7 @@ int Gateway::push(bool replacing) {
   return 200;
 }
 
-std::future<int> Gateway::async_push(bool replacing) {
+std::future<int> Gateway::async_push(PushMode mode) {
   std::vector<cpr::AsyncResponse> futures;
 
   for (auto& wcollectable : collectables_) {
@@ -112,7 +98,8 @@ std::future<int> Gateway::async_push(bool replacing) {
       metrics.push_back(metric);
     }
 
-    auto uri = job_uri() << labels_ << wcollectable.second;
+    auto uri = std::stringstream{};
+    uri << jobUri_ << labels_ << wcollectable.second;
 
     auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
 
@@ -129,7 +116,7 @@ std::future<int> Gateway::async_push(bool replacing) {
     }
 
     futures.push_back(std::async(std::launch::async, [&] {
-      return replacing ? session.Post() : session.Put();
+      return mode == PushMode::Replace ? session.Post() : session.Put();
     }));
   }
 
@@ -137,7 +124,7 @@ std::future<int> Gateway::async_push(bool replacing) {
     for (auto& future : futures) {
       auto res = future.get();
 
-      if (res.status_code > 400) {
+      if (res.status_code >= 400) {
         return res.status_code;
       }
     }
@@ -146,14 +133,14 @@ std::future<int> Gateway::async_push(bool replacing) {
   });
 }
 
-int Gateway::Delete(void) {
-  auto res = cpr::Delete(cpr::Url{cpr::Url{job_uri().str()}});
+int Gateway::Delete() {
+  auto res = cpr::Delete(cpr::Url{cpr::Url{jobUri_}});
 
   return res.status_code;
 }
 
-cpr::AsyncResponse Gateway::AsyncDelete(void) {
-  return cpr::DeleteAsync(cpr::Url{job_uri().str()});
+cpr::AsyncResponse Gateway::AsyncDelete() {
+  return cpr::DeleteAsync(cpr::Url{jobUri_});
 }
 
 }  // namespace prometheus

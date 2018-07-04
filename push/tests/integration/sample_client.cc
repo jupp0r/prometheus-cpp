@@ -4,20 +4,32 @@
 #include <string>
 #include <thread>
 
-#include <prometheus/exposer.h>
 #include <prometheus/gateway.h>
 #include <prometheus/registry.h>
+
+#ifdef _WIN32
+#include <Winsock2.h>
+#else
+#include <sys/param.h>
+#include <unistd.h>
+#endif
+
+static std::string GetHostName() {
+  char hostname[1024];
+
+  if (::gethostname(hostname, sizeof(hostname))) {
+    return {};
+  }
+  return hostname;
+}
 
 int main(int argc, char** argv) {
   using namespace prometheus;
 
-  // create an http server running on port 8080
-  Exposer exposer{"127.0.0.1:8080"};
-
   // create a push gateway
-  auto labels = Gateway::instance_label();
+  const auto labels = Gateway::GetInstanceLabel(GetHostName());
 
-  Gateway gateway{"127.0.0.1:9091", "sample_server", &labels};
+  Gateway gateway{"127.0.0.1:9091", "sample_client", labels};
 
   // create a metrics registry with component=main labels applied to all its
   // metrics
@@ -34,9 +46,6 @@ int main(int argc, char** argv) {
   // add a counter to the metric family
   auto& second_counter = counter_family.Add(
       {{"another_label", "value"}, {"yet_another_label", "value"}});
-
-  // ask the exposer to scrape the registry on incoming scrapes
-  exposer.RegisterCollectable(registry);
 
   // ask the pusher to push the metrics to the pushgateway
   gateway.RegisterCollectable(registry);

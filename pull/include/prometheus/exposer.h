@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include "histogram.h"
-#include "registry.h"
+#include "prometheus/histogram.h"
+#include "prometheus/registry.h"
 
 class CivetServer;
 

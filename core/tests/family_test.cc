@@ -3,7 +3,6 @@
 #include <gmock/gmock.h>
 
 #include <prometheus/client_metric.h>
-#include <prometheus/exposer.h>
 #include <prometheus/family.h>
 #include <prometheus/histogram.h>
 

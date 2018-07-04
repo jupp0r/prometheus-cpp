@@ -2,7 +2,7 @@ add_executable(sample_server
   sample_server.cc
 )
 
-target_link_libraries(sample_server PRIVATE prometheus-cpp)
+target_link_libraries(sample_server PRIVATE prometheus-cpp-pull)
 target_include_directories(sample_server PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
 
 

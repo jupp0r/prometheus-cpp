@@ -9,7 +9,7 @@ add_executable(benchmarks
   summary_bench.cc
 )
 
-target_link_libraries(benchmarks PRIVATE prometheus-cpp)
+target_link_libraries(benchmarks PRIVATE prometheus-cpp-core)
 target_include_directories(benchmarks PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
 
 target_link_libraries(benchmarks PRIVATE Google::Benchmark)

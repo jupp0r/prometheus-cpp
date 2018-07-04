@@ -84,5 +84,17 @@ target_link_libraries(gmock_main PRIVATE
 
 # prometheus-cpp
 
-add_subdirectory(lib)
-add_subdirectory(tests)
+add_subdirectory(core)
+add_subdirectory(pull)
+
+# install
+
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/prometheus-cpp-config.cmake.in prometheus-cpp-config.cmake
+  INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO
+  )
+install(EXPORT prometheus-cpp-targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE prometheus-cpp::)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-config.cmake" DESTINATION ${CMAKECONFIG_INSTALL_DIR})

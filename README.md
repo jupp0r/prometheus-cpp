@@ -142,19 +142,20 @@ guidelines](https://chris.beams.io/posts/git-commit/).
 
 You can check out this repo and build the library using
 ``` bash
-bazel build //:prometheus_cpp
+bazel build //...           # build everything
+bazel build //core //pull   # build just the libraries
 ```
 
 Run the unit tests using
 ```
-bazel test //tests:prometheus-test
+bazel test //...
 ```
 
 There is also an integration test that
 uses [telegraf](https://github.com/influxdata/telegraf) to scrape a
 sample server. With telegraf installed, it can be run using
 ```
-bazel test //tests/integration:scrape-test
+bazel test //pull/tests/integration:scrape-test
 ```
 
 ## Benchmarks
@@ -162,14 +163,14 @@ bazel test //tests/integration:scrape-test
 There's a benchmark suite you can run:
 
 ```
-bazel run -c opt tests/benchmark/benchmarks
+bazel run -c opt //core/tests/benchmark
 
 INFO: Found 1 target...
-Target //tests/benchmark:benchmarks up-to-date:
-  bazel-bin/tests/benchmark/benchmarks
+Target //core/tests/benchmark:benchmark up-to-date:
+  bazel-bin/core/tests/benchmark/benchmark
 INFO: Elapsed time: 1.682s, Critical Path: 1.56s
 
-INFO: Running command line: bazel-bin/tests/benchmark/benchmarks
+INFO: Running command line: bazel-bin/core/tests/benchmark/benchmark
 Run on (8 X 2300 MHz CPU s)
 2016-10-17 15:56:49
 Benchmark                              Time           CPU Iterations

@@ -44,6 +44,8 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 }
 
 int Gateway::push(PushMode mode) {
+  const auto serializer = TextSerializer{};
+
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
     if (!collectable) {
@@ -59,9 +61,7 @@ int Gateway::push(PushMode mode) {
     auto uri = std::stringstream{};
     uri << jobUri_ << labels_ << wcollectable.second;
 
-    auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
-
-    auto body = serializer->Serialize(metrics);
+    auto body = serializer.Serialize(metrics);
 
     cpr::Session session;
 
@@ -84,6 +84,7 @@ int Gateway::push(PushMode mode) {
 }
 
 std::future<int> Gateway::async_push(PushMode mode) {
+  const auto serializer = TextSerializer{};
   std::vector<cpr::AsyncResponse> futures;
 
   for (auto& wcollectable : collectables_) {
@@ -101,9 +102,7 @@ std::future<int> Gateway::async_push(PushMode mode) {
     auto uri = std::stringstream{};
     uri << jobUri_ << labels_ << wcollectable.second;
 
-    auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
-
-    auto body = serializer->Serialize(metrics);
+    auto body = serializer.Serialize(metrics);
 
     cpr::Session session;
 

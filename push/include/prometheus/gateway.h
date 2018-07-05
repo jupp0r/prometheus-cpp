@@ -5,8 +5,6 @@
 #include <memory>
 #include <sstream>
 
-#include <cpr/cpr.h>
-
 #include "prometheus/histogram.h"
 #include "prometheus/registry.h"
 
@@ -39,7 +37,7 @@ class Gateway {
   int Delete();
 
   // Delete metrics from the given pushgateway.
-  cpr::AsyncResponse AsyncDelete();
+  std::future<int> AsyncDelete();
 
  private:
   std::string jobUri_;

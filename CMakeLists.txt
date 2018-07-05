@@ -18,69 +18,14 @@ find_package(Threads)
 
 find_package(GoogleBenchmark)
 find_package(Telegraf)
+find_package(civetweb CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+find_package(googlemock CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
 
 # suppress warnings
 
 if(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif()
-
-# civetweb
-
-set(CIVETWEB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/civetweb/include)
-
-add_library(civetweb OBJECT
-  3rdparty/civetweb/include/CivetServer.h
-  3rdparty/civetweb/include/civetweb.h
-  3rdparty/civetweb/src/CivetServer.cpp
-  3rdparty/civetweb/src/civetweb.c
-  3rdparty/civetweb/src/handle_form.inl
-  3rdparty/civetweb/src/md5.inl
-)
-
-target_compile_definitions(civetweb PRIVATE
-  CIVETWEB_API=
-  USE_IPV6
-  NDEBUG
-  NO_CGI
-  NO_CACHING
-  NO_SSL
-  NO_FILES
-)
-
-target_include_directories(civetweb PUBLIC
-  ${CIVETWEB_INCLUDE_DIR}
-)
-
-if(BUILD_SHARED_LIBS)
-  set_target_properties(civetweb PROPERTIES
-    POSITION_INDEPENDENT_CODE ON
-    C_VISIBILITY_PRESET hidden
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN ON
-  )
-endif()
-
-# google mock
-
-add_library(gmock_main STATIC EXCLUDE_FROM_ALL
-  3rdparty/googletest/googletest/src/gtest-all.cc
-  3rdparty/googletest/googlemock/src/gmock-all.cc
-  3rdparty/googletest/googlemock/src/gmock_main.cc
-)
-
-target_include_directories(gmock_main
-  PUBLIC
-    3rdparty/googletest/googletest/include
-    3rdparty/googletest/googlemock/include
-  PRIVATE
-    3rdparty/googletest/googletest
-    3rdparty/googletest/googlemock
-)
-
-target_link_libraries(gmock_main PRIVATE
-  ${CMAKE_THREAD_LIBS_INIT}
-)
 
 # prometheus-cpp
 

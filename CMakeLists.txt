@@ -19,6 +19,8 @@ find_package(Threads)
 find_package(GoogleBenchmark)
 find_package(Telegraf)
 find_package(civetweb CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+find_package(cpr CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+find_package(CURL REQUIRED)
 find_package(googlemock CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
 
 # suppress warnings
@@ -31,6 +33,7 @@ endif()
 
 add_subdirectory(core)
 add_subdirectory(pull)
+add_subdirectory(push)
 
 # install
 

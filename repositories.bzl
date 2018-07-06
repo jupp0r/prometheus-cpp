@@ -115,9 +115,9 @@ def load_com_google_googletest():
         ],
     )
 
-def load_com_google_googlebenchmark():
+def load_com_github_google_benchmark():
     native.http_archive(
-        name = "com_google_googlebenchmark",
+        name = "com_github_google_benchmark",
         sha256 = "f8e525db3c42efc9c7f3bc5176a8fa893a9a9920bbd08cef30fb56a51854d60d",
         strip_prefix = "benchmark-1.4.1",
         urls = [
@@ -128,4 +128,4 @@ def load_com_google_googlebenchmark():
 def prometheus_cpp_repositories():
     load_civetweb()
     load_com_google_googletest()
-    load_com_google_googlebenchmark()
+    load_com_github_google_benchmark()

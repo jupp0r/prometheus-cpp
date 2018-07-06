@@ -6,10 +6,10 @@ if [ ! -x "$telegraf" ] ; then
     exit 1
 fi
 
-tests/integration/sample-server&
+pull/tests/integration/sample-server&
 sample_server_pid=$!
 sleep 1
-telegraf_output="$(telegraf -test -config tests/integration/scrape.conf)"
+telegraf_output="$(telegraf -test -config pull/tests/integration/scrape.conf)"
 telegraf_run_result=$?
 kill -9 $sample_server_pid
 

@@ -1,0 +1,17 @@
+cc_library(
+    name = "pull",
+    srcs = glob([
+        "src/**/*.cc",
+        "src/**/*.h",
+    ]),
+    hdrs = glob(
+        ["include/**/*.h"],
+    ),
+    linkstatic = 1,
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//core",
+        "@civetweb",
+    ],
+)

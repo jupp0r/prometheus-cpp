@@ -1,6 +1,5 @@
 @PACKAGE_INIT@
 
 set_and_check(prometheus-cpp_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
-set(prometheus-cpp_LIBRARY prometheus-cpp::prometheus-cpp)
 
 include("${CMAKE_CURRENT_LIST_DIR}/prometheus-cpp-targets.cmake")

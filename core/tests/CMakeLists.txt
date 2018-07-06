@@ -2,8 +2,6 @@ if(GoogleBenchmark_FOUND)
   add_subdirectory(benchmark)
 endif()
 
-add_subdirectory(integration)
-
 add_executable(prometheus_test
   check_names_test.cc
   counter_test.cc
@@ -15,7 +13,7 @@ add_executable(prometheus_test
   summary_test.cc
 )
 
-target_link_libraries(prometheus_test PRIVATE prometheus-cpp)
+target_link_libraries(prometheus_test PRIVATE prometheus-cpp-core)
 target_include_directories(prometheus_test PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
 
 target_link_libraries(prometheus_test PRIVATE gmock_main)

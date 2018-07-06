@@ -4,3 +4,6 @@
 [submodule "civetweb"]
 	path = 3rdparty/civetweb
 	url = https://github.com/civetweb/civetweb.git
+[submodule "3rdparty/cpr"]
+	path = 3rdparty/cpr
+	url = https://github.com/whoshuu/cpr.git

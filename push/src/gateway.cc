@@ -4,6 +4,8 @@
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
+#include <cpr/cpr.h>
+
 namespace prometheus {
 
 static const char CONTENT_TYPE[] = "text/plain; version=0.0.4; charset=utf-8";
@@ -138,8 +140,19 @@ int Gateway::Delete() {
   return res.status_code;
 }
 
-cpr::AsyncResponse Gateway::AsyncDelete() {
-  return cpr::DeleteAsync(cpr::Url{jobUri_});
+std::future<int> Gateway::AsyncDelete() {
+  const auto url = cpr::Url{jobUri_};
+
+  return std::async(std::launch::async, [url] {
+    auto future = cpr::DeleteAsync(url);
+    auto res = future.get();
+
+    if (res.status_code >= 400) {
+      return res.status_code;
+    }
+
+    return 200;
+  });
 }
 
 }  // namespace prometheus

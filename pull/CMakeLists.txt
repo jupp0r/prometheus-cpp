@@ -1,3 +1,5 @@
+find_package(civetweb CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+
 add_library(prometheus-cpp-pull
   src/exposer.cc
   src/handler.cc
@@ -28,4 +30,6 @@ install(TARGETS prometheus-cpp-pull EXPORT prometheus-cpp-targets
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-add_subdirectory(tests)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()

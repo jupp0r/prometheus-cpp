@@ -11,6 +11,6 @@ namespace prometheus {
 class Serializer {
  public:
   virtual ~Serializer() = default;
-  virtual std::string Serialize(const std::vector<MetricFamily>&) = 0;
+  virtual std::string Serialize(const std::vector<MetricFamily>&) const = 0;
 };
 }  // namespace prometheus

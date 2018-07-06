@@ -95,6 +95,27 @@ cc_library(
 )
 """
 
+_CPR_BUILD_FILE = """
+licenses(["notice"])  # Apache-2.0 license
+
+cc_library(
+    name = "cpr",
+    srcs = glob([
+        "cpr/*.cpp",
+    ]),
+    hdrs = glob([
+        "include/cpr/*.h",
+    ]),
+    includes = [
+        "include",
+    ],
+    linkopts = [
+        "-lcurl",
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+
 def load_civetweb():
     native.new_http_archive(
         name = "civetweb",
@@ -125,7 +146,19 @@ def load_com_github_google_benchmark():
         ],
     )
 
+def load_com_github_whoshuu_cpr():
+    native.new_http_archive(
+        name = "com_github_whoshuu_cpr",
+        sha256 = "82597627e8b2aef1f0482631c9b11595c63a7565bb462a5995d126da4419ac99",
+        strip_prefix = "cpr-1.3.0",
+        urls = [
+            "https://github.com/whoshuu/cpr/archive/1.3.0.tar.gz",
+        ],
+        build_file_content = _CPR_BUILD_FILE,
+    )
+
 def prometheus_cpp_repositories():
     load_civetweb()
     load_com_google_googletest()
     load_com_github_google_benchmark()
+    load_com_github_whoshuu_cpr()

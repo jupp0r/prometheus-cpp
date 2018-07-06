@@ -184,7 +184,7 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
 }
 
 std::string TextSerializer::Serialize(
-    const std::vector<MetricFamily>& metrics) {
+    const std::vector<MetricFamily>& metrics) const {
   std::ostringstream ss;
   for (auto& family : metrics) {
     SerializeFamily(ss, family);

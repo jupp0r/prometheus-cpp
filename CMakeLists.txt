@@ -13,15 +13,17 @@ if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
+option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
+option(ENABLE_TESTING "Build tests" ON)
+
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
-find_package(GoogleBenchmark)
-find_package(Telegraf)
-find_package(civetweb CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
-find_package(cpr CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
-find_package(CURL REQUIRED)
-find_package(googlemock CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+if(ENABLE_TESTING)
+  find_package(googlemock CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+  find_package(GoogleBenchmark)
+endif()
 
 # suppress warnings
 
@@ -32,8 +34,14 @@ endif()
 # prometheus-cpp
 
 add_subdirectory(core)
-add_subdirectory(pull)
-add_subdirectory(push)
+
+if(ENABLE_PULL)
+  add_subdirectory(pull)
+endif()
+
+if(ENABLE_PUSH)
+  add_subdirectory(push)
+endif()
 
 # install
 

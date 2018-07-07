@@ -1,3 +1,6 @@
+find_package(CURL REQUIRED)
+find_package(cpr CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+
 add_library(prometheus-cpp-push
   src/gateway.cc
 
@@ -27,4 +30,6 @@ install(TARGETS prometheus-cpp-push EXPORT prometheus-cpp-targets
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-add_subdirectory(tests)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()

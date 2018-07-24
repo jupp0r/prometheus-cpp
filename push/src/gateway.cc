@@ -60,7 +60,7 @@ int Gateway::push(PushMode mode) {
       metrics.push_back(metric);
     }
 
-    auto uri = std::stringstream{};
+    std::stringstream uri;
     uri << jobUri_ << labels_ << wcollectable.second;
 
     auto body = serializer.Serialize(metrics);
@@ -101,7 +101,7 @@ std::future<int> Gateway::async_push(PushMode mode) {
       metrics.push_back(metric);
     }
 
-    auto uri = std::stringstream{};
+    std::stringstream uri;
     uri << jobUri_ << labels_ << wcollectable.second;
 
     auto body = serializer.Serialize(metrics);

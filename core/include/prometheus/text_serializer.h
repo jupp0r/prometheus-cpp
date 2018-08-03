@@ -10,7 +10,7 @@ namespace prometheus {
 
 class TextSerializer : public Serializer {
  public:
-  std::string Serialize(
-      const std::vector<MetricFamily>& metrics) const override;
+  void Serialize(std::ostream& out,
+                 const std::vector<MetricFamily>& metrics) const override;
 };
 }

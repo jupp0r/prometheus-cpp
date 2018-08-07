@@ -1,7 +1,6 @@
 #include "prometheus/text_serializer.h"
 #include <cmath>
 #include <iostream>
-#include <sstream>
 #include <limits>
 
 namespace prometheus {
@@ -183,12 +182,10 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
 }
 }
 
-std::string TextSerializer::Serialize(
-    const std::vector<MetricFamily>& metrics) const {
-  std::ostringstream ss;
+void TextSerializer::Serialize(std::ostream& out,
+                               const std::vector<MetricFamily>& metrics) const {
   for (auto& family : metrics) {
-    SerializeFamily(ss, family);
+    SerializeFamily(out, family);
   }
-  return ss.str();
 }
 }

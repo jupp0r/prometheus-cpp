@@ -7,6 +7,7 @@ add_library(prometheus-cpp-core
   src/histogram.cc
   src/histogram_builder.cc
   src/registry.cc
+  src/serializer.cc
   src/summary.cc
   src/summary_builder.cc
   src/text_serializer.cc

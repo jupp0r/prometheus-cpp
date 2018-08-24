@@ -31,6 +31,6 @@ install(TARGETS prometheus-cpp-core EXPORT prometheus-cpp-targets
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(BUILD_TESTING)
+if(ENABLE_TESTING)
   add_subdirectory(tests)
 endif()

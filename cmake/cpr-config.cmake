@@ -1,3 +1,8 @@
+if(NOT CMAKE_VERSION VERSION_LESS 3)
+  include(CMakeFindDependencyMacro)
+  find_dependency(CURL)
+endif()
+
 get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/cpr/" ABSOLUTE)
 
 macro(set_and_check _var _file)
@@ -47,7 +52,7 @@ add_library(cpr OBJECT
   ${_IMPORT_PREFIX}/include/cpr/util.h
 )
 
-target_include_directories(cpr PUBLIC ${CPR_INCLUDE_DIR})
+target_include_directories(cpr PUBLIC ${CPR_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(cpr PROPERTIES

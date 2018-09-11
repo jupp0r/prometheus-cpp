@@ -21,6 +21,13 @@ endif()
 target_include_directories(prometheus-cpp-pull PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_include_directories(prometheus-cpp-pull PRIVATE ${CIVETWEB_INCLUDE_DIR})
 
+if(ENABLE_COMPRESSION)
+  find_package(ZLIB REQUIRED)
+  target_link_libraries(prometheus-cpp-pull PRIVATE ${ZLIB_LIBRARIES})
+  target_include_directories(prometheus-cpp-pull PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+  target_compile_definitions(prometheus-cpp-pull PRIVATE HAVE_ZLIB)
+endif()
+
 install(TARGETS prometheus-cpp-pull EXPORT prometheus-cpp-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}

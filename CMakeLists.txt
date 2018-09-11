@@ -15,6 +15,7 @@ endif()
 
 option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
+option(ENABLE_COMPRESSION "Enable gzip compression" ON)
 option(ENABLE_TESTING "Build tests" ON)
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

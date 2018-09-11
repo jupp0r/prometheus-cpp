@@ -1,3 +1,9 @@
+#include <cstring>
+
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
+
 #include "handler.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
@@ -28,42 +34,96 @@ MetricsHandler::MetricsHandler(
       request_latencies_(request_latencies_family_.Add(
           {}, Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}})) {}
 
-static std::string GetAcceptedEncoding(struct mg_connection* conn) {
-  auto request_info = mg_get_request_info(conn);
-  for (int i = 0; i < request_info->num_headers; i++) {
-    auto header = request_info->http_headers[i];
-    if (std::string{header.name} == "Accept") {
-      return {header.value};
+#ifdef HAVE_ZLIB
+static bool IsEncodingAccepted(struct mg_connection* conn,
+                               const char* encoding) {
+  auto accept_encoding = mg_get_header(conn, "Accept-Encoding");
+  if (!accept_encoding) {
+    return false;
+  }
+  return std::strstr(accept_encoding, encoding) != nullptr;
+}
+
+static std::vector<Byte> GZipCompress(const std::string& input) {
+  auto zs = z_stream{};
+
+  if (deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK) {
+    return {};
+  }
+
+  zs.next_in = (Bytef*)input.data();
+  zs.avail_in = input.size();
+
+  int ret;
+  std::vector<Byte> output;
+  output.reserve(input.size() / 2u);
+
+  do {
+    static const auto outputBytesPerRound = std::size_t{32768};
+
+    zs.avail_out = outputBytesPerRound;
+    output.resize(zs.total_out + zs.avail_out);
+    zs.next_out = reinterpret_cast<Bytef*>(output.data() + zs.total_out);
+
+    ret = deflate(&zs, Z_FINISH);
+
+    output.resize(zs.total_out);
+  } while (ret == Z_OK);
+
+  deflateEnd(&zs);
+
+  if (ret != Z_STREAM_END) {
+    return {};
+  }
+
+  return output;
+}
+#endif
+
+static std::size_t WriteResponse(struct mg_connection* conn,
+                                 const std::string& body) {
+  mg_printf(conn,
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/plain\r\n");
+
+#ifdef HAVE_ZLIB
+  auto acceptsGzip = IsEncodingAccepted(conn, "gzip");
+
+  if (acceptsGzip) {
+    auto compressed = GZipCompress(body);
+    if (!compressed.empty()) {
+      mg_printf(conn,
+                "Content-Encoding: gzip\r\n"
+                "Content-Length: %lu\r\n\r\n",
+                static_cast<unsigned long>(compressed.size()));
+      mg_write(conn, compressed.data(), compressed.size());
+      return compressed.size();
     }
   }
-  return "";
+#endif
+
+  mg_printf(conn, "Content-Length: %lu\r\n\r\n",
+            static_cast<unsigned long>(body.size()));
+  mg_write(conn, body.data(), body.size());
+  return body.size();
 }
 
 bool MetricsHandler::handleGet(CivetServer* server,
                                struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
-  auto accepted_encoding = GetAcceptedEncoding(conn);
   auto metrics = CollectMetrics();
 
   auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
-  auto content_type = std::string{"text/plain"};
 
-  auto body = serializer->Serialize(metrics);
-  mg_printf(conn,
-            "HTTP/1.1 200 OK\r\n"
-            "Content-Type: %s\r\n",
-            content_type.c_str());
-  mg_printf(conn, "Content-Length: %lu\r\n\r\n",
-            static_cast<unsigned long>(body.size()));
-  mg_write(conn, body.data(), body.size());
+  auto bodySize = WriteResponse(conn, serializer->Serialize(metrics));
 
   auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
       stop_time_of_request - start_time_of_request);
   request_latencies_.Observe(duration.count());
 
-  bytes_transferred_.Increment(body.size());
+  bytes_transferred_.Increment(bodySize);
   num_scrapes_.Increment();
   return true;
 }

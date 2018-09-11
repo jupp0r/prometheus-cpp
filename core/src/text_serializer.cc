@@ -101,7 +101,7 @@ void SerializeSummary(std::ostream& out, const MetricFamily& family,
   WriteTail(out, metric);
 
   for (auto& q : sum.quantile) {
-    WriteHead(out, family, metric, "_quantile", "quantile",
+    WriteHead(out, family, metric, "", "quantile",
               ToString(q.quantile));
     out << ToString(q.value);
     WriteTail(out, metric);

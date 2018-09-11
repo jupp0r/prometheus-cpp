@@ -8,9 +8,9 @@ sh_test(
     name = "scrape-test",
     size = "small",
     srcs = ["scrape.sh"],
-    tags = ["manual"],
     data = [
         "sample-server",
         "scrape.conf",
     ],
+    tags = ["manual"],
 )

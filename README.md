@@ -207,7 +207,7 @@ Beta, getting ready for 1.0. The library is pretty stable and used in
 production. There are some small breaking API changes that might
 happen before 1.0 Parts of the library are instrumented by itself
 (bytes scraped, number of scrapes, scrape request latencies).  There
-is a working [example](tests/integration/sample_server.cc) that's
+is a working [example](pull/tests/integration/sample_server.cc) that's
 scraped by telegraf as part of integration tests.
 
 ## FAQ

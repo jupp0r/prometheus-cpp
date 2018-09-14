@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
   auto registry = std::make_shared<Registry>();
 
   // add a new counter family to the registry (families combine values with the
-  // same name, but distinct label dimenstions)
+  // same name, but distinct label dimensions)
   auto& counter_family = BuildCounter()
                              .Name("time_running_seconds")
                              .Help("How many seconds is this server running?")

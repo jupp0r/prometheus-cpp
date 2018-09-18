@@ -46,8 +46,11 @@ static bool IsEncodingAccepted(struct mg_connection* conn,
 
 static std::vector<Byte> GZipCompress(const std::string& input) {
   auto zs = z_stream{};
+  auto windowSize = 16 + MAX_WBITS;
+  auto memoryLevel = 9;
 
-  if (deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK) {
+  if (deflateInit2(&zs, Z_DEFAULT_COMPRESSION, Z_DEFLATED, windowSize,
+                   memoryLevel, Z_DEFAULT_STRATEGY) != Z_OK) {
     return {};
   }
 

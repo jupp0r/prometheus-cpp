@@ -1,4 +1,4 @@
-find_package(civetweb CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+find_package(civetweb-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
 
 add_library(prometheus-cpp-pull
   src/exposer.cc

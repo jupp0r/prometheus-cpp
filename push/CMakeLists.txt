@@ -1,5 +1,5 @@
 find_package(CURL REQUIRED)
-find_package(cpr CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+find_package(cpr-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
 
 add_library(prometheus-cpp-push
   src/gateway.cc

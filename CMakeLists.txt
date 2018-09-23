@@ -22,7 +22,7 @@ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
 if(ENABLE_TESTING)
-  find_package(googlemock CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+  find_package(googlemock-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
   find_package(GoogleBenchmark)
 endif()
 

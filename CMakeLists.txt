@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
@@ -23,7 +23,11 @@ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
 if(ENABLE_TESTING)
-  find_package(googlemock-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+  if(USE_THIRDPARTY_LIBRARIES)
+    find_package(googlemock-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+  else()
+    find_package(GTest 1.8.1 CONFIG REQUIRED)
+  endif()
   find_package(GoogleBenchmark)
 endif()
 

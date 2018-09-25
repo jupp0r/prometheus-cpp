@@ -13,6 +13,7 @@ macro(set_and_check _var _file)
 endmacro()
 
 set_and_check(CPR_INCLUDE_DIR ${_IMPORT_PREFIX}/include)
+set(CPR_INCLUDE_DIRS "${CPR_INCLUDE_DIR}")
 
 add_library(cpr OBJECT
   ${_IMPORT_PREFIX}/cpr/auth.cpp

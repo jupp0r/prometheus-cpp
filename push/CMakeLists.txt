@@ -1,12 +1,17 @@
 find_package(CURL REQUIRED)
-find_package(cpr-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+
+if(USE_THIRDPARTY_LIBRARIES)
+  find_package(cpr-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+  set(CPR_SOURCES $<TARGET_OBJECTS:cpr>)
+else()
+  find_package(CPR REQUIRED)
+endif()
+
 
 add_library(prometheus-cpp-push
   src/gateway.cc
 
-  # cpr
-
-  $<TARGET_OBJECTS:cpr>
+  ${CPR_SOURCES}
 )
 
 set_target_properties(prometheus-cpp-push PROPERTIES EXPORT_NAME push)
@@ -19,7 +24,8 @@ if(UNIX AND NOT APPLE)
 endif()
 
 target_include_directories(prometheus-cpp-push PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_include_directories(prometheus-cpp-push PRIVATE ${CPR_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
+target_include_directories(prometheus-cpp-push PRIVATE ${CPR_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
+target_link_libraries(prometheus-cpp-push PRIVATE ${CPR_LIBRARIES})
 
 install(TARGETS prometheus-cpp-push EXPORT prometheus-cpp-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}

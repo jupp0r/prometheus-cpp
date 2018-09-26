@@ -1,0 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "prometheus",
+    include_prefix = "prometheus",
+    strip_include_prefix = "core/include",
+    srcs = glob([
+        "core/src/**/*.cc",
+        "core/include/**/*.h",
+    ]),
+    hdrs = glob(
+        ["core/include/**/*.h"],
+    ),
+)

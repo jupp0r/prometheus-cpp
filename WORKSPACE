@@ -1,5 +1,6 @@
-workspace(name = "com_github_jupp0r_prometheus_cpp")
-
+workspace(name = "prometheus")
 load(":repositories.bzl", "prometheus_cpp_repositories")
-
+local_repository(name = "pesto", path = "submodule/pesto")
+load("@pesto//:rules.bzl", "library_all")
+library_all()
 prometheus_cpp_repositories()

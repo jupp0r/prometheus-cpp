@@ -54,11 +54,7 @@ int Gateway::push(PushMode mode) {
       continue;
     }
 
-    auto metrics = std::vector<MetricFamily>{};
-
-    for (auto metric : collectable->Collect()) {
-      metrics.push_back(metric);
-    }
+    auto metrics = collectable->Collect();
 
     std::stringstream uri;
     uri << jobUri_ << labels_ << wcollectable.second;
@@ -95,11 +91,7 @@ std::future<int> Gateway::async_push(PushMode mode) {
       continue;
     }
 
-    auto metrics = std::vector<MetricFamily>{};
-
-    for (auto metric : collectable->Collect()) {
-      metrics.push_back(metric);
-    }
+    auto metrics = collectable->Collect();
 
     std::stringstream uri;
     uri << jobUri_ << labels_ << wcollectable.second;

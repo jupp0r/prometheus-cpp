@@ -8,7 +8,6 @@ add_executable(prometheus_test
   family_test.cc
   gauge_test.cc
   histogram_test.cc
-  mock_metric.h
   registry_test.cc
   summary_test.cc
 )

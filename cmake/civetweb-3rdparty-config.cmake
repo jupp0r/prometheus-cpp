@@ -8,6 +8,7 @@ macro(set_and_check _var _file)
 endmacro()
 
 set_and_check(CIVETWEB_INCLUDE_DIR ${_IMPORT_PREFIX}/include)
+set(CIVETWEB_INCLUDE_DIRS "${CIVETWEB_INCLUDE_DIR}")
 
 add_library(civetweb OBJECT
   ${_IMPORT_PREFIX}/include/CivetServer.h
@@ -28,7 +29,7 @@ target_compile_definitions(civetweb PRIVATE
   NO_FILES
 )
 
-target_include_directories(civetweb PUBLIC ${CIVETWEB_INCLUDE_DIR})
+target_include_directories(civetweb PUBLIC ${CIVETWEB_INCLUDE_DIRS})
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(civetweb PROPERTIES

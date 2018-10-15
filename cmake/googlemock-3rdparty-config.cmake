@@ -20,3 +20,4 @@ target_include_directories(gmock_main
 target_link_libraries(gmock_main PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
 )
+add_library(GTest::gmock_main ALIAS gmock_main)

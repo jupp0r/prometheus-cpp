@@ -16,6 +16,6 @@ add_executable(prometheus_test
 target_link_libraries(prometheus_test PRIVATE prometheus-cpp-core)
 target_include_directories(prometheus_test PRIVATE ${PROJECT_SOURCE_DIR}) # fixme
 
-target_link_libraries(prometheus_test PRIVATE gmock_main)
+target_link_libraries(prometheus_test PRIVATE GTest::gmock_main)
 
 add_test(NAME prometheus_test COMMAND $<TARGET_FILE:prometheus_test>)

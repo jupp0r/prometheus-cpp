@@ -31,13 +31,29 @@ script:
   - bazel test --test_output=all //core/... //pull/...
   - bazel test --test_output=all //pull/tests/integration:scrape-test
   - bazel run -c opt //core/tests/benchmark
-  - mkdir _build
-  - cd _build
-  - cmake ..
+
+  - pushd .
+  - mkdir _build_internal_deps
+  - cd _build_internal_deps
+  - cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON
   - make -j 4
   - ctest -V
   - mkdir -p deploy
   - make DESTDIR=`pwd`/deploy install
+  - popd
+
+  - 3rdparty/build_for_travis.sh
+  - rm -rf 3rdparty/*
+
+  - pushd .
+  - mkdir _build_external_deps
+  - cd _build_external_deps
+  - cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DUSE_THIRDPARTY_LIBRARIES=OFF
+  - make -j 4
+  - ctest -V
+  - mkdir -p deploy
+  - make DESTDIR=`pwd`/deploy install
+  - popd
 
 # addons:
 #   coverity_scan:

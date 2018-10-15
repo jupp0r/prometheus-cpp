@@ -10,4 +10,4 @@ std::string Serializer::Serialize(
   Serialize(ss, metrics);
   return ss.str();
 }
-}
+}  // namespace prometheus

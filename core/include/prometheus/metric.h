@@ -9,4 +9,5 @@ class Metric {
   virtual ~Metric() = default;
   virtual ClientMetric Collect() = 0;
 };
-}
+
+}  // namespace prometheus

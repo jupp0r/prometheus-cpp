@@ -26,5 +26,5 @@ CounterBuilder& CounterBuilder::Help(const std::string& help) {
 Family<Counter>& CounterBuilder::Register(Registry& registry) {
   return registry.AddCounter(name_, help_, labels_);
 }
-}
-}
+}  // namespace detail
+}  // namespace prometheus

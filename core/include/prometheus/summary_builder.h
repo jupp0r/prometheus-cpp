@@ -13,7 +13,7 @@ class Registry;
 
 namespace detail {
 class SummaryBuilder;
-}
+}  // namespace detail
 
 detail::SummaryBuilder BuildSummary();
 

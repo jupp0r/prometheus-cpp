@@ -7,6 +7,7 @@
 #include "prometheus/metric.h"
 
 namespace prometheus {
+
 class Counter {
  public:
   static const MetricType metric_type = MetricType::Counter;
@@ -20,4 +21,5 @@ class Counter {
  private:
   Gauge gauge_;
 };
-}
+
+}  // namespace prometheus

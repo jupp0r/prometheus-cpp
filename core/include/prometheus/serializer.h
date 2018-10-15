@@ -15,4 +15,5 @@ class Serializer {
   virtual void Serialize(std::ostream& out,
                          const std::vector<MetricFamily>& metrics) const = 0;
 };
+
 }  // namespace prometheus

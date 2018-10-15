@@ -14,4 +14,5 @@ class TextSerializer : public Serializer {
   void Serialize(std::ostream& out,
                  const std::vector<MetricFamily>& metrics) const override;
 };
-}
+
+}  // namespace prometheus

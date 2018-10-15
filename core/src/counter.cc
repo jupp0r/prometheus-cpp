@@ -13,4 +13,4 @@ ClientMetric Counter::Collect() {
   metric.counter.value = Value();
   return metric;
 }
-}
+}  // namespace prometheus

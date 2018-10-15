@@ -44,4 +44,4 @@ ClientMetric Gauge::Collect() {
   metric.gauge.value = Value();
   return metric;
 }
-}
+}  // namespace prometheus

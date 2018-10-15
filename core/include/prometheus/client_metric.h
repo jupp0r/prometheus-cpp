@@ -10,7 +10,6 @@
 namespace prometheus {
 
 struct ClientMetric {
-
   // Label
 
   struct Label {

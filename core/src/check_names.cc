@@ -33,4 +33,4 @@ bool CheckLabelName(const std::string& name) {
   return std::regex_match(name, label_name_regex);
 #endif
 }
-}
+}  // namespace prometheus

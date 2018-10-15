@@ -78,7 +78,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 #ifndef NDEBUG
     auto labels_iter = labels_.find(hash);
     assert(labels_iter != labels_.end());
-    const auto &old_labels = labels_iter->second;
+    const auto& old_labels = labels_iter->second;
     assert(labels == old_labels);
 #endif
     return *metrics_iter->second;
@@ -89,7 +89,6 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     labels_reverse_lookup_.insert({metric, hash});
     return *metric;
   }
-
 }
 
 template <typename T>
@@ -145,4 +144,5 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
-}
+
+}  // namespace prometheus

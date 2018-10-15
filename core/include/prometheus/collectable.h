@@ -4,7 +4,7 @@
 
 namespace prometheus {
 struct MetricFamily;
-}
+}  // namespace prometheus
 
 namespace prometheus {
 
@@ -13,4 +13,5 @@ class Collectable {
   virtual ~Collectable() = default;
   virtual std::vector<MetricFamily> Collect() = 0;
 };
-}
+
+}  // namespace prometheus

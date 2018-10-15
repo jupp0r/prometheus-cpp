@@ -9,4 +9,5 @@ enum class MetricType {
   Untyped,
   Histogram,
 };
-}
+
+}  // namespace prometheus

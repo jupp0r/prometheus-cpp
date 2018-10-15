@@ -40,4 +40,5 @@ class Registry : public Collectable {
   std::vector<std::unique_ptr<Collectable>> collectables_;
   std::mutex mutex_;
 };
-}
+
+}  // namespace prometheus

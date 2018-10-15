@@ -8,9 +8,10 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-  : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1) {
-    assert(std::is_sorted(std::begin(bucket_boundaries_), std::end(bucket_boundaries_)));
-  }
+    : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1) {
+  assert(std::is_sorted(std::begin(bucket_boundaries_),
+                        std::end(bucket_boundaries_)));
+}
 
 void Histogram::Observe(double value) {
   // TODO: determine bucket list size at which binary search would be faster
@@ -40,4 +41,4 @@ ClientMetric Histogram::Collect() {
 
   return metric;
 }
-}
+}  // namespace prometheus

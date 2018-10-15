@@ -14,4 +14,5 @@ struct MetricFamily {
   MetricType type = MetricType::Untyped;
   std::vector<ClientMetric> metric;
 };
+
 }  // namespace prometheus

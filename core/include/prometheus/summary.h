@@ -100,4 +100,5 @@ class Summary {
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
 };
+
 }  // namespace prometheus

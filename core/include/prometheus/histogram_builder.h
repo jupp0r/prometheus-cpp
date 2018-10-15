@@ -13,7 +13,7 @@ class Registry;
 
 namespace detail {
 class HistogramBuilder;
-}
+}  // namespace detail
 
 detail::HistogramBuilder BuildHistogram();
 
@@ -30,5 +30,6 @@ class HistogramBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+}  // namespace detail
+
+}  // namespace prometheus

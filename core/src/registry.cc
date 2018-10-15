@@ -48,4 +48,5 @@ std::vector<MetricFamily> Registry::Collect() {
 
   return results;
 }
-}
+
+}  // namespace prometheus

@@ -28,4 +28,5 @@ class Gauge {
   void Change(double);
   std::atomic<double> value_;
 };
-}
+
+}  // namespace prometheus

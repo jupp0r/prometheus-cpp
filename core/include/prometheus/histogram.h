@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <prometheus/client_metric.h>
+#include <prometheus/counter.h>
 
-#include "prometheus/client_metric.h"
-#include "prometheus/counter.h"
+#include <vector>
 
 namespace prometheus {
 

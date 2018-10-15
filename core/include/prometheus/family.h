@@ -1,5 +1,13 @@
 #pragma once
 
+#include <prometheus/check_names.h>
+#include <prometheus/collectable.h>
+#include <prometheus/counter_builder.h>
+#include <prometheus/gauge_builder.h>
+#include <prometheus/histogram_builder.h>
+#include <prometheus/metric.h>
+#include <prometheus/metric_family.h>
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -9,14 +17,6 @@
 #include <numeric>
 #include <string>
 #include <unordered_map>
-
-#include "check_names.h"
-#include "collectable.h"
-#include "counter_builder.h"
-#include "gauge_builder.h"
-#include "histogram_builder.h"
-#include "metric.h"
-#include "metric_family.h"
 
 namespace prometheus {
 

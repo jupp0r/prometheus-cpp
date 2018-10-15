@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
-
 #include <prometheus/summary.h>
+
+#include <gmock/gmock.h>
 
 #include <cmath>
 #include <thread>

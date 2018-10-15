@@ -1,4 +1,4 @@
-#include "prometheus/summary.h"
+#include <prometheus/summary.h>
 
 #include <algorithm>
 #include <cmath>

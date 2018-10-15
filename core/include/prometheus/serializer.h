@@ -1,10 +1,9 @@
 #pragma once
 
+#include <prometheus/metric_family.h>
+
 #include <string>
 #include <vector>
-
-#include "prometheus/client_metric.h"
-#include "prometheus/metric_family.h"
 
 namespace prometheus {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prometheus/client_metric.h"
+#include <prometheus/client_metric.h>
 
 namespace prometheus {
 

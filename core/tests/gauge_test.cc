@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
-
 #include <prometheus/gauge.h>
+
+#include <gmock/gmock.h>
 
 using namespace testing;
 using namespace prometheus;

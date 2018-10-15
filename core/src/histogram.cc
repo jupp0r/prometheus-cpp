@@ -1,9 +1,9 @@
+#include <prometheus/histogram.h>
+
 #include <algorithm>
 #include <cassert>
 #include <iterator>
 #include <numeric>
-
-#include "prometheus/histogram.h"
 
 namespace prometheus {
 

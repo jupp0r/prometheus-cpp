@@ -1,6 +1,6 @@
-#include <regex>
-
 #include <prometheus/check_names.h>
+
+#include <regex>
 
 #if defined(__GLIBCXX__) && __GLIBCXX__ <= 20150623
 #define STD_REGEX_IS_BROKEN

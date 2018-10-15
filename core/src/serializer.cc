@@ -1,4 +1,4 @@
-#include "prometheus/serializer.h"
+#include <prometheus/serializer.h>
 
 #include <sstream>
 

@@ -1,10 +1,11 @@
-#include <memory>
+#include <prometheus/family.h>
+
+#include <prometheus/client_metric.h>
+#include <prometheus/histogram.h>
 
 #include <gmock/gmock.h>
 
-#include <prometheus/client_metric.h>
-#include <prometheus/family.h>
-#include <prometheus/histogram.h>
+#include <memory>
 
 using namespace testing;
 using namespace prometheus;

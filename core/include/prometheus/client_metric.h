@@ -1,11 +1,11 @@
 #pragma once
 
+#include <prometheus/metric_type.h>
+
 #include <cstdint>
 #include <string>
 #include <tuple>
 #include <vector>
-
-#include "prometheus/metric_type.h"
 
 namespace prometheus {
 

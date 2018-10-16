@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-if(POLICY CMP0063)
-  cmake_policy(SET CMP0063 NEW)
-endif()
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(prometheus-cpp)
 enable_testing()

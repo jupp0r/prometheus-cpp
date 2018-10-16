@@ -20,7 +20,10 @@ namespace prometheus {
 /// Gauge.
 class Counter {
  public:
-  static const MetricType metric_type = MetricType::Counter;
+  static const MetricType metric_type{MetricType::Counter};
+
+  /// \brief Create a counter that starts at 0.
+  Counter() = default;
 
   /// \brief Increment the counter by 1.
   void Increment();
@@ -33,10 +36,10 @@ class Counter {
   /// \brief Get the current value of the counter.
   double Value() const;
 
-  ClientMetric Collect();
+  ClientMetric Collect() const;
 
  private:
-  Gauge gauge_;
+  Gauge gauge_{0.0};
 };
 
 }  // namespace prometheus

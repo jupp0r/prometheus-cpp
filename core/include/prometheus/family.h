@@ -15,7 +15,6 @@
 #include "counter_builder.h"
 #include "gauge_builder.h"
 #include "histogram_builder.h"
-#include "metric.h"
 #include "metric_family.h"
 
 namespace prometheus {

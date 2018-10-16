@@ -37,7 +37,7 @@ class Summary {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
 
-  static const MetricType metric_type = MetricType::Summary;
+  static const MetricType metric_type{MetricType::Summary};
 
   /// \brief Create a summary metric.
   ///
@@ -52,22 +52,22 @@ class Summary {
   /// usage of resources (memory and cpu) to calculate the summary.
   ///
   /// The Phi-quantiles are calculated over a sliding window of time. The
-  /// sliding window of time is configured by max_age_seconds and age_buckets.
+  /// sliding window of time is configured by max_age and age_buckets.
   ///
-  /// \param max_age_seconds Set the duration of the time window, i.e., how long
+  /// \param max_age Set the duration of the time window, i.e., how long
   /// observations are kept before they are discarded. The default value is 60
   /// seconds.
   ///
   /// \param age_buckets Set the number of buckets of the time window. It
-  /// determines the number of buckets used to exclude observations that
-  /// are older than max_age_seconds from the summary, e.g., if max_age_seconds
-  /// is 60 seconds and age_buckets is 5, buckets will be switched every 12
-  /// seconds. The value is a trade-off between resources (memory and cpu for
-  /// maintaining the bucket) and how smooth the time window is moved. With only
-  /// one age bucket it effectively results in a complete reset of the summary
-  /// each time max_age_seconds has passed. The default value is 5.
+  /// determines the number of buckets used to exclude observations that are
+  /// older than max_age from the summary, e.g., if max_age is 60 seconds and
+  /// age_buckets is 5, buckets will be switched every 12 seconds. The value is
+  /// a trade-off between resources (memory and cpu for maintaining the bucket)
+  /// and how smooth the time window is moved. With only one age bucket it
+  /// effectively results in a complete reset of the summary each time max_age
+  /// has passed. The default value is 5.
   Summary(const Quantiles& quantiles,
-          std::chrono::milliseconds max_age_seconds = std::chrono::seconds(60),
+          std::chrono::milliseconds max_age = std::chrono::seconds{60},
           int age_buckets = 5);
 
   /// \brief Observe the given amount.
@@ -77,11 +77,10 @@ class Summary {
 
  private:
   const Quantiles quantiles_;
-
   std::mutex mutex_;
-
-  double count_;
+  std::uint64_t count_;
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
 };
+
 }  // namespace prometheus

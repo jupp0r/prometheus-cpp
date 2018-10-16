@@ -3,13 +3,13 @@
 namespace prometheus {
 
 Summary::Summary(const Quantiles& quantiles,
-                 std::chrono::milliseconds max_age_seconds, int age_buckets)
-    : quantiles_(quantiles),
-      count_(0),
-      sum_(0),
-      quantile_values_(quantiles_, max_age_seconds, age_buckets) {}
+                 const std::chrono::milliseconds max_age, const int age_buckets)
+    : quantiles_{quantiles},
+      count_{0},
+      sum_{0},
+      quantile_values_{quantiles_, max_age, age_buckets} {}
 
-void Summary::Observe(double value) {
+void Summary::Observe(const double value) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   count_ += 1;

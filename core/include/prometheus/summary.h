@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/metric.h"
 
 namespace prometheus {
 

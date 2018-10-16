@@ -4,7 +4,6 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
-#include "prometheus/metric.h"
 
 namespace prometheus {
 

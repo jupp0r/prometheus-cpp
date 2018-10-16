@@ -4,7 +4,6 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/gauge.h"
-#include "prometheus/metric.h"
 
 namespace prometheus {
 class Counter {

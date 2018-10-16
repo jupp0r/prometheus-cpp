@@ -20,7 +20,7 @@ install:
   - sudo dpkg -i telegraf_1.0.1_amd64.deb
 
 script:
-  - bazel build //core/... //pull/... # avoid //... due to git submodules
+  - bazel build //...
   - bazel test --test_output=all //core/... //pull/...
   - bazel test --test_output=all //pull/tests/integration:scrape-test
   - bazel run -c opt //core/tests/benchmark

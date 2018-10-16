@@ -18,10 +18,10 @@ namespace prometheus {
 /// running processes.
 class Gauge {
  public:
-  static const MetricType metric_type = MetricType::Gauge;
+  static const MetricType metric_type{MetricType::Gauge};
 
   /// \brief Create a gauge that starts at 0.
-  Gauge();
+  Gauge() = default;
 
   /// \brief Create a gauge that starts at the given amount.
   Gauge(double);
@@ -47,11 +47,11 @@ class Gauge {
   /// \brief Get the current value of the gauge.
   double Value() const;
 
-  ClientMetric Collect();
+  ClientMetric Collect() const;
 
  private:
   void Change(double);
-  std::atomic<double> value_;
+  std::atomic<double> value_{0.0};
 };
 
 }  // namespace prometheus

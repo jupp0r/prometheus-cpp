@@ -1,10 +1,9 @@
 #pragma once
 
-#include <atomic>
+#include <prometheus/client_metric.h>
+#include <prometheus/metric.h>
 
-#include "prometheus/client_metric.h"
-#include "prometheus/collectable.h"
-#include "prometheus/metric.h"
+#include <atomic>
 
 namespace prometheus {
 
@@ -28,4 +27,5 @@ class Gauge {
   void Change(double);
   std::atomic<double> value_;
 };
-}
+
+}  // namespace prometheus

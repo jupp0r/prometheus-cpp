@@ -1,12 +1,11 @@
 #pragma once
 
-#include <atomic>
-
-#include "prometheus/client_metric.h"
-#include "prometheus/gauge.h"
-#include "prometheus/metric.h"
+#include <prometheus/client_metric.h>
+#include <prometheus/gauge.h>
+#include <prometheus/metric.h>
 
 namespace prometheus {
+
 class Counter {
  public:
   static const MetricType metric_type = MetricType::Counter;
@@ -20,4 +19,5 @@ class Counter {
  private:
   Gauge gauge_;
 };
-}
+
+}  // namespace prometheus

@@ -12,7 +12,7 @@ class Registry;
 
 namespace detail {
 class CounterBuilder;
-}
+}  // namespace detail
 
 detail::CounterBuilder BuildCounter();
 
@@ -29,5 +29,6 @@ class CounterBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+}  // namespace detail
+
+}  // namespace prometheus

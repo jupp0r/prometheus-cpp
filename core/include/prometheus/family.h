@@ -1,5 +1,13 @@
 #pragma once
 
+#include <prometheus/check_names.h>
+#include <prometheus/collectable.h>
+#include <prometheus/counter_builder.h>
+#include <prometheus/gauge_builder.h>
+#include <prometheus/histogram_builder.h>
+#include <prometheus/metric.h>
+#include <prometheus/metric_family.h>
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -9,14 +17,6 @@
 #include <numeric>
 #include <string>
 #include <unordered_map>
-
-#include "check_names.h"
-#include "collectable.h"
-#include "counter_builder.h"
-#include "gauge_builder.h"
-#include "histogram_builder.h"
-#include "metric.h"
-#include "metric_family.h"
 
 namespace prometheus {
 
@@ -78,7 +78,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 #ifndef NDEBUG
     auto labels_iter = labels_.find(hash);
     assert(labels_iter != labels_.end());
-    const auto &old_labels = labels_iter->second;
+    const auto& old_labels = labels_iter->second;
     assert(labels == old_labels);
 #endif
     return *metrics_iter->second;
@@ -89,7 +89,6 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     labels_reverse_lookup_.insert({metric, hash});
     return *metric;
   }
-
 }
 
 template <typename T>
@@ -145,4 +144,5 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
-}
+
+}  // namespace prometheus

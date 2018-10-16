@@ -1,9 +1,10 @@
-#include <vector>
+#include <prometheus/registry.h>
+
+#include <prometheus/collectable.h>
 
 #include <gmock/gmock.h>
 
-#include <prometheus/collectable.h>
-#include <prometheus/registry.h>
+#include <vector>
 
 using namespace testing;
 using namespace prometheus;

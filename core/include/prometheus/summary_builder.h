@@ -2,7 +2,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 namespace prometheus {
 
@@ -13,7 +12,7 @@ class Registry;
 
 namespace detail {
 class SummaryBuilder;
-}
+}  // namespace detail
 
 detail::SummaryBuilder BuildSummary();
 

@@ -1,4 +1,4 @@
-#include "prometheus/registry.h"
+#include <prometheus/registry.h>
 
 namespace prometheus {
 
@@ -48,4 +48,5 @@ std::vector<MetricFamily> Registry::Collect() {
 
   return results;
 }
-}
+
+}  // namespace prometheus

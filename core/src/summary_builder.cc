@@ -1,5 +1,6 @@
-#include "prometheus/summary_builder.h"
-#include "prometheus/registry.h"
+#include <prometheus/summary_builder.h>
+
+#include <prometheus/registry.h>
 
 namespace prometheus {
 

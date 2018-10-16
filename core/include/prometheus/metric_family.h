@@ -1,10 +1,9 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <prometheus/client_metric.h>
+#include <prometheus/metric_type.h>
 
-#include "prometheus/client_metric.h"
-#include "prometheus/metric_type.h"
+#include <vector>
 
 namespace prometheus {
 
@@ -14,4 +13,5 @@ struct MetricFamily {
   MetricType type = MetricType::Untyped;
   std::vector<ClientMetric> metric;
 };
+
 }  // namespace prometheus

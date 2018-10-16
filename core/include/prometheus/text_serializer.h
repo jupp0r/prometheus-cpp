@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <prometheus/metric_family.h>
+#include <prometheus/serializer.h>
 
-#include "prometheus/metric_family.h"
-#include "prometheus/serializer.h"
+#include <iostream>
+#include <vector>
 
 namespace prometheus {
 
@@ -14,4 +14,5 @@ class TextSerializer : public Serializer {
   void Serialize(std::ostream& out,
                  const std::vector<MetricFamily>& metrics) const override;
 };
-}
+
+}  // namespace prometheus

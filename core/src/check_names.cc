@@ -1,6 +1,6 @@
-#include <regex>
-
 #include <prometheus/check_names.h>
+
+#include <regex>
 
 #if defined(__GLIBCXX__) && __GLIBCXX__ <= 20150623
 #define STD_REGEX_IS_BROKEN
@@ -33,4 +33,4 @@ bool CheckLabelName(const std::string& name) {
   return std::regex_match(name, label_name_regex);
 #endif
 }
-}
+}  // namespace prometheus

@@ -1,4 +1,4 @@
-#include "prometheus/counter.h"
+#include <prometheus/counter.h>
 
 namespace prometheus {
 
@@ -13,4 +13,4 @@ ClientMetric Counter::Collect() {
   metric.counter.value = Value();
   return metric;
 }
-}
+}  // namespace prometheus

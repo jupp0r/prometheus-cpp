@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
-
 #include <prometheus/summary.h>
+
+#include <gmock/gmock.h>
 
 #include <cmath>
 #include <thread>
@@ -70,7 +70,8 @@ TEST_F(SummaryTest, quantile_values) {
 }
 
 TEST_F(SummaryTest, max_age) {
-  Summary summary{Summary::Quantiles{{0.99, 0.001}}, std::chrono::seconds(1), 2};
+  Summary summary{Summary::Quantiles{{0.99, 0.001}}, std::chrono::seconds(1),
+                  2};
   summary.Observe(8.0);
 
   static const auto test_value = [&summary](double ref) {

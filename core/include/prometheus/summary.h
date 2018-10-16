@@ -1,5 +1,8 @@
 #pragma once
 
+#include <prometheus/client_metric.h>
+#include <prometheus/metric.h>
+
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -7,9 +10,6 @@
 #include <list>
 #include <mutex>
 #include <vector>
-
-#include "prometheus/client_metric.h"
-#include "prometheus/metric.h"
 
 namespace prometheus {
 
@@ -100,4 +100,5 @@ class Summary {
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
 };
+
 }  // namespace prometheus

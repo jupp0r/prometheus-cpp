@@ -12,7 +12,7 @@ class Registry;
 
 namespace detail {
 class GaugeBuilder;
-}
+}  // namespace detail
 
 detail::GaugeBuilder BuildGauge();
 
@@ -29,5 +29,6 @@ class GaugeBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+}  // namespace detail
+
+}  // namespace prometheus

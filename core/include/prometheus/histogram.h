@@ -1,11 +1,12 @@
 #pragma once
 
+#include <prometheus/client_metric.h>
+#include <prometheus/counter.h>
+
 #include <vector>
 
-#include "prometheus/client_metric.h"
-#include "prometheus/counter.h"
-
 namespace prometheus {
+
 class Histogram {
  public:
   using BucketBoundaries = std::vector<double>;
@@ -23,4 +24,5 @@ class Histogram {
   std::vector<Counter> bucket_counts_;
   Counter sum_;
 };
-}
+
+}  // namespace prometheus

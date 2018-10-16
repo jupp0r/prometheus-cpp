@@ -25,7 +25,7 @@ class Histogram {
  public:
   using BucketBoundaries = std::vector<double>;
 
-  static const MetricType metric_type = MetricType::Histogram;
+  static const MetricType metric_type{MetricType::Histogram};
 
   /// \brief Create a histogram with manually choosen buckets.
   ///
@@ -47,7 +47,7 @@ class Histogram {
   /// sum of all observations is incremented.
   void Observe(double value);
 
-  ClientMetric Collect();
+  ClientMetric Collect() const;
 
  private:
   const BucketBoundaries bucket_boundaries_;

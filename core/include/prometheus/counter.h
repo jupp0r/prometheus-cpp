@@ -26,6 +26,8 @@ class Counter {
   void Increment();
 
   /// \brief Increment the counter by a given amount.
+  ///
+  /// The counter will not change if the given amount is negative.
   void Increment(double);
 
   /// \brief Get the current value of the counter.

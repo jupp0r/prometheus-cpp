@@ -6,7 +6,8 @@
 #include <vector>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/detail/quantiles.h"
+#include "prometheus/detail/ckms_quantiles.h"
+#include "prometheus/detail/time_window_quantiles.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {

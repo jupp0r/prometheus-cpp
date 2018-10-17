@@ -1,8 +1,5 @@
 #include "prometheus/summary.h"
 
-#include <algorithm>
-#include <cmath>
-
 namespace prometheus {
 
 Summary::Summary(const Quantiles& quantiles,

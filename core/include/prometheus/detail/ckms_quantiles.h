@@ -1,17 +1,13 @@
 #pragma once
 
 #include <array>
-#include <atomic>
-#include <chrono>
+#include <cstddef>
 #include <functional>
-#include <list>
-#include <mutex>
 #include <vector>
-
-#include "prometheus/client_metric.h"
 
 namespace prometheus {
 namespace detail {
+
 class CKMSQuantiles {
  public:
   struct Quantile {
@@ -53,25 +49,5 @@ class CKMSQuantiles {
   std::size_t buffer_count_;
 };
 
-class TimeWindowQuantiles {
-  using Clock = std::chrono::steady_clock;
-
- public:
-  TimeWindowQuantiles(const std::vector<CKMSQuantiles::Quantile>& quantiles,
-                      Clock::duration max_age_seconds, int age_buckets);
-
-  double get(double q);
-  void insert(double value);
-
- private:
-  CKMSQuantiles& rotate();
-
-  const std::vector<CKMSQuantiles::Quantile>& quantiles_;
-  std::vector<CKMSQuantiles> ckms_quantiles_;
-  std::size_t current_bucket_;
-
-  Clock::time_point last_rotation_;
-  const Clock::duration rotation_interval_;
-};
 }  // namespace detail
 }  // namespace prometheus

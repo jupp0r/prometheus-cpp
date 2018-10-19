@@ -1,14 +1,14 @@
+
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(prometheus-cpp)
-enable_testing()
+
 include(GNUInstallDirs)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-if(NOT DEFINED CMAKE_CXX_STANDARD AND UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS Off)
 
 option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
@@ -26,13 +26,14 @@ if(ENABLE_TESTING)
     find_package(GTest 1.8.1 CONFIG REQUIRED)
   endif()
   find_package(GoogleBenchmark)
+  enable_testing()
 endif()
 
 # suppress warnings
 
-if(APPLE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+add_compile_options(
+  $<$<AND:$<STREQUAL:$<COMPILE_LANGUAGE>,CXX>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-deprecated-declarations>
+)
 
 # prometheus-cpp
 
@@ -48,12 +49,24 @@ endif()
 
 # install
 
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 include(CMakePackageConfigHelpers)
-configure_package_config_file(cmake/prometheus-cpp-config.cmake.in prometheus-cpp-config.cmake
-  INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
-  PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+
+install(
+  EXPORT ${PROJECT_NAME}-targets
+  NAMESPACE ${PROJECT_NAME}::
+  FILE ${PROJECT_NAME}-targets.cmake
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
+  ${PROJECT_NAME}-config.cmake
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
-  )
-install(EXPORT prometheus-cpp-targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE prometheus-cpp::)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-config.cmake" DESTINATION ${CMAKECONFIG_INSTALL_DIR})
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+)
+
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)

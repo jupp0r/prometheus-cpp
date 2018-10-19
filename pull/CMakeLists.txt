@@ -1,3 +1,4 @@
+
 if(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
   set(CIVETWEB_SOURCES $<TARGET_OBJECTS:civetweb>)
@@ -5,42 +6,56 @@ else()
   find_package(CivetWeb REQUIRED)
 endif()
 
-add_library(prometheus-cpp-pull
+if(ENABLE_COMPRESSION)
+  find_package(ZLIB REQUIRED)
+endif()
+
+add_library(pull
   src/exposer.cc
   src/handler.cc
   src/handler.h
-
   ${CIVETWEB_SOURCES}
 )
 
-set_target_properties(prometheus-cpp-pull PROPERTIES EXPORT_NAME pull)
+add_library(${PROJECT_NAME}::pull ALIAS pull)
 
-target_link_libraries(prometheus-cpp-pull PUBLIC prometheus-cpp-core)
-target_link_libraries(prometheus-cpp-pull PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-if(UNIX AND NOT APPLE)
-  target_link_libraries(prometheus-cpp-pull PRIVATE rt)
-endif()
+target_link_libraries(pull
+  PUBLIC
+    ${PROJECT_NAME}::core
+  PRIVATE
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${CIVETWEB_LIBRARIES}
+    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+    $<$<BOOL:ENABLE_COMPRESSION>:ZLIB::ZLIB>
+)
 
-target_include_directories(prometheus-cpp-pull PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_include_directories(pull
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE
+    ${CIVETWEB_INCLUDE_DIRS}
+)
 
-target_include_directories(prometheus-cpp-pull PRIVATE ${CIVETWEB_INCLUDE_DIRS})
-target_link_libraries(prometheus-cpp-pull PRIVATE ${CIVETWEB_LIBRARIES})
+target_compile_definitions(pull
+  PRIVATE
+    $<$<BOOL:ENABLE_COMPRESSION>:HAVE_ZLIB>
+)
 
-if(ENABLE_COMPRESSION)
-  find_package(ZLIB REQUIRED)
-  target_link_libraries(prometheus-cpp-pull PRIVATE ${ZLIB_LIBRARIES})
-  target_include_directories(prometheus-cpp-pull PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
-  target_compile_definitions(prometheus-cpp-pull PRIVATE HAVE_ZLIB)
-endif()
+set_target_properties(pull PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-pull)
 
-install(TARGETS prometheus-cpp-pull EXPORT prometheus-cpp-targets
+install(
+  TARGETS pull
+  EXPORT ${PROJECT_NAME}-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(
+  DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 if(ENABLE_TESTING)
   add_subdirectory(tests)

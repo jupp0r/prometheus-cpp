@@ -1,3 +1,4 @@
+
 find_package(CURL REQUIRED)
 
 if(USE_THIRDPARTY_LIBRARIES)
@@ -8,33 +9,46 @@ else()
 endif()
 
 
-add_library(prometheus-cpp-push
+add_library(push
   src/gateway.cc
-
   ${CPR_SOURCES}
 )
 
-set_target_properties(prometheus-cpp-push PROPERTIES EXPORT_NAME push)
+add_library(${PROJECT_NAME}::push ALIAS push)
 
-target_link_libraries(prometheus-cpp-push PUBLIC prometheus-cpp-core)
-target_link_libraries(prometheus-cpp-push PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(prometheus-cpp-push PRIVATE ${CURL_LIBRARIES})
-if(UNIX AND NOT APPLE)
-  target_link_libraries(prometheus-cpp-push PRIVATE rt)
-endif()
+target_link_libraries(push
+  PUBLIC
+    ${PROJECT_NAME}::core
+  PRIVATE
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${CURL_LIBRARIES}
+    ${CPR_LIBRARIES}
+    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+)
 
-target_include_directories(prometheus-cpp-push PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_include_directories(prometheus-cpp-push PRIVATE ${CPR_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
-target_link_libraries(prometheus-cpp-push PRIVATE ${CPR_LIBRARIES})
+target_include_directories(push
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE
+    ${CPR_INCLUDE_DIRS}
+    ${CURL_INCLUDE_DIRS}
+)
 
-install(TARGETS prometheus-cpp-push EXPORT prometheus-cpp-targets
+set_target_properties(push PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-push)
+
+install(
+  TARGETS push
+  EXPORT ${PROJECT_NAME}-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(
+  DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 if(ENABLE_TESTING)
   add_subdirectory(tests)

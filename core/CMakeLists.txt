@@ -1,4 +1,5 @@
-add_library(prometheus-cpp-core
+
+add_library(core
   src/check_names.cc
   src/counter.cc
   src/counter_builder.cc
@@ -13,23 +14,34 @@ add_library(prometheus-cpp-core
   src/text_serializer.cc
 )
 
-set_target_properties(prometheus-cpp-core PROPERTIES EXPORT_NAME core)
+add_library(${PROJECT_NAME}::core ALIAS core)
 
-target_link_libraries(prometheus-cpp-core PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-if(UNIX AND NOT APPLE)
-  target_link_libraries(prometheus-cpp-core PRIVATE rt)
-endif()
+target_link_libraries(core
+  PRIVATE
+    ${CMAKE_THREAD_LIBS_INIT}
+    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+)
 
-target_include_directories(prometheus-cpp-core PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_include_directories(core
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
-install(TARGETS prometheus-cpp-core EXPORT prometheus-cpp-targets
+set_target_properties(core PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-core)
+
+install(
+  TARGETS core
+  EXPORT ${PROJECT_NAME}-targets
   RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION  ${CMAKE_INSTALL_LIBDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(
+  DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 if(ENABLE_TESTING)
   add_subdirectory(tests)

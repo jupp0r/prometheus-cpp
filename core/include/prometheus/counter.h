@@ -1,7 +1,10 @@
 #pragma once
 
+#include <array>
+#include <atomic>
+#include <exception>
+
 #include "prometheus/client_metric.h"
-#include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -17,7 +20,17 @@ namespace prometheus {
 /// - errors
 ///
 /// Do not use a counter to expose a value that can decrease - instead use a
-/// Gauge.
+/// Gauge. If an montonically increasing counter is applicable a counter shall
+/// be prefered to a Gauge because of a better update performance.
+///
+/// The implementation exhibits a performance which is near a sequential
+/// implementation and scales linearly with increasing number of updater threads
+/// in a multi-threaded environment invoking Increment(). However, this
+/// excellent update-side scalability comes at read-side expense invoking
+/// Collect(). Increment() can therefor be used in the fast-path of the code,
+/// where the count is updated extremely frequently. The Collect() function on
+/// the other hand shall read the counter at a low sample rate, e.g., in the
+/// order of milliseconds.
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
@@ -29,12 +42,17 @@ class Counter {
   Counter() = default;
 
   /// \brief Increment the counter by 1.
-  void Increment();
+  void Increment() { IncrementUnchecked(1.0); }
 
   /// \brief Increment the counter by a given amount.
   ///
   /// The counter will not change if the given amount is negative.
-  void Increment(double);
+  void Increment(const double value) {
+    if (value < 0.0) {
+      return;
+    }
+    IncrementUnchecked(value);
+  }
 
   /// \brief Get the current value of the counter.
   double Value() const;
@@ -45,7 +63,37 @@ class Counter {
   ClientMetric Collect() const;
 
  private:
-  Gauge gauge_{0.0};
+  int ThreadId() {
+    thread_local int id{-1};
+
+    if (id == -1) {
+      id = AssignThreadId();
+    }
+    return id;
+  }
+
+  int AssignThreadId() {
+    const int id{count_.fetch_add(1)};
+
+    if (id >= per_thread_counter_.size()) {
+      std::terminate();
+    }
+
+    return id;
+  }
+
+  void IncrementUnchecked(const double v) {
+    CacheLine& c = per_thread_counter_[ThreadId()];
+    const double new_value{c.v.load(std::memory_order_relaxed) + v};
+    c.v.store(new_value, std::memory_order_relaxed);
+  }
+
+  struct alignas(128) CacheLine {
+    std::atomic<double> v{0.0};
+  };
+
+  std::atomic<int> count_{0};
+  std::array<CacheLine, 256> per_thread_counter_{};
 };
 
 }  // namespace prometheus

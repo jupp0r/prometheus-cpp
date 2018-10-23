@@ -10,9 +10,25 @@ static void BM_Counter_Increment(benchmark::State& state) {
       BuildCounter().Name("benchmark_counter").Help("").Register(registry);
   auto& counter = counter_family.Add({});
 
-  while (state.KeepRunning()) counter.Increment();
+  while (state.KeepRunning()) {
+    counter.Increment();
+  }
 }
 BENCHMARK(BM_Counter_Increment);
+
+class BM_Counter : public benchmark::Fixture {
+ protected:
+  BM_Counter() { this->ThreadPerCpu(); }
+
+  prometheus::Counter counter{};
+};
+
+BENCHMARK_F(BM_Counter, ConcurrentIncrement)
+(benchmark::State& state) {
+  for (auto _ : state) {
+    counter.Increment();
+  }
+}
 
 static void BM_Counter_Collect(benchmark::State& state) {
   using prometheus::BuildCounter;

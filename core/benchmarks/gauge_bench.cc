@@ -14,6 +14,20 @@ static void BM_Gauge_Increment(benchmark::State& state) {
 }
 BENCHMARK(BM_Gauge_Increment);
 
+class BM_Gauge : public benchmark::Fixture {
+ protected:
+  BM_Gauge() { this->ThreadPerCpu(); }
+
+  prometheus::Gauge gauge{};
+};
+
+BENCHMARK_F(BM_Gauge, ConcurrentIncrement)
+(benchmark::State& state) {
+  for (auto _ : state) {
+    gauge.Increment();
+  }
+}
+
 static void BM_Gauge_Decrement(benchmark::State& state) {
   using prometheus::BuildGauge;
   using prometheus::Gauge;

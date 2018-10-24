@@ -11,3 +11,28 @@ cc_library(
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "core-headers",
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+)
+
+cc_binary(
+    name = "libcore.so",
+    srcs = glob([
+        "src/**/*.cc",
+        "src/**/*.h",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [":core-headers"],
+    linkshared = True,
+)
+
+cc_library(
+    name = "core-shared",
+    srcs = [":libcore.so"],
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+)

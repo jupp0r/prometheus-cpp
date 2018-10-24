@@ -12,9 +12,6 @@
 
 #include "check_names.h"
 #include "collectable.h"
-#include "counter_builder.h"
-#include "gauge_builder.h"
-#include "histogram_builder.h"
 #include "metric_family.h"
 
 namespace prometheus {
@@ -22,17 +19,12 @@ namespace prometheus {
 template <typename T>
 class Family : public Collectable {
  public:
-  friend class detail::CounterBuilder;
-  friend class detail::GaugeBuilder;
-  friend class detail::HistogramBuilder;
-
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
   void Remove(T* metric);
 
-  // Collectable
   std::vector<MetricFamily> Collect() override;
 
  private:
@@ -77,7 +69,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 #ifndef NDEBUG
     auto labels_iter = labels_.find(hash);
     assert(labels_iter != labels_.end());
-    const auto &old_labels = labels_iter->second;
+    const auto& old_labels = labels_iter->second;
     assert(labels == old_labels);
 #endif
     return *metrics_iter->second;
@@ -88,7 +80,6 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     labels_reverse_lookup_.insert({metric, hash});
     return *metric;
   }
-
 }
 
 template <typename T>
@@ -144,4 +135,5 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
-}
+
+}  // namespace prometheus

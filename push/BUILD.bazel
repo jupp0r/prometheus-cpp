@@ -15,3 +15,31 @@ cc_library(
         "@com_github_whoshuu_cpr//:cpr",
     ],
 )
+
+cc_library(
+    name = "push-headers",
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+)
+
+cc_binary(
+    name = "libpush.so",
+    srcs = glob([
+        "src/**/*.cc",
+        "src/**/*.h",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//core:core-shared",
+        "@com_github_whoshuu_cpr//:cpr",
+        ":push-headers",
+    ],
+)
+
+cc_library(
+    name = "push-shared",
+    srcs = [":libpush.so"],
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+    visibility =["//visibility:public"],
+)

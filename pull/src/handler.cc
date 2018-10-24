@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iterator>
 
 #ifdef HAVE_ZLIB
 #include <zlib.h>
@@ -139,9 +140,10 @@ std::vector<MetricFamily> MetricsHandler::CollectMetrics() const {
       continue;
     }
 
-    for (auto metric : collectable->Collect()) {
-      collected_metrics.push_back(metric);
-    }
+    auto&& metrics = collectable->Collect();
+    collected_metrics.insert(collected_metrics.end(),
+                             std::make_move_iterator(metrics.begin()),
+                             std::make_move_iterator(metrics.end()));
   }
 
   return collected_metrics;

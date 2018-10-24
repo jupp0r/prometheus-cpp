@@ -15,3 +15,32 @@ cc_library(
         "@civetweb",
     ],
 )
+
+cc_library(
+    name = "pull-headers",
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+)
+
+cc_binary(
+    name = "libpull.so",
+    srcs = glob([
+        "src/**/*.cc",
+        "src/**/*.h",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//core:core-shared",
+        "@civetweb",
+        ":pull-headers",
+    ],
+    linkshared = True
+)
+
+cc_library(
+    name = "pull-shared",
+    srcs = [":libpull.so"],
+    hdrs = glob(["include/**/*.h"]),
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+)

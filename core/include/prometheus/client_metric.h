@@ -17,6 +17,10 @@ struct ClientMetric {
     std::string name;
     std::string value;
 
+    bool operator<(const Label& rhs) const {
+      return std::tie(name, value) < std::tie(rhs.name, rhs.value);
+    }
+
     bool operator==(const Label& rhs) const {
       return std::tie(name, value) == std::tie(rhs.name, rhs.value);
     }

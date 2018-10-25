@@ -1,0 +1,7 @@
+name: prometheus-cppdoc
+
+channels:
+  - conda-forge
+
+dependencies:
+  - breathe

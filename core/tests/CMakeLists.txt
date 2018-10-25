@@ -1,8 +1,4 @@
 
-if(GoogleBenchmark_FOUND)
-  add_subdirectory(benchmark)
-endif()
-
 add_executable(prometheus_test
   check_names_test.cc
   counter_test.cc

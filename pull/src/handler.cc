@@ -1,3 +1,5 @@
+#include "handler.h"
+
 #include <cstring>
 #include <iterator>
 
@@ -5,7 +7,6 @@
 #include <zlib.h>
 #endif
 
-#include "handler.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 

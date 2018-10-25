@@ -1,6 +1,6 @@
 #include "prometheus/text_serializer.h"
+
 #include <cmath>
-#include <iostream>
 #include <limits>
 
 namespace prometheus {
@@ -101,8 +101,7 @@ void SerializeSummary(std::ostream& out, const MetricFamily& family,
   WriteTail(out, metric);
 
   for (auto& q : sum.quantile) {
-    WriteHead(out, family, metric, "", "quantile",
-              ToString(q.quantile));
+    WriteHead(out, family, metric, "", "quantile", ToString(q.quantile));
     out << ToString(q.value);
     WriteTail(out, metric);
   }
@@ -180,7 +179,7 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
       break;
   }
 }
-}
+}  // namespace
 
 void TextSerializer::Serialize(std::ostream& out,
                                const std::vector<MetricFamily>& metrics) const {
@@ -188,4 +187,4 @@ void TextSerializer::Serialize(std::ostream& out,
     SerializeFamily(out, family);
   }
 }
-}
+}  // namespace prometheus

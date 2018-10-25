@@ -2,7 +2,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 namespace prometheus {
 
@@ -30,5 +29,5 @@ class HistogramBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+}  // namespace detail
+}  // namespace prometheus

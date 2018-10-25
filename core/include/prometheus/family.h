@@ -2,17 +2,19 @@
 
 #include <algorithm>
 #include <cassert>
-#include <functional>
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <mutex>
-#include <numeric>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include "check_names.h"
-#include "collectable.h"
-#include "metric_family.h"
+#include "prometheus/check_names.h"
+#include "prometheus/client_metric.h"
+#include "prometheus/collectable.h"
+#include "prometheus/metric_family.h"
 
 namespace prometheus {
 

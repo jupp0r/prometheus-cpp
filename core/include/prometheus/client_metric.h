@@ -5,12 +5,9 @@
 #include <tuple>
 #include <vector>
 
-#include "prometheus/metric_type.h"
-
 namespace prometheus {
 
 struct ClientMetric {
-
   // Label
 
   struct Label {

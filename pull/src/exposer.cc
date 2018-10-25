@@ -1,9 +1,10 @@
+#include "prometheus/exposer.h"
+
 #include <chrono>
 #include <string>
 #include <thread>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/exposer.h"
 
 #include "CivetServer.h"
 #include "handler.h"

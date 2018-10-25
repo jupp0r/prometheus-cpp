@@ -3,7 +3,7 @@
 #include <atomic>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/collectable.h"
+#include "prometheus/metric_type.h"
 
 namespace prometheus {
 
@@ -27,4 +27,5 @@ class Gauge {
   void Change(double);
   std::atomic<double> value_;
 };
-}
+
+}  // namespace prometheus

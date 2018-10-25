@@ -4,6 +4,7 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
+#include "prometheus/metric_type.h"
 
 namespace prometheus {
 class Histogram {
@@ -23,4 +24,4 @@ class Histogram {
   std::vector<Counter> bucket_counts_;
   Counter sum_;
 };
-}
+}  // namespace prometheus

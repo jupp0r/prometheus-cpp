@@ -4,8 +4,9 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "prometheus/histogram.h"
+#include "prometheus/collectable.h"
 #include "prometheus/registry.h"
 
 class CivetServer;
@@ -30,4 +31,5 @@ class Exposer {
   std::unique_ptr<detail::MetricsHandler> metrics_handler_;
   std::string uri_;
 };
-}
+
+}  // namespace prometheus

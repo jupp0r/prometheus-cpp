@@ -1,9 +1,8 @@
 #pragma once
 
-#include <atomic>
-
 #include "prometheus/client_metric.h"
 #include "prometheus/gauge.h"
+#include "prometheus/metric_type.h"
 
 namespace prometheus {
 class Counter {
@@ -19,4 +18,4 @@ class Counter {
  private:
   Gauge gauge_;
 };
-}
+}  // namespace prometheus

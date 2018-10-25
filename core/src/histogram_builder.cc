@@ -1,4 +1,5 @@
 #include "prometheus/histogram_builder.h"
+
 #include "prometheus/registry.h"
 
 namespace prometheus {
@@ -26,5 +27,5 @@ HistogramBuilder& HistogramBuilder::Help(const std::string& help) {
 Family<Histogram>& HistogramBuilder::Register(Registry& registry) {
   return registry.AddHistogram(name_, help_, labels_);
 }
-}
-}
+}  // namespace detail
+}  // namespace prometheus

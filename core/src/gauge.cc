@@ -1,6 +1,7 @@
-#include <ctime>
 
 #include "prometheus/gauge.h"
+
+#include <ctime>
 
 namespace prometheus {
 Gauge::Gauge() : value_{0} {}
@@ -44,4 +45,4 @@ ClientMetric Gauge::Collect() {
   metric.gauge.value = Value();
   return metric;
 }
-}
+}  // namespace prometheus

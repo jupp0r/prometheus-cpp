@@ -15,11 +15,10 @@ option(USE_THIRDPARTY_LIBRARIES "Use 3rdParty submodules" ON)
 
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXLFAGS are configured differently" ON)
 
-if (OVERRIDE_CXX_STANDARD_FLAGS)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_EXTENSIONS Off)
+if(OVERRIDE_CXX_STANDARD_FLAGS)
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_EXTENSIONS Off)
 endif()
-
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)

@@ -19,7 +19,9 @@ double TimeWindowQuantiles::get(double q) {
 
 void TimeWindowQuantiles::insert(double value) {
   rotate();
-  for (auto& bucket : ckms_quantiles_) bucket.insert(value);
+  for (auto& bucket : ckms_quantiles_) {
+    bucket.insert(value);
+  }
 }
 
 CKMSQuantiles& TimeWindowQuantiles::rotate() {
@@ -27,7 +29,9 @@ CKMSQuantiles& TimeWindowQuantiles::rotate() {
   while (delta > rotation_interval_) {
     ckms_quantiles_[current_bucket_].reset();
 
-    if (++current_bucket_ >= ckms_quantiles_.size()) current_bucket_ = 0;
+    if (++current_bucket_ >= ckms_quantiles_.size()) {
+      current_bucket_ = 0;
+    }
 
     delta -= rotation_interval_;
     last_rotation_ += rotation_interval_;

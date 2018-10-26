@@ -33,7 +33,9 @@ double CKMSQuantiles::get(double q) {
   insertBatch();
   compress();
 
-  if (sample_.empty()) return std::numeric_limits<double>::quiet_NaN();
+  if (sample_.empty()) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
 
   int rankMin = 0;
   const auto desired = static_cast<int>(q * count_);
@@ -49,7 +51,9 @@ double CKMSQuantiles::get(double q) {
 
     rankMin += prev->g;
 
-    if (rankMin + cur->g + cur->delta > bound) return prev->value;
+    if (rankMin + cur->g + cur->delta > bound) {
+      return prev->value;
+    }
   }
 
   return sample_.back().value;
@@ -67,18 +71,23 @@ double CKMSQuantiles::allowableError(int rank) {
 
   for (const auto& q : quantiles_.get()) {
     double error;
-    if (rank <= q.quantile * size)
+    if (rank <= q.quantile * size) {
       error = q.u * (size - rank);
-    else
+    } else {
       error = q.v * rank;
-    if (error < minError) minError = error;
+    }
+    if (error < minError) {
+      minError = error;
+    }
   }
 
   return minError;
 }
 
 bool CKMSQuantiles::insertBatch() {
-  if (buffer_count_ == 0) return false;
+  if (buffer_count_ == 0) {
+    return false;
+  }
 
   std::sort(buffer_.begin(), buffer_.begin() + buffer_count_);
 
@@ -94,15 +103,20 @@ bool CKMSQuantiles::insertBatch() {
 
   for (std::size_t i = start; i < buffer_count_; ++i) {
     double v = buffer_[i];
-    while (idx < sample_.size() && sample_[item].value < v) item = idx++;
+    while (idx < sample_.size() && sample_[item].value < v) {
+      item = idx++;
+    }
 
-    if (sample_[item].value > v) --idx;
+    if (sample_[item].value > v) {
+      --idx;
+    }
 
     int delta;
-    if (idx - 1 == 0 || idx + 1 == sample_.size())
+    if (idx - 1 == 0 || idx + 1 == sample_.size()) {
       delta = 0;
-    else
+    } else {
       delta = static_cast<int>(std::floor(allowableError(idx + 1))) + 1;
+    }
 
     sample_.emplace(sample_.begin() + idx, v, 1, delta);
     count_++;
@@ -114,7 +128,9 @@ bool CKMSQuantiles::insertBatch() {
 }
 
 void CKMSQuantiles::compress() {
-  if (sample_.size() < 2) return;
+  if (sample_.size() < 2) {
+    return;
+  }
 
   std::size_t idx = 0;
   std::size_t prev;

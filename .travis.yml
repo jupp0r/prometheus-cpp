@@ -23,7 +23,7 @@ script:
   - bazel build //...
   - bazel test --test_output=all //core/... //pull/...
   - bazel test --test_output=all //pull/tests/integration:scrape-test
-  - bazel run -c opt //core/tests/benchmark
+  - bazel run -c opt //core/benchmarks
 
   - pushd .
   - mkdir _build_internal_deps

@@ -46,3 +46,7 @@ install(
 if(ENABLE_TESTING)
   add_subdirectory(tests)
 endif()
+
+if(GoogleBenchmark_FOUND)
+  add_subdirectory(benchmarks)
+endif()

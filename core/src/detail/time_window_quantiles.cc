@@ -5,12 +5,12 @@ namespace detail {
 
 TimeWindowQuantiles::TimeWindowQuantiles(
     const std::vector<CKMSQuantiles::Quantile>& quantiles,
-    Clock::duration max_age_seconds, int age_buckets)
+    const Clock::duration max_age, const int age_buckets)
     : quantiles_(quantiles),
       ckms_quantiles_(age_buckets, CKMSQuantiles(quantiles_)),
       current_bucket_(0),
       last_rotation_(Clock::now()),
-      rotation_interval_(max_age_seconds / age_buckets) {}
+      rotation_interval_(max_age / age_buckets) {}
 
 double TimeWindowQuantiles::get(double q) {
   CKMSQuantiles& current_bucket = rotate();

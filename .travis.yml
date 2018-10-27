@@ -25,6 +25,7 @@ addons:
     - bazel
     - cmake3
     - curl
+    - doxygen
     - g++-4.8
     - gcc-4.8
     - git
@@ -71,6 +72,20 @@ script:
   - make DESTDIR=`pwd`/deploy install
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install --user cpp-coveralls && coveralls --root .. --build-root . -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*"; fi
   - popd
+
+  - pushd .
+  - cd doc
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; doxygen && touch html/.nojekyll; fi
+  - popd
+
+deploy:
+  provider: pages
+  local-dir: doc/html
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  on:
+    branch: master
+    condition: "$TRAVIS_OS_NAME" == "linux"
 
 # addons:
 #   coverity_scan:

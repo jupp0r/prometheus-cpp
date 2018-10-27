@@ -16,6 +16,8 @@ namespace prometheus {
 /// Gauges are typically used for measured values like temperatures or current
 /// memory usage, but also "counts" that can go up and down, like the number of
 /// running processes.
+///
+/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
 class Gauge {
  public:
   static const MetricType metric_type{MetricType::Gauge};

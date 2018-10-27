@@ -33,6 +33,8 @@ namespace prometheus {
 ///
 /// See https://prometheus.io/docs/practices/histograms/ for detailed
 /// explanations of Phi-quantiles, summary usage, and differences to histograms.
+///
+/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
 class Summary {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;

@@ -21,6 +21,8 @@ namespace prometheus {
 ///
 /// See https://prometheus.io/docs/practices/histograms/ for detailed
 /// explanations of histogram usage and differences to summaries.
+///
+/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
 class Histogram {
  public:
   using BucketBoundaries = std::vector<double>;

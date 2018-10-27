@@ -31,3 +31,10 @@ TEST_F(CounterTest, inc_multiple) {
   counter.Increment(5);
   EXPECT_EQ(counter.Value(), 7.0);
 }
+
+TEST_F(CounterTest, inc_negative_value) {
+  Counter counter;
+  counter.Increment(5.0);
+  counter.Increment(-5.0);
+  EXPECT_EQ(counter.Value(), 5.0);
+}

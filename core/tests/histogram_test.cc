@@ -4,8 +4,8 @@
 
 #include <prometheus/histogram.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(HistogramTest, initialize_with_zero) {
   Histogram histogram{{}};
@@ -78,3 +78,6 @@ TEST(HistogramTest, cumulative_bucket_count) {
   EXPECT_EQ(h.bucket.at(1).cumulative_count, 6);
   EXPECT_EQ(h.bucket.at(2).cumulative_count, 7);
 }
+
+}  // namespace
+}  // namespace prometheus

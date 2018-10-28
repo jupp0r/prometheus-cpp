@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <prometheus/check_names.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(CheckNamesTest, empty_metric_name) { EXPECT_FALSE(CheckMetricName("")); }
 TEST(CheckNamesTest, good_metric_name) {
@@ -17,3 +17,6 @@ TEST(CheckNamesTest, good_label_name) { EXPECT_TRUE(CheckLabelName("type")); }
 TEST(CheckNamesTest, reserved_label_name) {
   EXPECT_FALSE(CheckMetricName("__some_reserved_label"));
 }
+
+}  // namespace
+}  // namespace prometheus

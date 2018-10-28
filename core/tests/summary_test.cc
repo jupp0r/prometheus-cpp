@@ -5,8 +5,8 @@
 #include <cmath>
 #include <thread>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(SummaryTest, initialize_with_zero) {
   Summary summary{Summary::Quantiles{}};
@@ -89,3 +89,6 @@ TEST(SummaryTest, max_age) {
   std::this_thread::sleep_for(std::chrono::milliseconds(600));
   test_value(std::numeric_limits<double>::quiet_NaN());
 }
+
+}  // namespace
+}  // namespace prometheus

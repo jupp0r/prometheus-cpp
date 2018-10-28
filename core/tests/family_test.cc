@@ -6,8 +6,8 @@
 #include <prometheus/family.h>
 #include <prometheus/histogram.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(FamilyTest, labels) {
   auto const_label = ClientMetric::Label{"component", "test"};
@@ -21,7 +21,7 @@ TEST(FamilyTest, labels) {
   ASSERT_GE(collected.size(), 1);
   ASSERT_GE(collected.at(0).metric.size(), 1);
   EXPECT_THAT(collected.at(0).metric.at(0).label,
-              ElementsAre(const_label, dynamic_label));
+              ::testing::ElementsAre(const_label, dynamic_label));
 }
 
 TEST(FamilyTest, counter_value) {
@@ -31,7 +31,7 @@ TEST(FamilyTest, counter_value) {
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
   ASSERT_GE(collected[0].metric.size(), 1);
-  EXPECT_THAT(collected[0].metric.at(0).counter.value, Eq(1));
+  EXPECT_THAT(collected[0].metric.at(0).counter.value, ::testing::Eq(1));
 }
 
 TEST(FamilyTest, remove) {
@@ -52,7 +52,8 @@ TEST(FamilyTest, Histogram) {
   auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1);
   ASSERT_GE(collected[0].metric.size(), 1);
-  EXPECT_THAT(collected[0].metric.at(0).histogram.sample_count, Eq(1));
+  EXPECT_THAT(collected[0].metric.at(0).histogram.sample_count,
+              ::testing::Eq(1));
 }
 
 TEST(FamilyTest, add_twice) {
@@ -78,3 +79,6 @@ TEST(FamilyTest, should_assert_on_invalid_labels) {
   EXPECT_DEATH(add_metric_with_invalid_label_name(), ".*");
 }
 #endif
+
+}  // namespace
+}  // namespace prometheus

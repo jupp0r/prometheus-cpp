@@ -2,8 +2,8 @@
 
 #include <prometheus/counter.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(CounterTest, initialize_with_zero) {
   Counter counter;
@@ -36,3 +36,6 @@ TEST(CounterTest, inc_negative_value) {
   counter.Increment(-5.0);
   EXPECT_EQ(counter.Value(), 5.0);
 }
+
+}  // namespace
+}  // namespace prometheus

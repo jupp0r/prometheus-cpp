@@ -2,8 +2,8 @@
 
 #include <prometheus/gauge.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(GaugeTest, initialize_with_zero) {
   Gauge gauge;
@@ -61,5 +61,8 @@ TEST(GaugeTest, set_multiple) {
 TEST(GaugeTest, set_to_current_time) {
   Gauge gauge;
   gauge.SetToCurrentTime();
-  EXPECT_THAT(gauge.Value(), Gt(0.0));
+  EXPECT_THAT(gauge.Value(), ::testing::Gt(0.0));
 }
+
+}  // namespace
+}  // namespace prometheus

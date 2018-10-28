@@ -5,8 +5,8 @@
 #include <prometheus/collectable.h>
 #include <prometheus/registry.h>
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
 TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};
@@ -35,3 +35,6 @@ TEST(RegistryTest, build_histogram_family) {
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1);
 }
+
+}  // namespace
+}  // namespace prometheus

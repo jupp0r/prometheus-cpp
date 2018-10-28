@@ -84,7 +84,7 @@ class Family : public Collectable {
   std::vector<MetricFamily> Collect() override;
 
  private:
-  static std::size_t hash_labels(
+  static std::size_t HashLabels(
       const std::map<std::string, std::string>& labels);
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
@@ -118,7 +118,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
   }
 #endif
 
-  auto hash = hash_labels(labels);
+  auto hash = HashLabels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
 
@@ -140,7 +140,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 }
 
 template <typename T>
-std::size_t Family<T>::hash_labels(
+std::size_t Family<T>::HashLabels(
     const std::map<std::string, std::string>& labels) {
   auto combined = std::accumulate(
       labels.begin(), labels.end(), std::string{},

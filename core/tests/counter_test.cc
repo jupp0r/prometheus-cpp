@@ -5,26 +5,24 @@
 using namespace testing;
 using namespace prometheus;
 
-class CounterTest : public Test {};
-
-TEST_F(CounterTest, initialize_with_zero) {
+TEST(CounterTest, initialize_with_zero) {
   Counter counter;
   EXPECT_EQ(counter.Value(), 0);
 }
 
-TEST_F(CounterTest, inc) {
+TEST(CounterTest, inc) {
   Counter counter;
   counter.Increment();
   EXPECT_EQ(counter.Value(), 1.0);
 }
 
-TEST_F(CounterTest, inc_number) {
+TEST(CounterTest, inc_number) {
   Counter counter;
   counter.Increment(4);
   EXPECT_EQ(counter.Value(), 4.0);
 }
 
-TEST_F(CounterTest, inc_multiple) {
+TEST(CounterTest, inc_multiple) {
   Counter counter;
   counter.Increment();
   counter.Increment();
@@ -32,7 +30,7 @@ TEST_F(CounterTest, inc_multiple) {
   EXPECT_EQ(counter.Value(), 7.0);
 }
 
-TEST_F(CounterTest, inc_negative_value) {
+TEST(CounterTest, inc_negative_value) {
   Counter counter;
   counter.Increment(5.0);
   counter.Increment(-5.0);

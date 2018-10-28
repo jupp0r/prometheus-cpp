@@ -8,9 +8,7 @@
 using namespace testing;
 using namespace prometheus;
 
-class RegistryTest : public Test {};
-
-TEST_F(RegistryTest, collect_single_metric_family) {
+TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};
   auto& counter_family =
       BuildCounter().Name("test").Help("a test").Register(registry);
@@ -27,7 +25,7 @@ TEST_F(RegistryTest, collect_single_metric_family) {
   EXPECT_EQ(collected[0].metric.at(1).label.at(0).name, "name");
 }
 
-TEST_F(RegistryTest, build_histogram_family) {
+TEST(RegistryTest, build_histogram_family) {
   Registry registry{};
   auto& histogram_family =
       BuildHistogram().Name("hist").Help("Test Histogram").Register(registry);

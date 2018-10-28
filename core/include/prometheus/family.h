@@ -84,19 +84,20 @@ class Family : public Collectable {
   std::vector<MetricFamily> Collect() override;
 
  private:
-  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
-  std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
-  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+  static std::size_t hash_labels(
+      const std::map<std::string, std::string>& labels);
+
+  ClientMetric CollectMetric(std::size_t hash, T* metric);
 
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
+
+  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
+  std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
+  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+
   std::mutex mutex_;
-
-  ClientMetric CollectMetric(std::size_t hash, T* metric);
-
-  static std::size_t hash_labels(
-      const std::map<std::string, std::string>& labels);
 };
 
 template <typename T>

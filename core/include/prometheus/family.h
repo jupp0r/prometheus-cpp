@@ -19,13 +19,66 @@
 
 namespace prometheus {
 
+/// \brief A metric of type T with a set of time series.
+///
+/// Every time series is uniquely identified by its metric name and a set of
+/// key-value pairs, also known as labels. It is required to follow the syntax
+/// of metric names and labels given by:
+/// https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
+///
+/// The following metric and label conventions are not required for using
+/// Prometheus, but can serve as both a style-guide and a collection of best
+/// practices: https://prometheus.io/docs/practices/naming/
+///
+/// \tparam T One of the metric types Counter, Gauge, Histogram or Summary.
 template <typename T>
 class Family : public Collectable {
  public:
+  /// \brief Create a new metric.
+  ///
+  /// Every metric is uniquely identified by its name and a set of key-value
+  /// pairs, also known as labels.
+  ///
+  /// The example selects all time series that have the `http_requests_total`
+  /// metric name:
+  ///
+  ///     http_requests_total
+  ///
+  /// It is possible to filter these time series further by appending a set of
+  /// labels to match in curly braces ({})
+  ///
+  ///     http_requests_total{job="prometheus",group="canary"}
+  ///
+  /// For further information see: [Quering Basics]
+  /// (https://prometheus.io/docs/prometheus/latest/querying/basics/)
+  ///
+  /// \param name Set the metric name.
+  /// \param help Set an additional description.
+  /// \param constant_labels Configure a set of key-value pairs (= labels)
+  /// attached to the metric. All these labels are automatically propagated to
+  /// each time series within the metric.
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
+
+  /// \brief Add a new time series.
+  ///
+  /// It is possible to filter the time series further by appending a set of
+  /// labels to match in curly braces ({})
+  ///
+  ///     http_requests_total{job="prometheus",group="canary",method="GET"}
+  ///
+  /// \param labels Configure a set of key-value pairs (= labels) of the time
+  /// series.
+  /// \param args Arguments are passed to the constructor of metric type
+  /// T. See Counter, Gauge, Histogram or Summary for required constructor
+  /// arguments.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
+
+  /// \brief Remove the given time series which was previously added with Add().
+  ///
+  /// \param metric Time series to be removed. The function does nothing, if the
+  /// given time series is not part of the metric.
   void Remove(T* metric);
 
   std::vector<MetricFamily> Collect() override;

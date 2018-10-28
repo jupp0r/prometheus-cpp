@@ -20,7 +20,7 @@ install:
   - sudo dpkg -i telegraf_1.0.1_amd64.deb
 
 script:
-  - bazel build //...
+  - bazel build -s //...
   - bazel test --test_output=all //core/... //pull/...
   - bazel test --test_output=all //pull/tests/integration:scrape-test
   - bazel run -c opt //core/benchmarks
@@ -28,7 +28,7 @@ script:
   - pushd .
   - mkdir _build_internal_deps
   - cd _build_internal_deps
-  - cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON
+  - cmake .. -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_THIRDPARTY_LIBRARIES=ON
   - make -j 4
   - ctest -V
   - mkdir -p deploy
@@ -41,7 +41,7 @@ script:
   - pushd .
   - mkdir _build_external_deps
   - cd _build_external_deps
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DUSE_THIRDPARTY_LIBRARIES=OFF
+  - cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_THIRDPARTY_LIBRARIES=OFF
   - make -j 4
   - ctest -V
   - mkdir -p deploy

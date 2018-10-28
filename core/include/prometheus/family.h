@@ -77,9 +77,9 @@ class Family : public Collectable {
 
   /// \brief Remove the given time series which was previously added with Add().
   ///
-  /// \param metric Time series to be removed. The function does nothing, if the
-  /// given time series is not part of the metric.
-  void Remove(T* metric);
+  /// \param time_series Time series to be removed. The function does nothing,
+  /// if the given time series is not part of the metric.
+  void Remove(T* time_series);
 
   std::vector<MetricFamily> Collect() override;
 
@@ -87,15 +87,16 @@ class Family : public Collectable {
   static std::size_t HashLabels(
       const std::map<std::string, std::string>& labels);
 
-  ClientMetric CollectMetric(std::size_t hash, T* metric);
+  ClientMetric CollectMetric(std::size_t hash, T* time_series);
 
   const std::string name_;
   const std::string help_;
-  const std::map<std::string, std::string> constant_labels_;
+  const std::map<std::string, std::string> metric_labels_;
 
-  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
-  std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
-  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+  std::unordered_map<std::size_t, std::unique_ptr<T>> time_series_;
+  std::unordered_map<std::size_t, std::map<std::string, std::string>>
+      time_series_labels_;
+  std::unordered_map<T*, std::size_t> time_series_labels_reverse_lookup_;
 
   std::mutex mutex_;
 };
@@ -103,7 +104,7 @@ class Family : public Collectable {
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
                   const std::map<std::string, std::string>& labels)
-    : name_(name), help_(help), constant_labels_(labels) {
+    : name_(name), help_(help), metric_labels_(labels) {
   assert(CheckMetricName(name_));
 }
 
@@ -120,22 +121,22 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 
   auto hash = HashLabels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
-  auto metrics_iter = metrics_.find(hash);
+  auto time_series_iter = time_series_.find(hash);
 
-  if (metrics_iter != metrics_.end()) {
+  if (time_series_iter != time_series_.end()) {
 #ifndef NDEBUG
-    auto labels_iter = labels_.find(hash);
-    assert(labels_iter != labels_.end());
-    const auto& old_labels = labels_iter->second;
+    auto time_series_labels_iter = time_series_labels_.find(hash);
+    assert(time_series_labels_iter != time_series_labels_.end());
+    const auto& old_labels = time_series_labels_iter->second;
     assert(labels == old_labels);
 #endif
-    return *metrics_iter->second;
+    return *time_series_iter->second;
   } else {
-    auto metric = new T(std::forward<Args>(args)...);
-    metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
-    labels_.insert({hash, labels});
-    labels_reverse_lookup_.insert({metric, hash});
-    return *metric;
+    auto time_series = new T(std::forward<Args>(args)...);
+    time_series_.insert(std::make_pair(hash, std::unique_ptr<T>{time_series}));
+    time_series_labels_.insert({hash, labels});
+    time_series_labels_reverse_lookup_.insert({time_series, hash});
+    return *time_series;
   }
 }
 
@@ -152,16 +153,16 @@ std::size_t Family<T>::HashLabels(
 }
 
 template <typename T>
-void Family<T>::Remove(T* metric) {
+void Family<T>::Remove(T* time_series) {
   std::lock_guard<std::mutex> lock{mutex_};
-  if (labels_reverse_lookup_.count(metric) == 0) {
+  if (time_series_labels_reverse_lookup_.count(time_series) == 0) {
     return;
   }
 
-  auto hash = labels_reverse_lookup_.at(metric);
-  metrics_.erase(hash);
-  labels_.erase(hash);
-  labels_reverse_lookup_.erase(metric);
+  auto hash = time_series_labels_reverse_lookup_.at(time_series);
+  time_series_.erase(hash);
+  time_series_labels_.erase(hash);
+  time_series_labels_reverse_lookup_.erase(time_series);
 }
 
 template <typename T>
@@ -171,15 +172,15 @@ std::vector<MetricFamily> Family<T>::Collect() {
   family.name = name_;
   family.help = help_;
   family.type = T::metric_type;
-  for (const auto& m : metrics_) {
-    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+  for (const auto& t : time_series_) {
+    family.metric.push_back(std::move(CollectMetric(t.first, t.second.get())));
   }
   return {family};
 }
 
 template <typename T>
-ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
-  auto collected = metric->Collect();
+ClientMetric Family<T>::CollectMetric(std::size_t hash, T* time_series) {
+  auto collected = time_series->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {
         auto label = ClientMetric::Label{};
@@ -187,9 +188,10 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
         label.value = label_pair.second;
         collected.label.push_back(std::move(label));
       };
-  std::for_each(constant_labels_.cbegin(), constant_labels_.cend(), add_label);
-  const auto& metric_labels = labels_.at(hash);
-  std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
+  std::for_each(metric_labels_.cbegin(), metric_labels_.cend(), add_label);
+  const auto& time_series_labels = time_series_labels_.at(hash);
+  std::for_each(time_series_labels.cbegin(), time_series_labels.cend(),
+                add_label);
   return collected;
 }
 

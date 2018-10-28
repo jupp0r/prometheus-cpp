@@ -8,11 +8,6 @@
 using namespace testing;
 using namespace prometheus;
 
-class MockCollectable : public Collectable {
- public:
-  MOCK_METHOD0(Collect, std::vector<prometheus::MetricFamily>());
-};
-
 class RegistryTest : public Test {};
 
 TEST_F(RegistryTest, collect_single_metric_family) {

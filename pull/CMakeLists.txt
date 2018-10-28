@@ -26,7 +26,7 @@ target_link_libraries(pull
     ${CMAKE_THREAD_LIBS_INIT}
     ${CIVETWEB_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
-    $<$<BOOL:ENABLE_COMPRESSION>:ZLIB::ZLIB>
+    $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )
 
 target_include_directories(pull
@@ -38,7 +38,7 @@ target_include_directories(pull
 
 target_compile_definitions(pull
   PRIVATE
-    $<$<BOOL:ENABLE_COMPRESSION>:HAVE_ZLIB>
+    $<$<BOOL:${ENABLE_COMPRESSION}>:HAVE_ZLIB>
 )
 
 set_target_properties(pull PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-pull)

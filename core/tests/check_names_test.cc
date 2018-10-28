@@ -1,5 +1,6 @@
+#include "prometheus/check_names.h"
+
 #include <gmock/gmock.h>
-#include <prometheus/check_names.h>
 
 namespace prometheus {
 namespace {

@@ -1,6 +1,6 @@
-#include "gmock/gmock.h"
+#include "prometheus/counter.h"
 
-#include <prometheus/counter.h>
+#include <gmock/gmock.h>
 
 namespace prometheus {
 namespace {

@@ -1,21 +1,15 @@
+#include "prometheus/registry.h"
+
 #include <vector>
 
 #include <gmock/gmock.h>
 
-#include <prometheus/collectable.h>
-#include <prometheus/registry.h>
+#include "prometheus/collectable.h"
 
-using namespace testing;
-using namespace prometheus;
+namespace prometheus {
+namespace {
 
-class MockCollectable : public Collectable {
- public:
-  MOCK_METHOD0(Collect, std::vector<prometheus::MetricFamily>());
-};
-
-class RegistryTest : public Test {};
-
-TEST_F(RegistryTest, collect_single_metric_family) {
+TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};
   auto& counter_family =
       BuildCounter().Name("test").Help("a test").Register(registry);
@@ -32,7 +26,7 @@ TEST_F(RegistryTest, collect_single_metric_family) {
   EXPECT_EQ(collected[0].metric.at(1).label.at(0).name, "name");
 }
 
-TEST_F(RegistryTest, build_histogram_family) {
+TEST(RegistryTest, build_histogram_family) {
   Registry registry{};
   auto& histogram_family =
       BuildHistogram().Name("hist").Help("Test Histogram").Register(registry);
@@ -42,3 +36,6 @@ TEST_F(RegistryTest, build_histogram_family) {
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1);
 }
+
+}  // namespace
+}  // namespace prometheus

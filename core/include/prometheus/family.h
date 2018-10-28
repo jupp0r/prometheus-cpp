@@ -54,11 +54,11 @@ class Family : public Collectable {
   ///
   /// \param name Set the metric name.
   /// \param help Set an additional description.
-  /// \param constant_labels Configure a set of key-value pairs (= labels)
-  /// attached to the metric. All these labels are automatically propagated to
-  /// each time series within the metric.
+  /// \param labels Configure a set of key-value pairs (= labels) attached to
+  /// the metric. All these labels are automatically propagated to each time
+  /// series within the metric.
   Family(const std::string& name, const std::string& help,
-         const std::map<std::string, std::string>& constant_labels);
+         const std::map<std::string, std::string>& labels);
 
   /// \brief Add a new time series.
   ///
@@ -101,8 +101,8 @@ class Family : public Collectable {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const std::map<std::string, std::string>& constant_labels)
-    : name_(name), help_(help), constant_labels_(constant_labels) {
+                  const std::map<std::string, std::string>& labels)
+    : name_(name), help_(help), constant_labels_(labels) {
   assert(CheckMetricName(name_));
 }
 

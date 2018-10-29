@@ -32,7 +32,7 @@ TEST(FamilyTest, counter_value) {
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1);
   ASSERT_GE(collected[0].metric.size(), 1);
-  EXPECT_THAT(collected[0].metric.at(0).counter.value, ::testing::Eq(1));
+  EXPECT_EQ(1, collected[0].metric.at(0).counter.value);
 }
 
 TEST(FamilyTest, remove) {
@@ -53,8 +53,7 @@ TEST(FamilyTest, Histogram) {
   auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1);
   ASSERT_GE(collected[0].metric.size(), 1);
-  EXPECT_THAT(collected[0].metric.at(0).histogram.sample_count,
-              ::testing::Eq(1));
+  EXPECT_EQ(1, collected[0].metric.at(0).histogram.sample_count);
 }
 
 TEST(FamilyTest, add_twice) {

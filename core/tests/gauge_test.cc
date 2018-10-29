@@ -61,7 +61,7 @@ TEST(GaugeTest, set_multiple) {
 TEST(GaugeTest, set_to_current_time) {
   Gauge gauge;
   gauge.SetToCurrentTime();
-  EXPECT_THAT(gauge.Value(), ::testing::Gt(0.0));
+  EXPECT_GT(gauge.Value(), 0.0);
 }
 
 }  // namespace

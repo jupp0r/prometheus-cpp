@@ -9,6 +9,10 @@
 
 #include "prometheus/registry.h"
 
+namespace cpr {
+class Session;
+}
+
 namespace prometheus {
 
 class Gateway {
@@ -46,12 +50,18 @@ class Gateway {
   std::string username_;
   std::string password_;
 
-  std::vector<std::pair<std::weak_ptr<Collectable>, std::string>> collectables_;
+  using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
+  std::vector<CollectableEntry> collectables_;
 
   enum class PushMode {
     Add,
     Replace,
   };
+
+  cpr::Session&& prepareSession(const std::string& uri,
+                                const std::string& body);
+
+  std::string getUri(const CollectableEntry& collectable) const;
 
   int push(PushMode mode);
 

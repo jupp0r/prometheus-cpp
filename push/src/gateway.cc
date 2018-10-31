@@ -46,6 +46,28 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
+cpr::Session&& Gateway::prepareSession(const std::string& uri,
+                                       const std::string& body) {
+  cpr::Session session;
+
+  session.SetUrl(cpr::Url{uri});
+  session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
+  session.SetBody(cpr::Body{body});
+
+  if (!username_.empty()) {
+    session.SetAuth(cpr::Authentication{username_, password_});
+  }
+
+  return std::move(session);
+}
+
+std::string Gateway::getUri(const CollectableEntry& collectable) const {
+  std::stringstream uri;
+  uri << jobUri_ << labels_ << collectable.second;
+
+  return uri.str();
+}
+
 int Gateway::push(PushMode mode) {
   const auto serializer = TextSerializer{};
 
@@ -56,21 +78,9 @@ int Gateway::push(PushMode mode) {
     }
 
     auto metrics = collectable->Collect();
-
-    std::stringstream uri;
-    uri << jobUri_ << labels_ << wcollectable.second;
-
     auto body = serializer.Serialize(metrics);
-
-    cpr::Session session;
-
-    session.SetUrl(cpr::Url{uri.str()});
-    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-    session.SetBody(cpr::Body{body});
-
-    if (!username_.empty()) {
-      session.SetAuth(cpr::Authentication{username_, password_});
-    }
+    auto uri = getUri(wcollectable);
+    auto&& session = prepareSession(uri, body);
 
     auto res = mode == PushMode::Replace ? session.Post() : session.Put();
 
@@ -93,21 +103,9 @@ std::future<int> Gateway::async_push(PushMode mode) {
     }
 
     auto metrics = collectable->Collect();
-
-    std::stringstream uri;
-    uri << jobUri_ << labels_ << wcollectable.second;
-
     auto body = serializer.Serialize(metrics);
-
-    cpr::Session session;
-
-    session.SetUrl(cpr::Url{uri.str()});
-    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-    session.SetBody(cpr::Body{body});
-
-    if (!username_.empty()) {
-      session.SetAuth(cpr::Authentication{username_, password_});
-    }
+    auto uri = getUri(wcollectable);
+    auto&& session = prepareSession(uri, body);
 
     futures.push_back(std::async(std::launch::async, [&] {
       return mode == PushMode::Replace ? session.Post() : session.Put();

@@ -28,7 +28,19 @@ def load_com_github_google_benchmark():
         ],
     )
 
+def load_com_github_madler_zlib():
+    native.new_http_archive(
+        name = "com_github_madler_zlib",
+        sha256 = "629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff",
+        strip_prefix = "zlib-1.2.11",
+        urls = [
+            "https://github.com/madler/zlib/archive/v1.2.11.tar.gz",
+        ],
+        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:zlib.BUILD",
+    )
+
 def prometheus_cpp_repositories():
     load_civetweb()
     load_com_google_googletest()
     load_com_github_google_benchmark()
+    load_com_github_madler_zlib()

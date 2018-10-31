@@ -46,19 +46,38 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
-cpr::Session&& Gateway::prepareSession(const std::string& uri,
-                                       const std::string& body) {
+int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
+                                const std::string& body) const {
   cpr::Session session;
 
   session.SetUrl(cpr::Url{uri});
-  session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-  session.SetBody(cpr::Body{body});
+
+  if (!body.empty()) {
+    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
+    session.SetBody(cpr::Body{body});
+  }
 
   if (!username_.empty()) {
     session.SetAuth(cpr::Authentication{username_, password_});
   }
 
-  return std::move(session);
+  auto response = cpr::Response{};
+
+  switch (method) {
+    case HttpMethod::Post:
+      response = session.Post();
+      break;
+
+    case HttpMethod::Put:
+      response = session.Put();
+      break;
+
+    case HttpMethod::Delete:
+      response = session.Delete();
+      break;
+  }
+
+  return response.status_code;
 }
 
 std::string Gateway::getUri(const CollectableEntry& collectable) const {
@@ -68,7 +87,7 @@ std::string Gateway::getUri(const CollectableEntry& collectable) const {
   return uri.str();
 }
 
-int Gateway::push(PushMode mode) {
+int Gateway::push(HttpMethod method) {
   const auto serializer = TextSerializer{};
 
   for (auto& wcollectable : collectables_) {
@@ -80,21 +99,19 @@ int Gateway::push(PushMode mode) {
     auto metrics = collectable->Collect();
     auto body = serializer.Serialize(metrics);
     auto uri = getUri(wcollectable);
-    auto&& session = prepareSession(uri, body);
+    auto status_code = performHttpRequest(method, uri, body);
 
-    auto res = mode == PushMode::Replace ? session.Post() : session.Put();
-
-    if (res.status_code >= 400) {
-      return res.status_code;
+    if (status_code >= 400) {
+      return status_code;
     }
   }
 
   return 200;
 }
 
-std::future<int> Gateway::async_push(PushMode mode) {
+std::future<int> Gateway::async_push(HttpMethod method) {
   const auto serializer = TextSerializer{};
-  std::vector<cpr::AsyncResponse> futures;
+  std::vector<std::future<int>> futures;
 
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
@@ -105,10 +122,9 @@ std::future<int> Gateway::async_push(PushMode mode) {
     auto metrics = collectable->Collect();
     auto body = serializer.Serialize(metrics);
     auto uri = getUri(wcollectable);
-    auto&& session = prepareSession(uri, body);
 
     futures.push_back(std::async(std::launch::async, [&] {
-      return mode == PushMode::Replace ? session.Post() : session.Put();
+      return performHttpRequest(method, uri, body);
     }));
   }
 
@@ -116,10 +132,10 @@ std::future<int> Gateway::async_push(PushMode mode) {
     auto final_status_code = 200;
 
     for (auto& future : futures) {
-      auto res = future.get();
+      auto status_code = future.get();
 
-      if (res.status_code >= 400) {
-        final_status_code = res.status_code;
+      if (status_code >= 400) {
+        final_status_code = status_code;
       }
     }
 
@@ -128,22 +144,12 @@ std::future<int> Gateway::async_push(PushMode mode) {
 }
 
 int Gateway::Delete() {
-  auto res = cpr::Delete(cpr::Url{jobUri_});
-
-  return res.status_code;
+  return performHttpRequest(HttpMethod::Delete, jobUri_, {});
 }
 
 std::future<int> Gateway::AsyncDelete() {
-  const auto url = cpr::Url{jobUri_};
-
-  return std::async(std::launch::async, [url] {
-    auto res = cpr::Delete(url);
-
-    if (res.status_code >= 400) {
-      return res.status_code;
-    }
-
-    return 200;
+  return std::async(std::launch::async, [&] {
+    return Delete();
   });
 }
 

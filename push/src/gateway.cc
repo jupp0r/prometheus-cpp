@@ -130,7 +130,7 @@ std::future<int> Gateway::async_push(PushMode mode) {
 }
 
 int Gateway::Delete() {
-  auto res = cpr::Delete(cpr::Url{cpr::Url{jobUri_}});
+  auto res = cpr::Delete(cpr::Url{jobUri_});
 
   return res.status_code;
 }
@@ -139,8 +139,7 @@ std::future<int> Gateway::AsyncDelete() {
   const auto url = cpr::Url{jobUri_};
 
   return std::async(std::launch::async, [url] {
-    auto future = cpr::DeleteAsync(url);
-    auto res = future.get();
+    auto res = cpr::Delete(url);
 
     if (res.status_code >= 400) {
       return res.status_code;

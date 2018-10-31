@@ -115,15 +115,17 @@ std::future<int> Gateway::async_push(PushMode mode) {
   }
 
   return std::async(std::launch::async, [&] {
+    auto final_status_code = 200;
+
     for (auto& future : futures) {
       auto res = future.get();
 
       if (res.status_code >= 400) {
-        return res.status_code;
+        final_status_code = res.status_code;
       }
     }
 
-    return 200;
+    return final_status_code;
   });
 }
 

@@ -5,19 +5,26 @@
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
-#include <cpr/cpr.h>
+#include <curl/curl.h>
 
 namespace prometheus {
 
-static const char CONTENT_TYPE[] = "text/plain; version=0.0.4; charset=utf-8";
+static const char CONTENT_TYPE[] =
+    "Content-Type: text/plain; version=0.0.4; charset=utf-8";
 
 Gateway::Gateway(const std::string& uri, const std::string jobname,
                  const Labels& labels, const std::string username,
-                 const std::string password)
-    : username_(username), password_(password) {
+                 const std::string password) {
+  /* In windows, this will init the winsock stuff */
+  curl_global_init(CURL_GLOBAL_ALL);
+
   std::stringstream jobUriStream;
   jobUriStream << uri << "/metrics/job/" << jobname;
   jobUri_ = jobUriStream.str();
+
+  if (!username.empty()) {
+    auth_ = username + ":" + password;
+  }
 
   std::stringstream labelStream;
   for (auto& label : labels) {
@@ -25,6 +32,8 @@ Gateway::Gateway(const std::string& uri, const std::string jobname,
   }
   labels_ = labelStream.str();
 }
+
+Gateway::~Gateway() { curl_global_cleanup(); }
 
 const Gateway::Labels Gateway::GetInstanceLabel(std::string hostname) {
   if (hostname.empty()) {
@@ -48,36 +57,59 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
 int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
                                 const std::string& body) const {
-  cpr::Session session;
+  auto curl = curl_easy_init();
+  if (!curl) {
+    return -CURLE_FAILED_INIT;
+  }
 
-  session.SetUrl(cpr::Url{uri});
+  curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
+
+  curl_slist* header_chunk = nullptr;
 
   if (!body.empty()) {
-    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-    session.SetBody(cpr::Body{body});
+    header_chunk = curl_slist_append(nullptr, CONTENT_TYPE);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
   }
 
-  if (!username_.empty()) {
-    session.SetAuth(cpr::Authentication{username_, password_});
+  if (!auth_.empty()) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERPWD, auth_.c_str());
   }
-
-  auto response = cpr::Response{};
 
   switch (method) {
     case HttpMethod::Post:
-      response = session.Post();
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
       break;
 
     case HttpMethod::Put:
-      response = session.Put();
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
       break;
 
     case HttpMethod::Delete:
-      response = session.Delete();
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
       break;
   }
 
-  return response.status_code;
+  auto curl_error = curl_easy_perform(curl);
+
+  long response_code;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+
+  curl_easy_cleanup(curl);
+  curl_slist_free_all(header_chunk);
+
+  if (curl_error != CURLE_OK) {
+    return -curl_error;
+  }
+
+  return response_code;
 }
 
 std::string Gateway::getUri(const CollectableEntry& collectable) const {

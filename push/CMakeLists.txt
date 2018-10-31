@@ -1,14 +1,8 @@
 
-if(USE_THIRDPARTY_LIBRARIES)
-  find_package(cpr-3rdparty CONFIG REQUIRED)
-else()
-  find_package(CPR REQUIRED)
-endif()
-
+find_package(CURL REQUIRED)
 
 add_library(push
   src/gateway.cc
-  $<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:cpr>>
 )
 
 add_library(${PROJECT_NAME}::push ALIAS push)
@@ -18,7 +12,7 @@ target_link_libraries(push
     ${PROJECT_NAME}::core
   PRIVATE
     ${CMAKE_THREAD_LIBS_INIT}
-    ${CPR_LIBRARIES}
+    ${CURL_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 
@@ -26,7 +20,7 @@ target_include_directories(push
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PRIVATE
-    ${CPR_INCLUDE_DIRS}
+    ${CURL_INCLUDE_DIRS}
 )
 
 set_target_properties(push PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-push)

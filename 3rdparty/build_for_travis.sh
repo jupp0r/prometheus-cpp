@@ -12,13 +12,6 @@ make -j4
 make install
 mv "${INSTALL_PREFIX}/lib/libcxx-library.a" "${INSTALL_PREFIX}/lib/libcivetweb-cpp.a"
 
-mkdir "${THIRDPARTY_ROOT}/cpr/_build"
-cd "${THIRDPARTY_ROOT}/cpr/_build"
-cmake  .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_CPR_TESTS=OFF -DUSE_SYSTEM_CURL=ON
-make -j4
-cp lib/libcpr.a "${INSTALL_PREFIX}/lib/"
-cp -r ../include/cpr "${INSTALL_PREFIX}/include/"
-
 mkdir "${THIRDPARTY_ROOT}/googletest/_build"
 cd "${THIRDPARTY_ROOT}/googletest/_build"
 cmake  .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}"

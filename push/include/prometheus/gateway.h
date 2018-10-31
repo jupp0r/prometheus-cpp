@@ -18,6 +18,7 @@ class Gateway {
   Gateway(const std::string& uri, const std::string jobname,
           const Labels& labels = {}, const std::string username = {},
           const std::string password = {});
+  ~Gateway();
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                            const Labels* labels = nullptr);
@@ -49,8 +50,7 @@ class Gateway {
  private:
   std::string jobUri_;
   std::string labels_;
-  std::string username_;
-  std::string password_;
+  std::string auth_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;

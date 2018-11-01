@@ -15,6 +15,7 @@
 #include "prometheus/check_names.h"
 #include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"
 
 namespace prometheus {
@@ -162,11 +163,12 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 #endif
     return *metrics_iter->second;
   } else {
-    auto metric = new T(std::forward<Args>(args)...);
-    metrics_.insert(std::make_pair(hash, std::unique_ptr<T>{metric}));
+    auto metric =
+        metrics_.insert(std::make_pair(hash, detail::make_unique<T>(args...)));
+    assert(metric.second);
     labels_.insert({hash, labels});
-    labels_reverse_lookup_.insert({metric, hash});
-    return *metric;
+    labels_reverse_lookup_.insert({metric.first->second.get(), hash});
+    return *(metric.first->second);
   }
 }
 

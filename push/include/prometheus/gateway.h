@@ -24,15 +24,21 @@ class Gateway {
 
   static const Labels GetInstanceLabel(std::string hostname);
 
-  // Push metrics to the given pushgateway.
-  int Push() { return push(PushMode::Replace); }
+  enum class HttpMethod {
+    Post,
+    Put,
+    Delete,
+  };
 
-  std::future<int> AsyncPush() { return async_push(PushMode::Replace); }
+  // Push metrics to the given pushgateway.
+  int Push() { return push(HttpMethod::Post); }
+
+  std::future<int> AsyncPush() { return async_push(HttpMethod::Post); }
 
   // PushAdd metrics to the given pushgateway.
-  int PushAdd() { return push(PushMode::Add); }
+  int PushAdd() { return push(HttpMethod::Put); }
 
-  std::future<int> AsyncPushAdd() { return async_push(PushMode::Add); }
+  std::future<int> AsyncPushAdd() { return async_push(HttpMethod::Put); }
 
   // Delete metrics from the given pushgateway.
   int Delete();
@@ -46,16 +52,17 @@ class Gateway {
   std::string username_;
   std::string password_;
 
-  std::vector<std::pair<std::weak_ptr<Collectable>, std::string>> collectables_;
+  using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
+  std::vector<CollectableEntry> collectables_;
 
-  enum class PushMode {
-    Add,
-    Replace,
-  };
+  std::string getUri(const CollectableEntry& collectable) const;
 
-  int push(PushMode mode);
+  int performHttpRequest(HttpMethod method, const std::string& uri,
+                         const std::string& body) const;
 
-  std::future<int> async_push(PushMode mode);
+  int push(HttpMethod method);
+
+  std::future<int> async_push(HttpMethod method);
 };
 
 }  // namespace prometheus

@@ -46,7 +46,48 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
-int Gateway::push(PushMode mode) {
+int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
+                                const std::string& body) const {
+  cpr::Session session;
+
+  session.SetUrl(cpr::Url{uri});
+
+  if (!body.empty()) {
+    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
+    session.SetBody(cpr::Body{body});
+  }
+
+  if (!username_.empty()) {
+    session.SetAuth(cpr::Authentication{username_, password_});
+  }
+
+  auto response = cpr::Response{};
+
+  switch (method) {
+    case HttpMethod::Post:
+      response = session.Post();
+      break;
+
+    case HttpMethod::Put:
+      response = session.Put();
+      break;
+
+    case HttpMethod::Delete:
+      response = session.Delete();
+      break;
+  }
+
+  return response.status_code;
+}
+
+std::string Gateway::getUri(const CollectableEntry& collectable) const {
+  std::stringstream uri;
+  uri << jobUri_ << labels_ << collectable.second;
+
+  return uri.str();
+}
+
+int Gateway::push(HttpMethod method) {
   const auto serializer = TextSerializer{};
 
   for (auto& wcollectable : collectables_) {
@@ -56,35 +97,21 @@ int Gateway::push(PushMode mode) {
     }
 
     auto metrics = collectable->Collect();
-
-    std::stringstream uri;
-    uri << jobUri_ << labels_ << wcollectable.second;
-
     auto body = serializer.Serialize(metrics);
+    auto uri = getUri(wcollectable);
+    auto status_code = performHttpRequest(method, uri, body);
 
-    cpr::Session session;
-
-    session.SetUrl(cpr::Url{uri.str()});
-    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-    session.SetBody(cpr::Body{body});
-
-    if (!username_.empty()) {
-      session.SetAuth(cpr::Authentication{username_, password_});
-    }
-
-    auto res = mode == PushMode::Replace ? session.Post() : session.Put();
-
-    if (res.status_code >= 400) {
-      return res.status_code;
+    if (status_code >= 400) {
+      return status_code;
     }
   }
 
   return 200;
 }
 
-std::future<int> Gateway::async_push(PushMode mode) {
+std::future<int> Gateway::async_push(HttpMethod method) {
   const auto serializer = TextSerializer{};
-  std::vector<cpr::AsyncResponse> futures;
+  std::vector<std::future<int>> futures;
 
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
@@ -93,58 +120,36 @@ std::future<int> Gateway::async_push(PushMode mode) {
     }
 
     auto metrics = collectable->Collect();
-
-    std::stringstream uri;
-    uri << jobUri_ << labels_ << wcollectable.second;
-
     auto body = serializer.Serialize(metrics);
-
-    cpr::Session session;
-
-    session.SetUrl(cpr::Url{uri.str()});
-    session.SetHeader(cpr::Header{{"Content-Type", CONTENT_TYPE}});
-    session.SetBody(cpr::Body{body});
-
-    if (!username_.empty()) {
-      session.SetAuth(cpr::Authentication{username_, password_});
-    }
+    auto uri = getUri(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [&] {
-      return mode == PushMode::Replace ? session.Post() : session.Put();
+      return performHttpRequest(method, uri, body);
     }));
   }
 
   return std::async(std::launch::async, [&] {
-    for (auto& future : futures) {
-      auto res = future.get();
+    auto final_status_code = 200;
 
-      if (res.status_code >= 400) {
-        return res.status_code;
+    for (auto& future : futures) {
+      auto status_code = future.get();
+
+      if (status_code >= 400) {
+        final_status_code = status_code;
       }
     }
 
-    return 200;
+    return final_status_code;
   });
 }
 
 int Gateway::Delete() {
-  auto res = cpr::Delete(cpr::Url{cpr::Url{jobUri_}});
-
-  return res.status_code;
+  return performHttpRequest(HttpMethod::Delete, jobUri_, {});
 }
 
 std::future<int> Gateway::AsyncDelete() {
-  const auto url = cpr::Url{jobUri_};
-
-  return std::async(std::launch::async, [url] {
-    auto future = cpr::DeleteAsync(url);
-    auto res = future.get();
-
-    if (res.status_code >= 400) {
-      return res.status_code;
-    }
-
-    return 200;
+  return std::async(std::launch::async, [&] {
+    return Delete();
   });
 }
 

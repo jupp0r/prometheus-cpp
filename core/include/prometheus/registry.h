@@ -22,15 +22,15 @@ namespace prometheus {
 
 class Registry : public Collectable {
  public:
+  // collectable
+  std::vector<MetricFamily> Collect() override;
+
+ private:
   friend class detail::CounterBuilder;
   friend class detail::GaugeBuilder;
   friend class detail::HistogramBuilder;
   friend class detail::SummaryBuilder;
 
-  // collectable
-  std::vector<MetricFamily> Collect() override;
-
- private:
   Family<Counter>& AddCounter(const std::string& name, const std::string& help,
                               const std::map<std::string, std::string>& labels);
   Family<Gauge>& AddGauge(const std::string& name, const std::string& help,

@@ -5,6 +5,7 @@
 #include <gmock/gmock.h>
 
 #include "prometheus/client_metric.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/histogram.h"
 
 namespace prometheus {
@@ -63,12 +64,13 @@ TEST(FamilyTest, add_twice) {
   ASSERT_EQ(&counter, &counter1);
 }
 
-#ifndef NDEBUG
 TEST(FamilyTest, should_assert_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
-    new Family<Counter>("", "empty name", {});
+    return detail::make_unique<Family<Counter>>(
+        "", "empty name", std::map<std::string, std::string>{});
   };
-  EXPECT_DEATH(create_family_with_invalid_name(), ".*");
+  EXPECT_DEBUG_DEATH(create_family_with_invalid_name(),
+                     ".*Assertion `CheckMetricName.*");
 }
 
 TEST(FamilyTest, should_assert_on_invalid_labels) {
@@ -76,9 +78,9 @@ TEST(FamilyTest, should_assert_on_invalid_labels) {
   auto add_metric_with_invalid_label_name = [&family]() {
     family.Add({{"__invalid", "counter1"}});
   };
-  EXPECT_DEATH(add_metric_with_invalid_label_name(), ".*");
+  EXPECT_DEBUG_DEATH(add_metric_with_invalid_label_name(),
+                     ".*Assertion `CheckLabelName.*");
 }
-#endif
 
 }  // namespace
 }  // namespace prometheus

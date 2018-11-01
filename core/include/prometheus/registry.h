@@ -9,6 +9,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/counter.h"
 #include "prometheus/counter_builder.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/family.h"
 #include "prometheus/gauge.h"
 #include "prometheus/gauge_builder.h"
@@ -49,16 +50,6 @@ class Registry : public Collectable {
   friend class detail::HistogramBuilder;
   friend class detail::SummaryBuilder;
 
-  Family<Counter>& AddCounter(const std::string& name, const std::string& help,
-                              const std::map<std::string, std::string>& labels);
-  Family<Gauge>& AddGauge(const std::string& name, const std::string& help,
-                          const std::map<std::string, std::string>& labels);
-  Family<Histogram>& AddHistogram(
-      const std::string& name, const std::string& help,
-      const std::map<std::string, std::string>& labels);
-  Family<Summary>& AddSummary(const std::string& name, const std::string& help,
-                              const std::map<std::string, std::string>& labels);
-
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
                  const std::map<std::string, std::string>& labels);
@@ -66,5 +57,15 @@ class Registry : public Collectable {
   std::vector<std::unique_ptr<Collectable>> collectables_;
   std::mutex mutex_;
 };
+
+template <typename T>
+Family<T>& Registry::Add(const std::string& name, const std::string& help,
+                         const std::map<std::string, std::string>& labels) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto& ref = *family;
+  collectables_.push_back(std::move(family));
+  return ref;
+}
 
 }  // namespace prometheus

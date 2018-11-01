@@ -25,7 +25,7 @@ GaugeBuilder& GaugeBuilder::Help(const std::string& help) {
 }
 
 Family<Gauge>& GaugeBuilder::Register(Registry& registry) {
-  return registry.AddGauge(name_, help_, labels_);
+  return registry.Add<Gauge>(name_, help_, labels_);
 }
 }  // namespace detail
 }  // namespace prometheus

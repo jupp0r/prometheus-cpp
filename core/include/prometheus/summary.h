@@ -34,7 +34,8 @@ namespace prometheus {
 /// See https://prometheus.io/docs/practices/histograms/ for detailed
 /// explanations of Phi-quantiles, summary usage, and differences to histograms.
 ///
-/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
+/// The class is thread-safe. No concurrent call to any API of this type causes
+/// a data race.
 class Summary {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
@@ -75,6 +76,9 @@ class Summary {
   /// \brief Observe the given amount.
   void Observe(double value);
 
+  /// \brief Get the current value of the summary.
+  ///
+  /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
 
  private:

@@ -19,7 +19,8 @@ namespace prometheus {
 /// Do not use a counter to expose a value that can decrease - instead use a
 /// Gauge.
 ///
-/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
+/// The class is thread-safe. No concurrent call to any API of this type causes
+/// a data race.
 class Counter {
  public:
   static const MetricType metric_type{MetricType::Counter};
@@ -38,6 +39,9 @@ class Counter {
   /// \brief Get the current value of the counter.
   double Value() const;
 
+  /// \brief Get the current value of the counter.
+  ///
+  /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
 
  private:

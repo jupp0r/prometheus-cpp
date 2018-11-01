@@ -70,7 +70,7 @@ class Family : public Collectable {
   ///
   ///     http_requests_total
   ///
-  /// It is possible to assing labels to the metric name. These labels are
+  /// It is possible to assign labels to the metric name. These labels are
   /// propagated to each dimensional data added with Add(). For example if a
   /// label `job= "prometheus"` is provided to this constructor, it is possible
   /// to filter this time series with Prometheus's query language by appending
@@ -114,6 +114,11 @@ class Family : public Collectable {
   /// if the given metric was not returned by Add().
   void Remove(T* metric);
 
+  /// \brief Returns the current value of each dimensional data.
+  ///
+  /// Collect is called by the Registry when collecting metrics.
+  ///
+  /// \return Zero or more samples for each dimensional data.
   std::vector<MetricFamily> Collect() override;
 
  private:

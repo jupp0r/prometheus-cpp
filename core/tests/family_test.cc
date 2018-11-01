@@ -65,7 +65,7 @@ TEST(FamilyTest, add_twice) {
 
 TEST(FamilyTest, should_assert_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
-    new Family<Counter>("", "empty name", {});
+    return new Family<Counter>("", "empty name", {});
   };
   EXPECT_DEBUG_DEATH(create_family_with_invalid_name(),
                      ".*Assertion `CheckMetricName.*");

@@ -20,17 +20,35 @@
 
 namespace prometheus {
 
+/// \brief Manages the collection of a number of metrics.
+///
+/// The Registry is responsible to expose data to a class/method/function
+/// "bridge", which returns the metrics in a format Prometheus supports.
+///
+/// The key class is the Collectable. This has a method - called Collect() -
+/// that returns zero or more metrics and their samples. The metrics are
+/// represented by the class Family<>, which implements the Collectable
+/// interface. A new metric is registered with BuildCounter(), BuildGauge(),
+/// BuildHistogram() or BuildSummary().
+///
+/// The class is thread-safe. No concurrent call to any API of this type causes
+/// a data race.
 class Registry : public Collectable {
  public:
+  /// \brief Returns a list of metrics and their samples.
+  ///
+  /// Every time the Registry is scraped it calls each of the metrics Collect
+  /// function.
+  ///
+  /// \return Zero or more metrics and their samples.
+  std::vector<MetricFamily> Collect() override;
+
+ private:
   friend class detail::CounterBuilder;
   friend class detail::GaugeBuilder;
   friend class detail::HistogramBuilder;
   friend class detail::SummaryBuilder;
 
-  // collectable
-  std::vector<MetricFamily> Collect() override;
-
- private:
   Family<Counter>& AddCounter(const std::string& name, const std::string& help,
                               const std::map<std::string, std::string>& labels);
   Family<Gauge>& AddGauge(const std::string& name, const std::string& help,

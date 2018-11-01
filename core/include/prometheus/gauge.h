@@ -17,7 +17,8 @@ namespace prometheus {
 /// memory usage, but also "counts" that can go up and down, like the number of
 /// running processes.
 ///
-/// The class is thread-safe. No concurrent call to any API of this type causes a data race.
+/// The class is thread-safe. No concurrent call to any API of this type causes
+/// a data race.
 class Gauge {
  public:
   static const MetricType metric_type{MetricType::Gauge};
@@ -49,6 +50,9 @@ class Gauge {
   /// \brief Get the current value of the gauge.
   double Value() const;
 
+  /// \brief Get the current value of the gauge.
+  ///
+  /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
 
  private:

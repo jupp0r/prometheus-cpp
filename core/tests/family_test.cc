@@ -67,7 +67,8 @@ TEST(FamilyTest, should_assert_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
     new Family<Counter>("", "empty name", {});
   };
-  EXPECT_DEBUG_DEATH(create_family_with_invalid_name(), ".*");
+  EXPECT_DEBUG_DEATH(create_family_with_invalid_name(),
+                     ".*Assertion `CheckMetricName.*");
 }
 
 TEST(FamilyTest, should_assert_on_invalid_labels) {
@@ -75,7 +76,8 @@ TEST(FamilyTest, should_assert_on_invalid_labels) {
   auto add_metric_with_invalid_label_name = [&family]() {
     family.Add({{"__invalid", "counter1"}});
   };
-  EXPECT_DEBUG_DEATH(add_metric_with_invalid_label_name(), ".*");
+  EXPECT_DEBUG_DEATH(add_metric_with_invalid_label_name(),
+                     ".*Assertion `CheckLabelName.*");
 }
 
 }  // namespace

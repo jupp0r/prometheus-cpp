@@ -52,7 +52,7 @@ script:
   - pushd .
   - mkdir _build_internal_deps
   - cd _build_internal_deps
-  - cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON
+  - cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_WARNINGS_AS_ERRORS=ON
   - make -j 4
   - ctest -V
   - mkdir -p deploy

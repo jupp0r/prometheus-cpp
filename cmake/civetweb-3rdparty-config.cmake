@@ -30,6 +30,12 @@ target_compile_definitions(civetweb
     NO_FILES
 )
 
+target_compile_options(civetweb
+  PRIVATE
+    $<$<CXX_COMPILER_ID:AppleClang>:-w>
+    $<$<CXX_COMPILER_ID:GNU>:-w>
+)
+
 target_include_directories(civetweb
   PRIVATE
     ${CIVETWEB_INCLUDE_DIRS}

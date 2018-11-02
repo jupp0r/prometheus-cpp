@@ -1,4 +1,4 @@
-get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/civetweb/" ABSOLUTE)
+get_filename_component(_IMPORT_PREFIX "${PROJECT_SOURCE_DIR}/3rdparty/civetweb/" ABSOLUTE)
 
 macro(set_and_check _var _file)
   set(${_var} "${_file}")
@@ -19,17 +19,21 @@ add_library(civetweb OBJECT
   ${_IMPORT_PREFIX}/src/md5.inl
 )
 
-target_compile_definitions(civetweb PRIVATE
-  CIVETWEB_API=
-  USE_IPV6
-  NDEBUG
-  NO_CGI
-  NO_CACHING
-  NO_SSL
-  NO_FILES
+target_compile_definitions(civetweb
+  PRIVATE
+    CIVETWEB_API=
+    USE_IPV6
+    NDEBUG
+    NO_CGI
+    NO_CACHING
+    NO_SSL
+    NO_FILES
 )
 
-target_include_directories(civetweb PUBLIC ${CIVETWEB_INCLUDE_DIRS})
+target_include_directories(civetweb
+  PRIVATE
+    ${CIVETWEB_INCLUDE_DIRS}
+)
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(civetweb PROPERTIES

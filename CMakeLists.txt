@@ -6,13 +6,13 @@ project(prometheus-cpp)
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)
 option(ENABLE_TESTING "Build tests" ON)
 option(USE_THIRDPARTY_LIBRARIES "Use 3rdParty submodules" ON)
-
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXLFAGS are configured differently" ON)
 
 if(OVERRIDE_CXX_STANDARD_FLAGS)
@@ -25,7 +25,7 @@ find_package(Threads)
 
 if(ENABLE_TESTING)
   if(USE_THIRDPARTY_LIBRARIES)
-    find_package(googlemock-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
+    find_package(googlemock-3rdparty CONFIG REQUIRED)
   else()
     find_package(GTest 1.8.1 CONFIG REQUIRED)
   endif()

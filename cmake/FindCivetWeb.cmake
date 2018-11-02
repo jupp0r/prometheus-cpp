@@ -35,7 +35,7 @@ find_package_handle_standard_args(CivetWeb
 
 if(CivetWeb_FOUND)
   set(CIVETWEB_LIBRARIES CivetWeb::CivetWeb CivetWeb::CivetWebCpp)
-  set(CIVETWEB_INCLUDE_DIRS ${CIVETWEB_INCLUDE_DIR} ${CIVETWEB_CXX_INCLUDE_DIR})
+  set(CIVETWEB_INCLUDE_DIRS "${CIVETWEB_INCLUDE_DIR}" "${CIVETWEB_CXX_INCLUDE_DIR}")
   if(NOT TARGET CivetWeb::CivetWeb)
     add_library(CivetWeb::CivetWeb UNKNOWN IMPORTED)
     set_target_properties(CivetWeb::CivetWeb PROPERTIES

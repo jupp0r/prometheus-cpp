@@ -1,9 +1,6 @@
-if(NOT CMAKE_VERSION VERSION_LESS 3)
-  include(CMakeFindDependencyMacro)
-  find_dependency(CURL)
-endif()
+find_package(CURL REQUIRED)
 
-get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/cpr/" ABSOLUTE)
+get_filename_component(_IMPORT_PREFIX "${PROJECT_SOURCE_DIR}/3rdparty/cpr/" ABSOLUTE)
 
 macro(set_and_check _var _file)
   set(${_var} "${_file}")
@@ -13,7 +10,8 @@ macro(set_and_check _var _file)
 endmacro()
 
 set_and_check(CPR_INCLUDE_DIR ${_IMPORT_PREFIX}/include)
-set(CPR_INCLUDE_DIRS "${CPR_INCLUDE_DIR}")
+set(CPR_INCLUDE_DIRS "${CPR_INCLUDE_DIR}" "${CURL_INCLUDE_DIRS}")
+set(CPR_LIBRARIES "${CURL_LIBRARIES}")
 
 add_library(cpr OBJECT
   ${_IMPORT_PREFIX}/cpr/auth.cpp
@@ -29,7 +27,6 @@ add_library(cpr OBJECT
   ${_IMPORT_PREFIX}/cpr/ssl_options.cpp
   ${_IMPORT_PREFIX}/cpr/timeout.cpp
   ${_IMPORT_PREFIX}/cpr/util.cpp
-
   ${_IMPORT_PREFIX}/include/cpr/api.h
   ${_IMPORT_PREFIX}/include/cpr/auth.h
   ${_IMPORT_PREFIX}/include/cpr/body.h
@@ -53,7 +50,11 @@ add_library(cpr OBJECT
   ${_IMPORT_PREFIX}/include/cpr/util.h
 )
 
-target_include_directories(cpr PUBLIC ${CPR_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
+target_include_directories(cpr
+  PRIVATE
+    ${CPR_INCLUDE_DIR}
+    ${CURL_INCLUDE_DIRS}
+)
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(cpr PROPERTIES

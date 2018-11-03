@@ -1,5 +1,5 @@
 
-find_package(CURL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS thread system)
 
 add_library(push
   src/gateway.cc
@@ -12,7 +12,8 @@ target_link_libraries(push
     ${PROJECT_NAME}::core
   PRIVATE
     Threads::Threads
-    CURL::libcurl
+    Boost::system
+    Boost::thread
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 

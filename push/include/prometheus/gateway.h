@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <future>
 #include <iosfwd>
 #include <map>
@@ -16,7 +17,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
   using Labels = std::map<std::string, std::string>;
 
-  Gateway(const std::string host, const std::string port,
+  Gateway(const std::string host, const std::string service,
           const std::string jobname, const Labels& labels = {},
           const std::string username = {}, const std::string password = {});
   ~Gateway();
@@ -43,14 +44,17 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::future<int> AsyncDelete();
 
  private:
-  std::string jobUri_;
+    std::string host_;
+    std::string service_;
+
+  std::string target_base_;
   std::string labels_;
   std::string auth_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;
 
-  std::string getUri(const CollectableEntry& collectable) const;
+  std::string getTarget(const CollectableEntry& collectable) const;
 
   enum class HttpMethod {
     Post,

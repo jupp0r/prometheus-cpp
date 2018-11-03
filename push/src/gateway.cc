@@ -8,22 +8,24 @@
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
-#include <curl/curl.h>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/beast/core/detail/base64.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 namespace prometheus {
 
 static const char CONTENT_TYPE[] =
-    "Content-Type: text/plain; version=0.0.4; charset=utf-8";
+    "text/plain; version=0.0.4; charset=utf-8";
 
-Gateway::Gateway(const std::string host, const std::string port,
+Gateway::Gateway(const std::string host, const std::string service,
                  const std::string jobname, const Labels& labels,
-                 const std::string username, const std::string password) {
-  /* In windows, this will init the winsock stuff */
-  curl_global_init(CURL_GLOBAL_ALL);
-
+                 const std::string username, const std::string password) : host_{host}, service_{service} {
   std::stringstream jobUriStream;
-  jobUriStream << host << ':' << port << "/metrics/job/" << jobname;
-  jobUri_ = jobUriStream.str();
+  jobUriStream << "/metrics/job/" << jobname;
+  target_base_ = jobUriStream.str();
 
   if (!username.empty()) {
     auth_ = username + ":" + password;
@@ -36,7 +38,7 @@ Gateway::Gateway(const std::string host, const std::string port,
   labels_ = labelStream.str();
 }
 
-Gateway::~Gateway() { curl_global_cleanup(); }
+Gateway::~Gateway() { }
 
 const Gateway::Labels Gateway::GetInstanceLabel(std::string hostname) {
   if (hostname.empty()) {
@@ -58,68 +60,83 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
-int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
+int Gateway::performHttpRequest(HttpMethod method, const std::string& target,
                                 const std::string& body) const {
-  auto curl = curl_easy_init();
-  if (!curl) {
-    return -CURLE_FAILED_INIT;
-  }
 
-  curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
+  // The io_context is required for all I/O
+  boost::asio::io_context ioc;
 
-  curl_slist* header_chunk = nullptr;
+  // These objects perform our I/O
+  boost::asio::ip::tcp::resolver resolver{ioc};
+  boost::asio::ip::tcp::socket socket{ioc};
+
+  // Look up the domain name
+  auto const results = resolver.resolve(host_, service_);
+
+  // Make the connection on the IP address we get from a lookup
+  boost::asio::connect(socket, results.begin(), results.end());
+
+  // Set up an HTTP GET request message
+  boost::beast::http::request<boost::beast::http::string_body> req;//{boost::beast::http::verb::get, target, 11};
+
+  req.target(target);
+  req.version(11);
+
+  req.set(boost::beast::http::field::host, host_);
+  //req.set(boost::beast::http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
   if (!body.empty()) {
-    header_chunk = curl_slist_append(nullptr, CONTENT_TYPE);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
-
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
+    req.set(boost::beast::http::field::content_type, CONTENT_TYPE);
+    req.body() = body;
   }
 
   if (!auth_.empty()) {
-    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_easy_setopt(curl, CURLOPT_USERPWD, auth_.c_str());
+      std::string encoded;
+      encoded.resize(boost::beast::detail::base64::encoded_size(auth_.size()));
+      boost::beast::detail::base64::encode(&encoded.front(), auth_.data(), auth_.size());
+      req.set(boost::beast::http::field::authorization, "Basic " + encoded);
   }
 
   switch (method) {
     case HttpMethod::Post:
-      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      req.method(boost::beast::http::verb::post);
       break;
 
     case HttpMethod::Put:
-      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
-      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      req.method(boost::beast::http::verb::put);
       break;
 
     case HttpMethod::Delete:
-      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
-      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+      req.method(boost::beast::http::verb::delete_);
       break;
   }
 
-  auto curl_error = curl_easy_perform(curl);
+  req.prepare_payload();
 
-  long response_code;
-  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+  // Send the HTTP request to the remote host
+  boost::beast::http::write(socket, req);
 
-  curl_easy_cleanup(curl);
-  curl_slist_free_all(header_chunk);
+  // This buffer is used for reading and must be persisted
+  boost::beast::flat_buffer buffer;
 
-  if (curl_error != CURLE_OK) {
-    return -curl_error;
-  }
+  // Declare a container to hold the response
+  boost::beast::http::response<boost::beast::http::dynamic_body> res;
 
-  return response_code;
+  // Receive the HTTP response
+  boost::beast::http::read(socket, buffer, res);
+
+  // Gracefully close the socket
+  boost::system::error_code ec;
+  socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+
+  return res.result_int();
 }
 
-std::string Gateway::getUri(const CollectableEntry& collectable) const {
-  std::stringstream uri;
-  uri << jobUri_ << labels_ << collectable.second;
+std::string Gateway::getTarget(const CollectableEntry& collectable) const {
+  std::stringstream target;
+  target << target_base_ << labels_ << collectable.second;
 
-  return uri.str();
+  return target.str();
 }
 
 int Gateway::Push() { return push(HttpMethod::Post); }
@@ -137,8 +154,8 @@ int Gateway::push(HttpMethod method) {
 
     auto metrics = collectable->Collect();
     auto body = serializer.Serialize(metrics);
-    auto uri = getUri(wcollectable);
-    auto status_code = performHttpRequest(method, uri, body);
+    auto target = getTarget(wcollectable);
+    auto status_code = performHttpRequest(method, target, body);
 
     if (status_code < 100 || status_code >= 400) {
       return status_code;
@@ -164,7 +181,7 @@ std::future<int> Gateway::async_push(HttpMethod method) {
 
     auto metrics = collectable->Collect();
     auto body = std::make_shared<std::string>(serializer.Serialize(metrics));
-    auto uri = getUri(wcollectable);
+    auto uri = getTarget(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
       return performHttpRequest(method, uri, *body);
@@ -189,7 +206,7 @@ std::future<int> Gateway::async_push(HttpMethod method) {
 }
 
 int Gateway::Delete() {
-  return performHttpRequest(HttpMethod::Delete, jobUri_, {});
+  return performHttpRequest(HttpMethod::Delete, target_base_, {});
 }
 
 std::future<int> Gateway::AsyncDelete() {

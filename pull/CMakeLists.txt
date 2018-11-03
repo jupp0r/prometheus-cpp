@@ -1,7 +1,6 @@
 
 if(USE_THIRDPARTY_LIBRARIES)
-  find_package(civetweb-3rdparty CONFIG REQUIRED PATHS ${PROJECT_SOURCE_DIR}/cmake)
-  set(CIVETWEB_SOURCES $<TARGET_OBJECTS:civetweb>)
+  find_package(civetweb-3rdparty CONFIG REQUIRED)
 else()
   find_package(CivetWeb REQUIRED)
 endif()
@@ -14,7 +13,7 @@ add_library(pull
   src/exposer.cc
   src/handler.cc
   src/handler.h
-  ${CIVETWEB_SOURCES}
+  $<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:civetweb>>
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)

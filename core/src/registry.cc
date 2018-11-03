@@ -1,41 +1,41 @@
 #include "prometheus/registry.h"
 
+#include "prometheus/detail/future_std.h"
+
 namespace prometheus {
+
+template <typename T>
+Family<T>& Registry::Add(const std::string& name, const std::string& help,
+                         const std::map<std::string, std::string>& labels) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto& ref = *family;
+  collectables_.push_back(std::move(family));
+  return ref;
+}
 
 Family<Counter>& Registry::AddCounter(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto counter_family = new Family<Counter>(name, help, labels);
-  collectables_.push_back(std::unique_ptr<Collectable>{counter_family});
-  return *counter_family;
+  return Add<Counter>(name, help, labels);
 }
 
 Family<Gauge>& Registry::AddGauge(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto gauge_family = new Family<Gauge>(name, help, labels);
-  collectables_.push_back(std::unique_ptr<Collectable>{gauge_family});
-  return *gauge_family;
+  return Add<Gauge>(name, help, labels);
 }
 
 Family<Histogram>& Registry::AddHistogram(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto histogram_family = new Family<Histogram>(name, help, labels);
-  collectables_.push_back(std::unique_ptr<Collectable>{histogram_family});
-  return *histogram_family;
+  return Add<Histogram>(name, help, labels);
 }
 
 Family<Summary>& Registry::AddSummary(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto histogram_family = new Family<Summary>(name, help, labels);
-  collectables_.push_back(std::unique_ptr<Collectable>{histogram_family});
-  return *histogram_family;
+  return Add<Summary>(name, help, labels);
 }
 
 std::vector<MetricFamily> Registry::Collect() {
@@ -48,4 +48,5 @@ std::vector<MetricFamily> Registry::Collect() {
 
   return results;
 }
-}
+
+}  // namespace prometheus

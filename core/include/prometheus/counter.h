@@ -3,6 +3,7 @@
 #include <array>
 #include <atomic>
 #include <exception>
+#include <thread>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/metric_type.h"
@@ -63,27 +64,22 @@ class Counter {
   ClientMetric Collect() const;
 
  private:
-  int ThreadId() {
+  int BucketId() {
     thread_local int id{-1};
 
     if (id == -1) {
-      id = AssignThreadId();
+      id = AssignBucketId();
     }
     return id;
   }
 
-  int AssignThreadId() {
-    const int id{count_.fetch_add(1)};
-
-    if (id >= per_thread_counter_.size()) {
-      std::terminate();
-    }
-
-    return id;
+  int AssignBucketId() {
+    const auto threadIdHash = std::hash<std::thread::id>{}(std::this_thread::get_id());
+    return threadIdHash % per_thread_counter_.size();
   }
 
   void IncrementUnchecked(const double v) {
-    CacheLine& c = per_thread_counter_[ThreadId()];
+    CacheLine& c = per_thread_counter_[BucketId()];
     const double new_value{c.v.load(std::memory_order_relaxed) + v};
     c.v.store(new_value, std::memory_order_relaxed);
   }
@@ -92,8 +88,7 @@ class Counter {
     std::atomic<double> v{0.0};
   };
 
-  std::atomic<int> count_{0};
-  std::array<CacheLine, 256> per_thread_counter_{};
+  std::array<CacheLine, 128> per_thread_counter_{};
 };
 
 }  // namespace prometheus

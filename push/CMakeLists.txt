@@ -11,7 +11,7 @@ target_link_libraries(push
   PUBLIC
     ${PROJECT_NAME}::core
   PRIVATE
-    ${CMAKE_THREAD_LIBS_INIT}
+    Threads::Threads
     ${CURL_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )

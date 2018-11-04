@@ -20,7 +20,7 @@ add_library(${PROJECT_NAME}::core ALIAS core)
 
 target_link_libraries(core
   PRIVATE
-    ${CMAKE_THREAD_LIBS_INIT}
+    Threads::Threads
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 

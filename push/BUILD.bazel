@@ -7,12 +7,10 @@ cc_library(
     hdrs = glob(
         ["include/**/*.h"],
     ),
-    linkopts = [
-        "-lcurl",
-    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//core",
+        "@com_github_curl//:curl",
     ],
 )

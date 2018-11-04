@@ -18,6 +18,18 @@ def load_com_google_googletest():
         ],
     )
 
+def load_com_github_curl():
+    native.new_http_archive(
+        name = "com_github_curl",
+        sha256 = "e9c37986337743f37fd14fe8737f246e97aec94b39d1b71e8a5973f72a9fc4f5",
+        strip_prefix = "curl-7.60.0",
+        urls = [
+            "https://mirror.bazel.build/curl.haxx.se/download/curl-7.60.0.tar.gz",
+            "https://curl.haxx.se/download/curl-7.60.0.tar.gz",
+        ],
+        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
+    )
+
 def load_com_github_google_benchmark():
     native.http_archive(
         name = "com_github_google_benchmark",
@@ -42,5 +54,6 @@ def load_com_github_madler_zlib():
 def prometheus_cpp_repositories():
     load_civetweb()
     load_com_google_googletest()
+    load_com_github_curl()
     load_com_github_google_benchmark()
     load_com_github_madler_zlib()

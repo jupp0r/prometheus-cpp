@@ -7,10 +7,14 @@ cc_library(
     hdrs = glob(
         ["include/**/*.h"],
     ),
+    copts = [
+        "-DHAVE_ZLIB",
+    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//core",
         "@civetweb",
+        "@com_github_madler_zlib//:zlib",
     ],
 )

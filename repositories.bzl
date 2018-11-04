@@ -1,109 +1,12 @@
-_CIVETWEB_BUILD_FILE = """
-licenses(["notice"])  # MIT license
-
-config_setting(
-    name = "darwin",
-    values = {"cpu": "darwin"},)
-
-config_setting(
-    name = "darwin_x86_64",
-    values = {"cpu": "darwin_x86_64"},
-)
-
-config_setting(
-    name = "windows",
-    values = { "cpu": "x64_windows" },
-)
-
-config_setting(
-    name = "windows_msvc",
-    values = {"cpu": "x64_windows_msvc"},
-)
-
-cc_library(
-    name = "libcivetweb",
-    srcs = [
-        "src/civetweb.c",
-    ],
-    hdrs = [
-        "include/civetweb.h",
-    ],
-    copts = [
-        "-DUSE_IPV6",
-        "-DNDEBUG",
-        "-DNO_CGI",
-        "-DNO_CACHING",
-        "-DNO_SSL",
-        "-DNO_FILES",
-    ],
-    includes = [
-        "include",
-    ],
-    linkopts = select({
-        ":windows": [],
-        ":windows_msvc": [],
-        "//conditions:default": ["-lpthread"],
-    }) + select({
-        ":darwin": [],
-        ":darwin_x86_64": [],
-        ":windows": [],
-        ":windows_msvc": [],
-        "//conditions:default": ["-lrt"],
-    }),
-    textual_hdrs = [
-        "src/file_ops.inl",
-        "src/md5.inl",
-        "src/handle_form.inl",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
-    name = "civetweb",
-    srcs = [
-        "src/CivetServer.cpp",
-    ],
-    hdrs = [
-        "include/CivetServer.h",
-    ],
-    deps = [
-        ":libcivetweb",
-    ],
-    copts = [
-        "-DUSE_IPV6",
-        "-DNDEBUG",
-        "-DNO_CGI",
-        "-DNO_CACHING",
-        "-DNO_SSL",
-        "-DNO_FILES",
-    ],
-    includes = [
-        "include",
-    ],
-    linkopts = select({
-        ":windows": [],
-        ":windows_msvc": [],
-        "//conditions:default": ["-lpthread"],
-    }) + select({
-        ":darwin": [],
-        ":darwin_x86_64": [],
-        ":windows": [],
-        ":windows_msvc": [],
-        "//conditions:default": ["-lrt"],
-    }),
-    visibility = ["//visibility:public"],
-)
-"""
-
 def load_civetweb():
     native.new_http_archive(
         name = "civetweb",
         strip_prefix = "civetweb-1.9.1",
         sha256 = "880d741724fd8de0ebc77bc5d98fa673ba44423dc4918361c3cd5cf80955e36d",
         urls = [
-           "https://github.com/civetweb/civetweb/archive/v1.9.1.tar.gz",
-       ],
-       build_file_content = _CIVETWEB_BUILD_FILE,
+            "https://github.com/civetweb/civetweb/archive/v1.9.1.tar.gz",
+        ],
+        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )
 
 def load_com_google_googletest():
@@ -113,6 +16,18 @@ def load_com_google_googletest():
         urls = [
             "https://github.com/google/googletest/archive/master.zip",
         ],
+    )
+
+def load_com_github_curl():
+    native.new_http_archive(
+        name = "com_github_curl",
+        sha256 = "e9c37986337743f37fd14fe8737f246e97aec94b39d1b71e8a5973f72a9fc4f5",
+        strip_prefix = "curl-7.60.0",
+        urls = [
+            "https://mirror.bazel.build/curl.haxx.se/download/curl-7.60.0.tar.gz",
+            "https://curl.haxx.se/download/curl-7.60.0.tar.gz",
+        ],
+        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )
 
 def load_com_github_google_benchmark():
@@ -125,7 +40,20 @@ def load_com_github_google_benchmark():
         ],
     )
 
+def load_com_github_madler_zlib():
+    native.new_http_archive(
+        name = "com_github_madler_zlib",
+        sha256 = "629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff",
+        strip_prefix = "zlib-1.2.11",
+        urls = [
+            "https://github.com/madler/zlib/archive/v1.2.11.tar.gz",
+        ],
+        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:zlib.BUILD",
+    )
+
 def prometheus_cpp_repositories():
     load_civetweb()
     load_com_google_googletest()
+    load_com_github_curl()
     load_com_github_google_benchmark()
+    load_com_github_madler_zlib()

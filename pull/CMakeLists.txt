@@ -22,7 +22,7 @@ target_link_libraries(pull
   PUBLIC
     ${PROJECT_NAME}::core
   PRIVATE
-    ${CMAKE_THREAD_LIBS_INIT}
+    Threads::Threads
     ${CIVETWEB_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>

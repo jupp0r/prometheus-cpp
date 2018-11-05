@@ -15,6 +15,6 @@ cc_library(
     deps = [
         "//core",
         "@civetweb",
-        "@com_github_madler_zlib//:zlib",
+        "@com_github_madler_zlib//:z",
     ],
 )

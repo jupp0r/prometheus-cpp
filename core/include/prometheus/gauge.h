@@ -17,6 +17,9 @@ namespace prometheus {
 /// memory usage, but also "counts" that can go up and down, like the number of
 /// running processes.
 ///
+/// If an montonically increasing counter is applicable a Counter shall be
+/// prefered to a Gauge because of a better update performance.
+///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
 class Gauge {

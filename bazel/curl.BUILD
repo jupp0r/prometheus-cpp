@@ -41,10 +41,21 @@ cc_library(
         "include/curl/*.h",
         "lib/**/*.h",
     ]),
+    defines = ["CURL_STATICLIB"],
     includes = ["include/", "lib/"],
+    linkopts =  select({
+        "//:windows": [
+            "-DEFAULTLIB:ws2_32.lib",
+            "-DEFAULTLIB:advapi32.lib",
+            "-DEFAULTLIB:crypt32.lib",
+            "-DEFAULTLIB:Normaliz.lib",
+        ],
+        "//conditions:default": [
+            "-lpthread",
+        ],
+    }),
     copts = CURL_COPTS + [
         '-DOS="os"',
-        '-DCURL_EXTERN_SYMBOL=__attribute__((__visibility__("default")))',
     ],
     visibility = ["//visibility:public"],
 )

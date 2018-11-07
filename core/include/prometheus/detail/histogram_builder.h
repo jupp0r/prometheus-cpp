@@ -11,12 +11,7 @@ class Histogram;
 class Registry;
 
 namespace detail {
-class HistogramBuilder;
-}
 
-detail::HistogramBuilder BuildHistogram();
-
-namespace detail {
 class HistogramBuilder {
  public:
   HistogramBuilder& Labels(const std::map<std::string, std::string>& labels);
@@ -29,5 +24,6 @@ class HistogramBuilder {
   std::string name_;
   std::string help_;
 };
+
 }  // namespace detail
 }  // namespace prometheus

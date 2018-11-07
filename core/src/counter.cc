@@ -14,4 +14,6 @@ ClientMetric Counter::Collect() const {
   return metric;
 }
 
+detail::CounterBuilder BuildCounter() { return {}; }
+
 }  // namespace prometheus

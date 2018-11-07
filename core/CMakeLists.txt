@@ -2,17 +2,17 @@
 add_library(core
   src/check_names.cc
   src/counter.cc
-  src/counter_builder.cc
   src/detail/ckms_quantiles.cc
+  src/detail/counter_builder.cc
+  src/detail/gauge_builder.cc
+  src/detail/histogram_builder.cc
+  src/detail/summary_builder.cc
   src/detail/time_window_quantiles.cc
   src/gauge.cc
-  src/gauge_builder.cc
   src/histogram.cc
-  src/histogram_builder.cc
   src/registry.cc
   src/serializer.cc
   src/summary.cc
-  src/summary_builder.cc
   src/text_serializer.cc
 )
 

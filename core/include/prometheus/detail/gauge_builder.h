@@ -11,12 +11,7 @@ class Gauge;
 class Registry;
 
 namespace detail {
-class GaugeBuilder;
-}
 
-detail::GaugeBuilder BuildGauge();
-
-namespace detail {
 class GaugeBuilder {
  public:
   GaugeBuilder& Labels(const std::map<std::string, std::string>& labels);
@@ -29,5 +24,6 @@ class GaugeBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+
+}  // namespace detail
+}  // namespace prometheus

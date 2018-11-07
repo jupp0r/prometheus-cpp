@@ -1,11 +1,8 @@
-#include "prometheus/counter_builder.h"
+#include "prometheus/detail/counter_builder.h"
 
 #include "prometheus/registry.h"
 
 namespace prometheus {
-
-detail::CounterBuilder BuildCounter() { return {}; }
-
 namespace detail {
 
 CounterBuilder& CounterBuilder::Labels(
@@ -27,5 +24,6 @@ CounterBuilder& CounterBuilder::Help(const std::string& help) {
 Family<Counter>& CounterBuilder::Register(Registry& registry) {
   return registry.Add<Counter>(name_, help_, labels_);
 }
+
 }  // namespace detail
 }  // namespace prometheus

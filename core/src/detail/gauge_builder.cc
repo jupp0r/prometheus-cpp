@@ -1,11 +1,8 @@
-#include "prometheus/gauge_builder.h"
+#include "prometheus/detail/gauge_builder.h"
 
 #include "prometheus/registry.h"
 
 namespace prometheus {
-
-detail::GaugeBuilder BuildGauge() { return {}; }
-
 namespace detail {
 
 GaugeBuilder& GaugeBuilder::Labels(
@@ -27,5 +24,6 @@ GaugeBuilder& GaugeBuilder::Help(const std::string& help) {
 Family<Gauge>& GaugeBuilder::Register(Registry& registry) {
   return registry.Add<Gauge>(name_, help_, labels_);
 }
+
 }  // namespace detail
 }  // namespace prometheus

@@ -1,10 +1,10 @@
 def load_civetweb():
     native.new_http_archive(
         name = "civetweb",
-        strip_prefix = "civetweb-1.9.1",
-        sha256 = "880d741724fd8de0ebc77bc5d98fa673ba44423dc4918361c3cd5cf80955e36d",
+        strip_prefix = "civetweb-1.11",
+        sha256 = "de7d5e7a2d9551d325898c71e41d437d5f7b51e754b242af897f7be96e713a42",
         urls = [
-            "https://github.com/civetweb/civetweb/archive/v1.9.1.tar.gz",
+            "https://github.com/civetweb/civetweb/archive/v1.11.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )

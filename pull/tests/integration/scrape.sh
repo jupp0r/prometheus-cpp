@@ -17,8 +17,8 @@ if [ $telegraf_run_result -ne 0 ] ; then
     exit $telegraf_run_result
 fi
 
-if [[ ! $telegraf_output == *"time_running_seconds"* ]] ; then
-   echo "Could not find time_running_seconds in exposed metrics:"
+if [[ ! $telegraf_output == *"time_running_seconds_total"* ]] ; then
+   echo "Could not find time_running_seconds_total in exposed metrics:"
    echo "${telegraf_run_output}"
    exit 1
 fi

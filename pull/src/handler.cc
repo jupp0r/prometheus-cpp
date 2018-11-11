@@ -19,12 +19,12 @@ MetricsHandler::MetricsHandler(
     : collectables_(collectables),
       bytes_transferred_family_(
           BuildCounter()
-              .Name("exposer_bytes_transferred")
-              .Help("bytesTransferred to metrics services")
+              .Name("exposer_transferred_bytes_total")
+              .Help("Transferred bytes to metrics services")
               .Register(registry)),
       bytes_transferred_(bytes_transferred_family_.Add({})),
       num_scrapes_family_(BuildCounter()
-                              .Name("exposer_total_scrapes")
+                              .Name("exposer_scrapes_total")
                               .Help("Number of times metrics were scraped")
                               .Register(registry)),
       num_scrapes_(num_scrapes_family_.Add({})),

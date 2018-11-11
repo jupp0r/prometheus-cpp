@@ -54,6 +54,10 @@ int main(int argc, char** argv) {
 }
 ```
 
+## Requirements
+
+Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successfully tested with GNU GCC 4.8 on Ubuntu Trusty and Visual Studio 2017 (but Visual Studio 2015 should work, too).
+
 ## Building
 
 There are two supported ways to build

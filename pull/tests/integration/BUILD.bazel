@@ -14,3 +14,13 @@ sh_test(
     ],
     tags = ["manual"],
 )
+
+sh_test(
+    name = "lint-test",
+    size = "small",
+    srcs = ["lint.sh"],
+    data = [
+        "sample-server",
+    ],
+    tags = ["manual"],
+)

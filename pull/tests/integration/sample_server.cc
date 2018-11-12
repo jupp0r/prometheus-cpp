@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   // add a new counter family to the registry (families combine values with the
   // same name, but distinct label dimensions)
   auto& counter_family = BuildCounter()
-                             .Name("time_running_seconds")
+                             .Name("time_running_seconds_total")
                              .Help("How many seconds is this server running?")
                              .Labels({{"label", "value"}})
                              .Register(*registry);

@@ -70,7 +70,7 @@ TEST(FamilyTest, should_assert_on_invalid_metric_name) {
         "", "empty name", std::map<std::string, std::string>{});
   };
   EXPECT_DEBUG_DEATH(create_family_with_invalid_name(),
-                     ".*Assertion `CheckMetricName.*");
+                     ".*Assertion .*CheckMetricName.*");
 }
 
 TEST(FamilyTest, should_assert_on_invalid_labels) {
@@ -79,7 +79,7 @@ TEST(FamilyTest, should_assert_on_invalid_labels) {
     family.Add({{"__invalid", "counter1"}});
   };
   EXPECT_DEBUG_DEATH(add_metric_with_invalid_label_name(),
-                     ".*Assertion `CheckLabelName.*");
+                     ".*Assertion .*CheckLabelName.*");
 }
 
 }  // namespace

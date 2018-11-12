@@ -14,7 +14,9 @@ addons:
   apt:
     sources:
     - sourceline: 'deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8'
-      key_url: https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg
+      key_url: 'https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg'
+    - sourceline: 'deb https://repos.influxdata.com/ubuntu trusty stable'
+      key_url: 'https://repos.influxdata.com/influxdb.key'
     packages:
     - bazel
     - cmake3
@@ -26,10 +28,7 @@ addons:
     - libcurl4-openssl-dev
     - openjdk-8-jdk-headless
     - python-pip
-
-install:
-  - wget https://dl.influxdata.com/telegraf/releases/telegraf_1.0.1_amd64.deb
-  - sudo dpkg -i telegraf_1.0.1_amd64.deb
+    - telegraf
 
 script:
   - bazel build //...

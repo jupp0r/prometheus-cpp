@@ -34,6 +34,7 @@ cc_library(
         "-DNO_CACHING",
         "-DNO_SSL",
         "-DNO_FILES",
+        "-UDEBUG",
     ],
     includes = [
         "include",

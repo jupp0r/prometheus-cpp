@@ -7,6 +7,7 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/ckms_quantiles.h"
+#include "prometheus/detail/summary_builder.h"
 #include "prometheus/detail/time_window_quantiles.h"
 #include "prometheus/metric_type.h"
 
@@ -88,5 +89,7 @@ class Summary {
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
 };
+
+detail::SummaryBuilder BuildSummary();
 
 }  // namespace prometheus

@@ -8,16 +8,16 @@
 
 #include "prometheus/collectable.h"
 #include "prometheus/counter.h"
-#include "prometheus/counter_builder.h"
+#include "prometheus/detail/counter_builder.h"
 #include "prometheus/detail/future_std.h"
+#include "prometheus/detail/gauge_builder.h"
+#include "prometheus/detail/histogram_builder.h"
+#include "prometheus/detail/summary_builder.h"
 #include "prometheus/family.h"
 #include "prometheus/gauge.h"
-#include "prometheus/gauge_builder.h"
 #include "prometheus/histogram.h"
-#include "prometheus/histogram_builder.h"
 #include "prometheus/metric_family.h"
 #include "prometheus/summary.h"
-#include "prometheus/summary_builder.h"
 
 namespace prometheus {
 

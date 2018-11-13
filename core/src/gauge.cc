@@ -1,4 +1,3 @@
-
 #include "prometheus/gauge.h"
 
 #include <ctime>
@@ -45,5 +44,7 @@ ClientMetric Gauge::Collect() const {
   metric.gauge.value = Value();
   return metric;
 }
+
+detail::GaugeBuilder BuildGauge() { return {}; }
 
 }  // namespace prometheus

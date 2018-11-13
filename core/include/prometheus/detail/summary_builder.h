@@ -11,12 +11,7 @@ class Summary;
 class Registry;
 
 namespace detail {
-class SummaryBuilder;
-}
 
-detail::SummaryBuilder BuildSummary();
-
-namespace detail {
 class SummaryBuilder {
  public:
   SummaryBuilder& Labels(const std::map<std::string, std::string>& labels);
@@ -29,6 +24,6 @@ class SummaryBuilder {
   std::string name_;
   std::string help_;
 };
-}  // namespace detail
 
+}  // namespace detail
 }  // namespace prometheus

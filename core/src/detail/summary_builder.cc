@@ -1,11 +1,8 @@
-#include "prometheus/summary_builder.h"
+#include "prometheus/detail/summary_builder.h"
 
 #include "prometheus/registry.h"
 
 namespace prometheus {
-
-detail::SummaryBuilder BuildSummary() { return {}; }
-
 namespace detail {
 
 SummaryBuilder& SummaryBuilder::Labels(
@@ -27,5 +24,6 @@ SummaryBuilder& SummaryBuilder::Help(const std::string& help) {
 Family<Summary>& SummaryBuilder::Register(Registry& registry) {
   return registry.Add<Summary>(name_, help_, labels_);
 }
+
 }  // namespace detail
 }  // namespace prometheus

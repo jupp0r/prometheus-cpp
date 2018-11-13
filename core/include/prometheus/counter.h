@@ -1,6 +1,7 @@
 #pragma once
 
 #include "prometheus/client_metric.h"
+#include "prometheus/detail/counter_builder.h"
 #include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
 
@@ -47,5 +48,7 @@ class Counter {
  private:
   Gauge gauge_{0.0};
 };
+
+detail::CounterBuilder BuildCounter();
 
 }  // namespace prometheus

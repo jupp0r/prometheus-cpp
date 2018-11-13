@@ -11,12 +11,7 @@ class Counter;
 class Registry;
 
 namespace detail {
-class CounterBuilder;
-}
 
-detail::CounterBuilder BuildCounter();
-
-namespace detail {
 class CounterBuilder {
  public:
   CounterBuilder& Labels(const std::map<std::string, std::string>& labels);
@@ -29,5 +24,6 @@ class CounterBuilder {
   std::string name_;
   std::string help_;
 };
-}
-}
+
+}  // namespace detail
+}  // namespace prometheus

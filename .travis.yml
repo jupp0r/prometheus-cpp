@@ -37,6 +37,7 @@ addons:
     packages:
     - cmake
     - bazelbuild/tap/bazel
+    - prometheus
     - telegraf
     taps:
     - bazelbuild/tap
@@ -45,6 +46,7 @@ script:
   - bazel build //...
   - bazel test --test_output=all //core/... //pull/...
   - bazel test --test_output=all //pull/tests/integration:scrape-test
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bazel test --test_output=all //pull/tests/integration:lint-test; fi
   - bazel run -c opt //core/benchmarks
 
   - pushd .

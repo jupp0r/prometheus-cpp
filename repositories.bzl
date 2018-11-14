@@ -43,9 +43,10 @@ def load_com_github_google_benchmark():
         ],
     )
 
-def load_net_zlib_zlib():
+def load_com_github_madler_zlib():
+    # Named "com_github_madler_zlib" to match gRPC's import of zlib.
     http_archive(
-        name = "net_zlib_zlib",
+        name = "com_github_madler_zlib",
         sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1",
         strip_prefix = "zlib-1.2.11",
         urls = [
@@ -60,4 +61,4 @@ def prometheus_cpp_repositories():
     if "com_google_googletest" not in native.existing_rules(): load_com_google_googletest()
     if "com_github_google_benchmark" not in native.existing_rules(): load_com_github_google_benchmark()
     if "com_github_curl" not in native.existing_rules(): load_com_github_curl()
-    if "net_zlib_zlib" not in native.existing_rules(): load_net_zlib_zlib()
+    if "com_github_madler_zlib" not in native.existing_rules(): load_com_github_madler_zlib()

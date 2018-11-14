@@ -130,7 +130,7 @@ you introduce the following dependencies, if they do not exist yet, to your proj
 * `load_com_google_googletest()` to load `com_google_googletest` rules for Google gtest
 * `load_com_google_googlebenchmark()` to load `com_github_google_benchmark` rules for Googlebenchmark
 * `load_com_github_curl()` to load `com_github_curl` rules for curl
-* `load_net_zlib_zlib()` to load `net_zlib_zlib` rules for zlib
+* `load_com_github_madler_zlib()` to load `com_github_madler_zlib` rules for zlib
 
 The list of dependencies is also available from file `repositories.bzl`.
 

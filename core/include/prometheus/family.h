@@ -184,10 +184,10 @@ std::size_t Family<T>::hash_labels(
     std::size_t final_hash_code = 1;
     
     for (const auto &label : labels) {
-        std::size_t key_hash_code = std::hash<std::string>{}(label.first);
+        auto key_hash_code = std::hash<std::string>{}(label.first);
         final_hash_code = 31 * final_hash_code + key_hash_code;
 
-        std::size_t value_hash_code = std::hash<std::string>{}(label.value);
+        auto value_hash_code = std::hash<std::string>{}(label.value);
         final_hash_code = 31 * final_hash_code + value_hash_code;
     }
 

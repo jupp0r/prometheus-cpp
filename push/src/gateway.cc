@@ -180,9 +180,7 @@ int Gateway::Delete() {
 }
 
 std::future<int> Gateway::AsyncDelete() {
-  return std::async(std::launch::async, [&] {
-    return Delete();
-  });
+  return std::async(std::launch::async, [&] { return Delete(); });
 }
 
 }  // namespace prometheus

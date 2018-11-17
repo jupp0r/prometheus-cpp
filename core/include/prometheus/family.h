@@ -180,13 +180,18 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 template <typename T>
 std::size_t Family<T>::hash_labels(
     const std::map<std::string, std::string>& labels) {
-  auto combined = std::accumulate(
-      labels.begin(), labels.end(), std::string{},
-      [](const std::string& acc,
-         const std::pair<std::string, std::string>& label_pair) {
-        return acc + label_pair.first + label_pair.second;
-      });
-  return std::hash<std::string>{}(combined);
+
+    std::size_t final_hash_code = 1;
+    
+    for (const auto &label : labels) {
+        std::size_t key_hash_code = std::hash<std::string>{}(label.first);
+        final_hash_code = 31 * final_hash_code + key_hash_code;
+
+        std::size_t value_hash_code = std::hash<std::string>{}(label.value);
+        final_hash_code = 31 * final_hash_code + value_hash_code;
+    }
+
+    return final_hash_code;
 }
 
 template <typename T>

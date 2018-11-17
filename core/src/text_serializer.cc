@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <limits>
+#include <ostream>
 
 namespace prometheus {
 

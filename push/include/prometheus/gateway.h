@@ -1,9 +1,9 @@
 #pragma once
 
 #include <future>
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <vector>
 

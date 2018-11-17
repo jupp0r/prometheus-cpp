@@ -1,6 +1,8 @@
 
 #include "prometheus/gateway.h"
 
+#include <sstream>
+
 #include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"

@@ -12,8 +12,13 @@ option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)
 option(ENABLE_TESTING "Build tests" ON)
+option(ENABLE_SHARED_BUILD "Enable shared library build" OFF)
 option(USE_THIRDPARTY_LIBRARIES "Use 3rdParty submodules" ON)
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXLFAGS are configured differently" ON)
+
+if(ENABLE_SHARED_BUILD)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_STANDARD 11)

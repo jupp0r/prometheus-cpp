@@ -1,5 +1,4 @@
-
-add_library(core
+set(sources 
   src/check_names.cc
   src/counter.cc
   src/detail/ckms_quantiles.cc
@@ -14,7 +13,9 @@ add_library(core
   src/serializer.cc
   src/summary.cc
   src/text_serializer.cc
-)
+  )
+
+add_library(core STATIC ${sources})
 
 add_library(${PROJECT_NAME}::core ALIAS core)
 
@@ -30,6 +31,35 @@ target_include_directories(core
 )
 
 set_target_properties(core PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-core)
+
+if (ENABLE_SHARED_BUILD)
+add_library(core_shared SHARED ${sources})
+
+add_library(${PROJECT_NAME}::core_shared ALIAS core_shared)
+
+target_link_libraries(core_shared
+  PRIVATE
+    Threads::Threads
+    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+)
+
+target_include_directories(core_shared
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+set_target_properties(core_shared PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-core)
+
+install(
+  TARGETS core_shared
+  EXPORT ${PROJECT_NAME}-targets
+  RUNTIME DESTINATION  ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION  ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION  ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+endif()
+
 
 install(
   TARGETS core

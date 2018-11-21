@@ -63,13 +63,14 @@ script:
   - rm -rf 3rdparty/*
 
   - pushd .
-  - mkdir _build_external_deps
-  - cd _build_external_deps
-  - cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DUSE_THIRDPARTY_LIBRARIES=OFF
+  - mkdir _build_coverage
+  - cd _build_coverage
+  - CFLAGS="--coverage" CXXFLAGS="--coverage" LDFLAGS="--coverage" cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DUSE_THIRDPARTY_LIBRARIES=OFF
   - make -j 4
   - ctest -V
   - mkdir -p deploy
   - make DESTDIR=`pwd`/deploy install
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install --user cpp-coveralls && coveralls --root .. --build-root . -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*"; fi
   - popd
 
 # addons:

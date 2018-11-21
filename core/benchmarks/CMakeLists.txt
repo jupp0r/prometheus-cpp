@@ -20,3 +20,8 @@ add_test(
   NAME benchmarks
   COMMAND benchmarks
 )
+
+set_property(
+  TEST benchmarks
+  APPEND PROPERTY LABELS Benchmark
+)

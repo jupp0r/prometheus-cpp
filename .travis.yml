@@ -67,7 +67,7 @@ script:
   - cd _build_coverage
   - CFLAGS="--coverage" CXXFLAGS="--coverage" LDFLAGS="--coverage" cmake .. -DCMAKE_INSTALL_PREFIX=../_opt -DUSE_THIRDPARTY_LIBRARIES=OFF
   - make -j 4
-  - ctest -V
+  - ctest -V -LE Benchmark
   - mkdir -p deploy
   - make DESTDIR=`pwd`/deploy install
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install --user cpp-coveralls && coveralls --root .. --build-root . -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*"; fi

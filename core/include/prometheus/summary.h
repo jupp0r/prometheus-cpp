@@ -90,6 +90,33 @@ class Summary {
   detail::TimeWindowQuantiles quantile_values_;
 };
 
+/// \brief Return a builder to configure and register a Summary metric.
+///
+/// @copydetails Family<>::Family()
+///
+/// Example usage:
+///
+/// \code
+/// auto registry = std::make_shared<Registry>();
+/// auto& summary_family = prometheus::BuildSummary()
+///                            .Name("some_name")
+///                            .Help("Additional description.")
+///                            .Labels({{"key", "value"}})
+///                            .Register(*registry);
+///
+/// ...
+/// \endcode
+///
+/// \return An object of unspecified type T, i.e., an implementation detail
+/// except that it has the following members:
+///
+/// - Name(const std::string&) to set the metric name,
+/// - Help(const std::string&) to set an additional description.
+/// - Label(const std::map<std::string, std::string>&) to assign a set of
+///   key-value pairs (= labels) to the metric.
+///
+/// To finish the configuration of the Summary metric register it with
+/// Register(Registry&).
 detail::SummaryBuilder BuildSummary();
 
 }  // namespace prometheus

@@ -1,6 +1,8 @@
 
 #include "prometheus/gateway.h"
 
+#include <sstream>
+
 #include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
@@ -180,9 +182,7 @@ int Gateway::Delete() {
 }
 
 std::future<int> Gateway::AsyncDelete() {
-  return std::async(std::launch::async, [&] {
-    return Delete();
-  });
+  return std::async(std::launch::async, [&] { return Delete(); });
 }
 
 }  // namespace prometheus

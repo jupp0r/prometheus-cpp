@@ -166,43 +166,96 @@ bazel test //pull/tests/integration:scrape-test
 There's a benchmark suite you can run:
 
 ```
-bazel run -c opt //core/tests/benchmark
+bazel run -c opt //core/benchmarks
 
+INFO: Analysed target //core/benchmarks:benchmarks (0 packages loaded, 0 targets configured).
 INFO: Found 1 target...
-Target //core/tests/benchmark:benchmark up-to-date:
-  bazel-bin/core/tests/benchmark/benchmark
-INFO: Elapsed time: 1.682s, Critical Path: 1.56s
-
-INFO: Running command line: bazel-bin/core/tests/benchmark/benchmark
-Run on (8 X 2300 MHz CPU s)
-2016-10-17 15:56:49
-Benchmark                              Time           CPU Iterations
---------------------------------------------------------------------
-BM_Counter_Increment                  11 ns         11 ns   62947942
-BM_Counter_Collect                    84 ns         84 ns    8221752
-BM_Gauge_Increment                    11 ns         11 ns   61384663
-BM_Gauge_Decrement                    11 ns         11 ns   62148197
-BM_Gauge_SetToCurrentTime            199 ns        198 ns    3589670
-BM_Gauge_Collect                      86 ns         85 ns    7469136
-BM_Histogram_Observe/0               122 ns        122 ns    5839855
-BM_Histogram_Observe/1               116 ns        115 ns    5806623
-BM_Histogram_Observe/8               126 ns        126 ns    5781588
-BM_Histogram_Observe/64              138 ns        138 ns    4895550
-BM_Histogram_Observe/512             228 ns        228 ns    2992898
-BM_Histogram_Observe/4k              959 ns        958 ns     642231
-BM_Histogram_Collect/0               328 ns        327 ns    2002792
-BM_Histogram_Collect/1               356 ns        354 ns    1819032
-BM_Histogram_Collect/8              1553 ns       1544 ns     454921
-BM_Histogram_Collect/64            10389 ns      10287 ns      66759
-BM_Histogram_Collect/512           75795 ns      75093 ns       9075
-BM_Histogram_Collect/4k           615853 ns     610277 ns       1222
-BM_Registry_CreateFamily             195 ns        182 ns    3843894
-BM_Registry_CreateCounter/0          319 ns        317 ns    1914132
-BM_Registry_CreateCounter/1         2146 ns       2131 ns     408432
-BM_Registry_CreateCounter/8         8936 ns       8837 ns      82439
-BM_Registry_CreateCounter/64       72589 ns      72010 ns       9248
-BM_Registry_CreateCounter/512     694323 ns     686655 ns       1056
-BM_Registry_CreateCounter/4k    18246638 ns   18150525 ns         40
+Target //core/benchmarks:benchmarks up-to-date:
+  bazel-bin/core/benchmarks/benchmarks
+INFO: Elapsed time: 0.356s, Critical Path: 0.01s, Remote (0.00% of the time): [queue: 0.00%, setup: 0.00%, process: 0.00%]
+INFO: 0 processes.
+INFO: Build completed successfully, 1 total action
+INFO: Build completed successfully, 1 total action
+2018-11-30 15:13:14
+Run on (4 X 2200 MHz CPU s)
+CPU Caches:
+  L1 Data 32K (x2)
+  L1 Instruction 32K (x2)
+  L2 Unified 262K (x2)
+  L3 Unified 4194K (x1)
+-----------------------------------------------------------------------------------
+Benchmark                                            Time           CPU Iterations
+-----------------------------------------------------------------------------------
+BM_Counter_Increment                                13 ns         12 ns   55616469
+BM_Counter_Collect                                   7 ns          7 ns   99823170
+BM_Gauge_Increment                                  12 ns         12 ns   51511873
+BM_Gauge_Decrement                                  12 ns         12 ns   56831098
+BM_Gauge_SetToCurrentTime                          184 ns        183 ns    3928964
+BM_Gauge_Collect                                     6 ns          6 ns  117223478
+BM_Histogram_Observe/0                             134 ns        124 ns    5665310
+BM_Histogram_Observe/1                             122 ns        120 ns    5937185
+BM_Histogram_Observe/8                             137 ns        135 ns    4652863
+BM_Histogram_Observe/64                            143 ns        143 ns    4835957
+BM_Histogram_Observe/512                           259 ns        257 ns    2334750
+BM_Histogram_Observe/4096                         1545 ns       1393 ns     620754
+BM_Histogram_Collect/0                             103 ns        102 ns    5654829
+BM_Histogram_Collect/1                             100 ns        100 ns    7015153
+BM_Histogram_Collect/8                             608 ns        601 ns    1149652
+BM_Histogram_Collect/64                           1438 ns       1427 ns     515236
+BM_Histogram_Collect/512                          5178 ns       5159 ns     114619
+BM_Histogram_Collect/4096                        33527 ns      33280 ns      20785
+BM_Registry_CreateFamily                           320 ns        316 ns    2021567
+BM_Registry_CreateCounter/0                        128 ns        128 ns    5487140
+BM_Registry_CreateCounter/1                       2066 ns       2058 ns     386002
+BM_Registry_CreateCounter/8                       7672 ns       7634 ns      91328
+BM_Registry_CreateCounter/64                     63270 ns      62761 ns      10780
+BM_Registry_CreateCounter/512                   560714 ns     558328 ns       1176
+BM_Registry_CreateCounter/4096                18672798 ns   18383000 ns         35
+BM_Summary_Observe/0/iterations:262144            9351 ns       9305 ns     262144
+BM_Summary_Observe/1/iterations:262144            9242 ns       9169 ns     262144
+BM_Summary_Observe/8/iterations:262144           14344 ns      14195 ns     262144
+BM_Summary_Observe/64/iterations:262144          19176 ns      18950 ns     262144
+BM_Summary_Collect/0/0                              31 ns         30 ns   24873766
+BM_Summary_Collect/1/0                             166 ns        166 ns    4266706
+BM_Summary_Collect/8/0                            1040 ns       1036 ns     660527
+BM_Summary_Collect/64/0                           4529 ns       4489 ns     155600
+BM_Summary_Collect/0/1                              28 ns         28 ns   24866697
+BM_Summary_Collect/1/1                             190 ns        188 ns    3930354
+BM_Summary_Collect/8/1                            1372 ns       1355 ns     535779
+BM_Summary_Collect/64/1                           9901 ns       9822 ns      64632
+BM_Summary_Collect/0/8                              29 ns         29 ns   24922651
+BM_Summary_Collect/1/8                             217 ns        215 ns    3278381
+BM_Summary_Collect/8/8                            2275 ns       2256 ns     282503
+BM_Summary_Collect/64/8                          56790 ns      55804 ns      13878
+BM_Summary_Collect/0/64                             32 ns         31 ns   22548350
+BM_Summary_Collect/1/64                            395 ns        389 ns    1817073
+BM_Summary_Collect/8/64                          10187 ns      10064 ns      71928
+BM_Summary_Collect/64/64                        374835 ns     373560 ns       1812
+BM_Summary_Collect/0/512                            28 ns         28 ns   25234228
+BM_Summary_Collect/1/512                          1710 ns       1639 ns     802285
+BM_Summary_Collect/8/512                         50355 ns      49335 ns      15975
+BM_Summary_Collect/64/512                      2520972 ns    2493417 ns        295
+BM_Summary_Collect/0/4096                           31 ns         31 ns   24059034
+BM_Summary_Collect/1/4096                         2719 ns       2698 ns     286186
+BM_Summary_Collect/8/4096                       121689 ns     119995 ns       5647
+BM_Summary_Collect/64/4096                     5660131 ns    5587634 ns        134
+BM_Summary_Collect/0/32768                          29 ns         29 ns   22217567
+BM_Summary_Collect/1/32768                        4344 ns       4294 ns     138135
+BM_Summary_Collect/8/32768                      331563 ns     326403 ns       2017
+BM_Summary_Collect/64/32768                   16363553 ns   16038182 ns         44
+BM_Summary_Collect/0/262144                         27 ns         27 ns   23923036
+BM_Summary_Collect/1/262144                      10457 ns      10332 ns      67690
+BM_Summary_Collect/8/262144                     930434 ns     869234 ns        792
+BM_Summary_Collect/64/262144                  39217069 ns   39054846 ns         13
+BM_Summary_Observe_Common/iterations:262144       5587 ns       5557 ns     262144
+BM_Summary_Collect_Common/0                        676 ns        673 ns    1054630
+BM_Summary_Collect_Common/1                        709 ns        705 ns     990659
+BM_Summary_Collect_Common/8                       1030 ns       1025 ns     685649
+BM_Summary_Collect_Common/64                      2066 ns       2055 ns     339969
+BM_Summary_Collect_Common/512                     5754 ns       5248 ns     156895
+BM_Summary_Collect_Common/4096                   23894 ns      23292 ns      31096
+BM_Summary_Collect_Common/32768                  49831 ns      49292 ns      13492
+BM_Summary_Collect_Common/262144                128723 ns     126987 ns       5579
 ```
 
 ## Project Status

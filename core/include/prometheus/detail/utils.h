@@ -1,5 +1,9 @@
 #pragma onece
 
+#include <map>
+#include <cstddef>
+#include <string>
+
 namespace prometheus {
 
 namespace utils {

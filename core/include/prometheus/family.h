@@ -17,6 +17,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"
+#include "prometheus/detail/utils.h"
 
 namespace prometheus {
 

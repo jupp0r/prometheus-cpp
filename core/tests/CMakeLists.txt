@@ -7,6 +7,7 @@ add_executable(prometheus_test
   histogram_test.cc
   registry_test.cc
   summary_test.cc
+  utils_test.cc
 )
 
 target_link_libraries(prometheus_test

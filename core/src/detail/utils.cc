@@ -1,11 +1,17 @@
 #include "prometheus/detail/utils.h"
-#include "prometheus/detail/hash.h"
+#include "detail.h"
+
+#include <numeric>
 
 namespace prometheus {
 
-namespace utils {
+namespace detail {
 
 std::size_t hash_labels(const std::map<std::string, std::string>& labels) {
+
+  auto seed = std::accumulate(labels.begin(), labels.end(), );
+
+
   size_t seed = 0;
   for (auto& label : labels) {
     hash_combine(&seed, label.first, label.second);
@@ -14,6 +20,6 @@ std::size_t hash_labels(const std::map<std::string, std::string>& labels) {
   return seed;
 }
 
-}  // utils
+}  // namespace detail
 
-}  // prometheus
+}  // namespace prometheus

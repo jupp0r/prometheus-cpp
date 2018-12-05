@@ -6,7 +6,7 @@
 
 namespace prometheus {
 
-namespace utils {
+namespace detail {
 
 /// \brief Compute the hash value of a map of labels.
 ///
@@ -15,6 +15,6 @@ namespace utils {
 /// \returns The hash value of the given labels.
 std::size_t hash_labels(const std::map<std::string, std::string>& labels);
 
-}  // utils
+}  // namespace utils
 
-}  // prometheus
+}  // namespace prometheus

@@ -154,7 +154,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
   }
 #endif
 
-  auto hash = utils::hash_labels(labels);
+  auto hash = detail::hash_labels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
 

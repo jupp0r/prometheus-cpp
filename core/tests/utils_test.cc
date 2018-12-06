@@ -9,15 +9,15 @@ namespace {
 
 void expect_not_equal(const std::map<std::string, std::string>& label1,
                       const std::map<std::string, std::string>& label2) {
-  EXPECT_TRUE(utils::hash_labels(label1) != utils::hash_labels(label2));
+  EXPECT_TRUE(detail::hash_labels(label1) != detail::hash_labels(label2));
 }
 
 TEST(UtilsTest, hash_labels_1) {
   std::map<std::string, std::string> labels;
   labels.insert(std::make_pair<std::string, std::string>("key1", "value1"));
   labels.insert(std::make_pair<std::string, std::string>("key2", "vaule2"));
-  auto value1 = utils::hash_labels(labels);
-  auto value2 = utils::hash_labels(labels);
+  auto value1 = detail::hash_labels(labels);
+  auto value2 = detail::hash_labels(labels);
 
   EXPECT_EQ(value1, value2);
 }

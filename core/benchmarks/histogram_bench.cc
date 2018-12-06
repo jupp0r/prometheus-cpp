@@ -16,9 +16,9 @@ static Histogram::BucketBoundaries CreateLinearBuckets(double start, double end,
 }
 
 static void BM_Histogram_Observe(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Histogram;
   using prometheus::BuildHistogram;
+  using prometheus::Histogram;
+  using prometheus::Registry;
 
   const auto number_of_buckets = state.range(0);
 
@@ -45,9 +45,9 @@ static void BM_Histogram_Observe(benchmark::State& state) {
 BENCHMARK(BM_Histogram_Observe)->Range(0, 4096);
 
 static void BM_Histogram_Collect(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Histogram;
   using prometheus::BuildHistogram;
+  using prometheus::Histogram;
+  using prometheus::Registry;
 
   const auto number_of_buckets = state.range(0);
 

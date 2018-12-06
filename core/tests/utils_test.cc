@@ -1,7 +1,7 @@
 #include "prometheus/detail/utils.h"
 
-#include <map>
 #include <gmock/gmock.h>
+#include <map>
 
 namespace prometheus {
 
@@ -29,6 +29,6 @@ TEST(UtilsTest, hash_label_3) {
   EXPECT_NE(detail::hash_labels(labels1), detail::hash_labels(labels2));
 }
 
-}
+}  // namespace
 
-}  //prometheus
+}  // namespace prometheus

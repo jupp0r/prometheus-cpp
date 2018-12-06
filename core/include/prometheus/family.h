@@ -16,8 +16,8 @@
 #include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
 #include "prometheus/detail/future_std.h"
-#include "prometheus/metric_family.h"
 #include "prometheus/detail/utils.h"
+#include "prometheus/metric_family.h"
 
 namespace prometheus {
 
@@ -133,7 +133,6 @@ class Family : public Collectable {
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
-
 };
 
 template <typename T>

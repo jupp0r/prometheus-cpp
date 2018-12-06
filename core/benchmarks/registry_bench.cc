@@ -6,9 +6,9 @@
 #include "benchmark_helpers.h"
 
 static void BM_Registry_CreateFamily(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Counter;
   using prometheus::BuildCounter;
+  using prometheus::Counter;
+  using prometheus::Registry;
   Registry registry;
 
   while (state.KeepRunning())
@@ -17,9 +17,9 @@ static void BM_Registry_CreateFamily(benchmark::State& state) {
 BENCHMARK(BM_Registry_CreateFamily);
 
 static void BM_Registry_CreateCounter(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Counter;
   using prometheus::BuildCounter;
+  using prometheus::Counter;
+  using prometheus::Registry;
   Registry registry;
   auto& counter_family = BuildCounter()
                              .Labels(GenerateRandomLabels(10))

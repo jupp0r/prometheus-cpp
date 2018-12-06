@@ -17,6 +17,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"
+#include "prometheus/detail/utils.h"
 
 namespace prometheus {
 
@@ -133,8 +134,6 @@ class Family : public Collectable {
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
 
-  static std::size_t hash_labels(
-      const std::map<std::string, std::string>& labels);
 };
 
 template <typename T>
@@ -155,7 +154,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
   }
 #endif
 
-  auto hash = hash_labels(labels);
+  auto hash = detail::hash_labels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
 
@@ -175,18 +174,6 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     labels_reverse_lookup_.insert({metric.first->second.get(), hash});
     return *(metric.first->second);
   }
-}
-
-template <typename T>
-std::size_t Family<T>::hash_labels(
-    const std::map<std::string, std::string>& labels) {
-  auto combined = std::accumulate(
-      labels.begin(), labels.end(), std::string{},
-      [](const std::string& acc,
-         const std::pair<std::string, std::string>& label_pair) {
-        return acc + label_pair.first + label_pair.second;
-      });
-  return std::hash<std::string>{}(combined);
 }
 
 template <typename T>

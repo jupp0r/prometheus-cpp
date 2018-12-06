@@ -8,6 +8,7 @@ add_library(core
   src/detail/histogram_builder.cc
   src/detail/summary_builder.cc
   src/detail/time_window_quantiles.cc
+  src/detail/utils.cc
   src/gauge.cc
   src/histogram.cc
   src/registry.cc

@@ -11,7 +11,7 @@ namespace detail {
 /// It's the boundary condition of this serial functions.
 ///
 /// \param seed Not effect.
-inline void hash_combine(std::size_t *seed) {}
+inline void hash_combine(std::size_t *) {}
 
 /// \brief Combine the given hash value with another obeject.
 ///

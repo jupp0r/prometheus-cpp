@@ -16,13 +16,13 @@ TEST(RegistryTest, collect_single_metric_family) {
   counter_family.Add({{"name", "counter1"}});
   counter_family.Add({{"name", "counter2"}});
   auto collected = registry.Collect();
-  ASSERT_EQ(collected.size(), 1);
+  ASSERT_EQ(collected.size(), 1U);
   EXPECT_EQ(collected[0].name, "test");
   EXPECT_EQ(collected[0].help, "a test");
-  ASSERT_EQ(collected[0].metric.size(), 2);
-  ASSERT_EQ(collected[0].metric.at(0).label.size(), 1);
+  ASSERT_EQ(collected[0].metric.size(), 2U);
+  ASSERT_EQ(collected[0].metric.at(0).label.size(), 1U);
   EXPECT_EQ(collected[0].metric.at(0).label.at(0).name, "name");
-  ASSERT_EQ(collected[0].metric.at(1).label.size(), 1);
+  ASSERT_EQ(collected[0].metric.at(1).label.size(), 1U);
   EXPECT_EQ(collected[0].metric.at(1).label.at(0).name, "name");
 }
 
@@ -34,7 +34,7 @@ TEST(RegistryTest, build_histogram_family) {
                                          Histogram::BucketBoundaries{0, 1, 2});
   histogram.Observe(1.1);
   auto collected = registry.Collect();
-  ASSERT_EQ(collected.size(), 1);
+  ASSERT_EQ(collected.size(), 1U);
 }
 
 }  // namespace

@@ -113,8 +113,7 @@ static std::size_t WriteResponse(struct mg_connection* conn,
   return body.size();
 }
 
-bool MetricsHandler::handleGet(CivetServer* server,
-                               struct mg_connection* conn) {
+bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
   auto metrics = CollectMetrics();

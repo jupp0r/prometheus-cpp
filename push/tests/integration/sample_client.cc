@@ -23,7 +23,7 @@ static std::string GetHostName() {
   return hostname;
 }
 
-int main(int argc, char** argv) {
+int main() {
   using namespace prometheus;
 
   // create a push gateway

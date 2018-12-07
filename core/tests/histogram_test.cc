@@ -11,7 +11,7 @@ TEST(HistogramTest, initialize_with_zero) {
   Histogram histogram{{}};
   auto metric = histogram.Collect();
   auto h = metric.histogram;
-  EXPECT_EQ(h.sample_count, 0);
+  EXPECT_EQ(h.sample_count, 0U);
   EXPECT_EQ(h.sample_sum, 0);
 }
 
@@ -21,7 +21,7 @@ TEST(HistogramTest, sample_count) {
   histogram.Observe(200);
   auto metric = histogram.Collect();
   auto h = metric.histogram;
-  EXPECT_EQ(h.sample_count, 2);
+  EXPECT_EQ(h.sample_count, 2U);
 }
 
 TEST(HistogramTest, sample_sum) {
@@ -38,7 +38,7 @@ TEST(HistogramTest, bucket_size) {
   Histogram histogram{{1, 2}};
   auto metric = histogram.Collect();
   auto h = metric.histogram;
-  EXPECT_EQ(h.bucket.size(), 3);
+  EXPECT_EQ(h.bucket.size(), 3U);
 }
 
 TEST(HistogramTest, bucket_bounds) {
@@ -58,8 +58,8 @@ TEST(HistogramTest, bucket_counts_not_reset_by_collection) {
   histogram.Observe(1.5);
   auto metric = histogram.Collect();
   auto h = metric.histogram;
-  ASSERT_EQ(h.bucket.size(), 3);
-  EXPECT_EQ(h.bucket.at(1).cumulative_count, 2);
+  ASSERT_EQ(h.bucket.size(), 3U);
+  EXPECT_EQ(h.bucket.at(1).cumulative_count, 2U);
 }
 
 TEST(HistogramTest, cumulative_bucket_count) {
@@ -73,10 +73,10 @@ TEST(HistogramTest, cumulative_bucket_count) {
   histogram.Observe(3);
   auto metric = histogram.Collect();
   auto h = metric.histogram;
-  ASSERT_EQ(h.bucket.size(), 3);
-  EXPECT_EQ(h.bucket.at(0).cumulative_count, 3);
-  EXPECT_EQ(h.bucket.at(1).cumulative_count, 6);
-  EXPECT_EQ(h.bucket.at(2).cumulative_count, 7);
+  ASSERT_EQ(h.bucket.size(), 3U);
+  EXPECT_EQ(h.bucket.at(0).cumulative_count, 3U);
+  EXPECT_EQ(h.bucket.at(1).cumulative_count, 6U);
+  EXPECT_EQ(h.bucket.at(2).cumulative_count, 7U);
 }
 
 }  // namespace

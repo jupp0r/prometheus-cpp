@@ -12,7 +12,7 @@ TEST(SummaryTest, initialize_with_zero) {
   Summary summary{Summary::Quantiles{}};
   auto metric = summary.Collect();
   auto s = metric.summary;
-  EXPECT_EQ(s.sample_count, 0);
+  EXPECT_EQ(s.sample_count, 0U);
   EXPECT_EQ(s.sample_sum, 0);
 }
 
@@ -22,7 +22,7 @@ TEST(SummaryTest, sample_count) {
   summary.Observe(200);
   auto metric = summary.Collect();
   auto s = metric.summary;
-  EXPECT_EQ(s.sample_count, 2);
+  EXPECT_EQ(s.sample_count, 2U);
 }
 
 TEST(SummaryTest, sample_sum) {
@@ -39,14 +39,14 @@ TEST(SummaryTest, quantile_size) {
   Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}}};
   auto metric = summary.Collect();
   auto s = metric.summary;
-  EXPECT_EQ(s.quantile.size(), 2);
+  EXPECT_EQ(s.quantile.size(), 2U);
 }
 
 TEST(SummaryTest, quantile_bounds) {
   Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}};
   auto metric = summary.Collect();
   auto s = metric.summary;
-  ASSERT_EQ(s.quantile.size(), 3);
+  ASSERT_EQ(s.quantile.size(), 3U);
   EXPECT_DOUBLE_EQ(s.quantile.at(0).quantile, 0.5);
   EXPECT_DOUBLE_EQ(s.quantile.at(1).quantile, 0.9);
   EXPECT_DOUBLE_EQ(s.quantile.at(2).quantile, 0.99);
@@ -60,7 +60,7 @@ TEST(SummaryTest, quantile_values) {
 
   auto metric = summary.Collect();
   auto s = metric.summary;
-  ASSERT_EQ(s.quantile.size(), 3);
+  ASSERT_EQ(s.quantile.size(), 3U);
 
   EXPECT_NEAR(s.quantile.at(0).value, 0.5 * SAMPLES, 0.05 * SAMPLES);
   EXPECT_NEAR(s.quantile.at(1).value, 0.9 * SAMPLES, 0.01 * SAMPLES);
@@ -75,7 +75,7 @@ TEST(SummaryTest, max_age) {
   static const auto test_value = [&summary](double ref) {
     auto metric = summary.Collect();
     auto s = metric.summary;
-    ASSERT_EQ(s.quantile.size(), 1);
+    ASSERT_EQ(s.quantile.size(), 1U);
 
     if (std::isnan(ref))
       EXPECT_TRUE(std::isnan(s.quantile.at(0).value));

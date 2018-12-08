@@ -1,7 +1,7 @@
 #pragma onece
 
-#include <map>
 #include <cstddef>
+#include <map>
 #include <string>
 
 namespace prometheus {
@@ -15,6 +15,6 @@ namespace detail {
 /// \returns The hash value of the given labels.
 std::size_t hash_labels(const std::map<std::string, std::string>& labels);
 
-}  // namespace utils
+}  // namespace detail
 
 }  // namespace prometheus

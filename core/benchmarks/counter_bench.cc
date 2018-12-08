@@ -2,9 +2,9 @@
 #include <prometheus/registry.h>
 
 static void BM_Counter_Increment(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Counter;
   using prometheus::BuildCounter;
+  using prometheus::Counter;
+  using prometheus::Registry;
   Registry registry;
   auto& counter_family =
       BuildCounter().Name("benchmark_counter").Help("").Register(registry);
@@ -15,9 +15,9 @@ static void BM_Counter_Increment(benchmark::State& state) {
 BENCHMARK(BM_Counter_Increment);
 
 static void BM_Counter_Collect(benchmark::State& state) {
-  using prometheus::Registry;
-  using prometheus::Counter;
   using prometheus::BuildCounter;
+  using prometheus::Counter;
+  using prometheus::Registry;
   Registry registry;
   auto& counter_family =
       BuildCounter().Name("benchmark_counter").Help("").Register(registry);

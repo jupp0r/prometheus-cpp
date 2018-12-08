@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 
-
 #include "CivetServer.h"
 #include "prometheus/registry.h"
 
@@ -27,5 +26,5 @@ class MetricsHandler : public CivetHandler {
   Family<Summary>& request_latencies_family_;
   Summary& request_latencies_;
 };
-}
-}
+}  // namespace detail
+}  // namespace prometheus

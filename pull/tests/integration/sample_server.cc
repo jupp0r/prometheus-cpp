@@ -7,7 +7,7 @@
 #include <prometheus/exposer.h>
 #include <prometheus/registry.h>
 
-int main(int argc, char** argv) {
+int main() {
   using namespace prometheus;
 
   // create an http server running on port 8080

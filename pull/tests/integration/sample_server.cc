@@ -11,7 +11,7 @@ int main() {
   using namespace prometheus;
 
   // create an http server running on port 8080
-  Exposer exposer{"127.0.0.1:8080"};
+  Exposer exposer{"127.0.0.1:8080", "/metrics", 1};
 
   // create a metrics registry with component=main labels applied to all its
   // metrics

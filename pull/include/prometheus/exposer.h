@@ -20,7 +20,8 @@ class MetricsHandler;
 class Exposer {
  public:
   explicit Exposer(const std::string& bind_address,
-                   const std::string& uri = std::string("/metrics"));
+                   const std::string& uri = std::string("/metrics"),
+                   const std::size_t num_threads = 2);
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 

@@ -121,6 +121,10 @@ std::string Gateway::getUri(const CollectableEntry& collectable) const {
   return uri.str();
 }
 
+int Gateway::Push() { return push(HttpMethod::Post); }
+
+int Gateway::PushAdd() { return push(HttpMethod::Put); }
+
 int Gateway::push(HttpMethod method) {
   const auto serializer = TextSerializer{};
 
@@ -142,6 +146,10 @@ int Gateway::push(HttpMethod method) {
 
   return 200;
 }
+
+std::future<int> Gateway::AsyncPush() { return async_push(HttpMethod::Post); }
+
+std::future<int> Gateway::AsyncPushAdd() { return async_push(HttpMethod::Put); }
 
 std::future<int> Gateway::async_push(HttpMethod method) {
   const auto serializer = TextSerializer{};

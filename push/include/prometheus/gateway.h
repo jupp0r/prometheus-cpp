@@ -15,9 +15,9 @@ class Gateway {
  public:
   using Labels = std::map<std::string, std::string>;
 
-  Gateway(const std::string& uri, const std::string jobname,
-          const Labels& labels = {}, const std::string username = {},
-          const std::string password = {});
+  Gateway(const std::string host, const std::string port,
+          const std::string jobname, const Labels& labels = {},
+          const std::string username = {}, const std::string password = {});
   ~Gateway();
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,

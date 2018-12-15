@@ -14,14 +14,14 @@ namespace prometheus {
 static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
 
-Gateway::Gateway(const std::string& uri, const std::string jobname,
-                 const Labels& labels, const std::string username,
-                 const std::string password) {
+Gateway::Gateway(const std::string host, const std::string port,
+                 const std::string jobname, const Labels& labels,
+                 const std::string username, const std::string password) {
   /* In windows, this will init the winsock stuff */
   curl_global_init(CURL_GLOBAL_ALL);
 
   std::stringstream jobUriStream;
-  jobUriStream << uri << "/metrics/job/" << jobname;
+  jobUriStream << host << ':' << port << "/metrics/job/" << jobname;
   jobUri_ = jobUriStream.str();
 
   if (!username.empty()) {

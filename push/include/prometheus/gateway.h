@@ -25,21 +25,15 @@ class Gateway {
 
   static const Labels GetInstanceLabel(std::string hostname);
 
-  enum class HttpMethod {
-    Post,
-    Put,
-    Delete,
-  };
-
   // Push metrics to the given pushgateway.
-  int Push() { return push(HttpMethod::Post); }
+  int Push();
 
-  std::future<int> AsyncPush() { return async_push(HttpMethod::Post); }
+  std::future<int> AsyncPush();
 
   // PushAdd metrics to the given pushgateway.
-  int PushAdd() { return push(HttpMethod::Put); }
+  int PushAdd();
 
-  std::future<int> AsyncPushAdd() { return async_push(HttpMethod::Put); }
+  std::future<int> AsyncPushAdd();
 
   // Delete metrics from the given pushgateway.
   int Delete();
@@ -56,6 +50,12 @@ class Gateway {
   std::vector<CollectableEntry> collectables_;
 
   std::string getUri(const CollectableEntry& collectable) const;
+
+  enum class HttpMethod {
+    Post,
+    Put,
+    Delete,
+  };
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
                          const std::string& body) const;

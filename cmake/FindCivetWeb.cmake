@@ -34,22 +34,22 @@ find_package_handle_standard_args(CivetWeb
                                   VERSION_VAR CIVETWEB_VERSION_STRING)
 
 if(CivetWeb_FOUND)
-  set(CIVETWEB_LIBRARIES CivetWeb::CivetWeb CivetWeb::CivetWebCpp)
+  set(CIVETWEB_LIBRARIES civetweb::civetweb civetweb::civetweb-cpp)
   set(CIVETWEB_INCLUDE_DIRS "${CIVETWEB_INCLUDE_DIR}" "${CIVETWEB_CXX_INCLUDE_DIR}")
-  if(NOT TARGET CivetWeb::CivetWeb)
-    add_library(CivetWeb::CivetWeb UNKNOWN IMPORTED)
-    set_target_properties(CivetWeb::CivetWeb PROPERTIES
+  if(NOT TARGET civetweb::civetweb)
+    add_library(civetweb::civetweb UNKNOWN IMPORTED)
+    set_target_properties(civetweb::civetweb PROPERTIES
       IMPORTED_LOCATION "${CIVETWEB_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES "${CIVETWEB_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
     )
   endif()
-  if(NOT TARGET CivetWeb::CivetWebCpp)
-    add_library(CivetWeb::CivetWebCpp UNKNOWN IMPORTED)
-    set_target_properties(CivetWeb::CivetWebCpp PROPERTIES
+  if(NOT TARGET civetweb::civetweb-cpp)
+    add_library(civetweb::civetweb-cpp UNKNOWN IMPORTED)
+    set_target_properties(civetweb::civetweb-cpp PROPERTIES
       IMPORTED_LOCATION "${CIVETWEB_CXX_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES "${CIVETWEB_CXX_INCLUDE_DIR}"
-      IMPORTED_LINK_INTERFACE_LIBRARIES "CivetWeb::CivetWeb"
+      IMPORTED_LINK_INTERFACE_LIBRARIES "civetweb::civetweb"
       IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
     )
   endif()

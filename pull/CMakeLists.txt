@@ -2,7 +2,7 @@
 if(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED)
 else()
-  find_package(CivetWeb REQUIRED)
+  find_package(civetweb REQUIRED)
 endif()
 
 if(ENABLE_COMPRESSION)

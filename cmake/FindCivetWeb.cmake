@@ -28,12 +28,12 @@ if(CIVETWEB_INCLUDE_DIR AND EXISTS "${CIVETWEB_INCLUDE_DIR}/civetweb.h")
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(CivetWeb
-                                  FOUND_VAR CivetWeb_FOUND
+find_package_handle_standard_args(civetweb
+                                  FOUND_VAR civetweb_FOUND
                                   REQUIRED_VARS CIVETWEB_LIBRARY CIVETWEB_CXX_LIBRARY CIVETWEB_INCLUDE_DIR CIVETWEB_CXX_INCLUDE_DIR
                                   VERSION_VAR CIVETWEB_VERSION_STRING)
 
-if(CivetWeb_FOUND)
+if(civetweb_FOUND)
   set(CIVETWEB_LIBRARIES civetweb::civetweb civetweb::civetweb-cpp)
   set(CIVETWEB_INCLUDE_DIRS "${CIVETWEB_INCLUDE_DIR}" "${CIVETWEB_CXX_INCLUDE_DIR}")
   if(NOT TARGET civetweb::civetweb)

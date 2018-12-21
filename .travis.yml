@@ -30,7 +30,6 @@ addons:
     - git
     - lcov
     - libcurl4-openssl-dev
-    - openjdk-8-jdk-headless
     - python-pip
     - telegraf
   homebrew:
@@ -46,7 +45,7 @@ script:
   - bazel build //...
   - bazel test --test_output=all //core/... //pull/...
 #  - bazel test --test_output=all //pull/tests/integration:scrape-test
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bazel test --test_output=all //pull/tests/integration:lint-test; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bazel test --test_output=all //pull/tests/integration:lint-test; fi
   - bazel run -c opt //core/benchmarks
 
   - pushd .

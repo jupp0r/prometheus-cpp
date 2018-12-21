@@ -30,7 +30,6 @@ addons:
     - git
     - lcov
     - libcurl4-openssl-dev
-    - openjdk-8-jdk-headless
     - python-pip
     - telegraf
   homebrew:

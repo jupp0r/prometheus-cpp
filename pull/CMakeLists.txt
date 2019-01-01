@@ -1,5 +1,6 @@
-
-if(USE_THIRDPARTY_LIBRARIES)
+if(USE_BOOST_BEAST)
+  find_package(Boost REQUIRED COMPONENTS thread system)
+elseif(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED)
 else()
   find_package(civetweb REQUIRED)
@@ -10,20 +11,22 @@ if(ENABLE_COMPRESSION)
 endif()
 
 add_library(pull
-  src/exposer.cc
-  src/handler.cc
-  src/handler.h
-  $<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:civetweb>>
-)
+  #src/exposer.cc
+  #src/handler.cc
+  #src/handler.h
+  #$<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:civetweb>>
+  src/beast_exposer.cc)
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
 
 target_link_libraries(pull
   PUBLIC
     ${PROJECT_NAME}::core
+        Boost::system
+        Boost::thread
   PRIVATE
     Threads::Threads
-    ${CIVETWEB_LIBRARIES}
+    #${CIVETWEB_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )
@@ -32,12 +35,13 @@ target_include_directories(pull
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PRIVATE
-    ${CIVETWEB_INCLUDE_DIRS}
+    #${CIVETWEB_INCLUDE_DIRS}
 )
 
 target_compile_definitions(pull
   PRIVATE
     $<$<BOOL:${ENABLE_COMPRESSION}>:HAVE_ZLIB>
+    HAVE_BOOST_BEAST
 )
 
 set_target_properties(pull PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-pull)

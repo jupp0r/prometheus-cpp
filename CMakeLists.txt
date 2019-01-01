@@ -12,6 +12,7 @@ option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)
 option(ENABLE_TESTING "Build tests" ON)
+option(USE_BOOST_BEAST "Use Boost Beast for HTTP" ON)
 option(USE_THIRDPARTY_LIBRARIES "Use 3rdParty submodules" ON)
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXLFAGS are configured differently" ON)
 

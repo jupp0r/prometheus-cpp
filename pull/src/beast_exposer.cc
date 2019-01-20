@@ -6,7 +6,7 @@
 
 #include <boost/asio.hpp>
 
-#include "beast_listener.h"
+#include "beast_session.h"
 
 //#include "prometheus/client_metric.h"
 
@@ -32,11 +32,12 @@ namespace prometheus {
         std::make_shared<listener>(
                 ioc,
                 endpoint,
-                doc_root)->run();
+                uri_,
+                collectables_)->run();
 
         // Run the I/O service on the requested number of threads
         worker_.reserve(num_threads - 1);
-        for(auto i = num_threads - 1; i > 0; --i) {
+        for(auto i = num_threads; i > 0; --i) {
             worker_.emplace_back(
                     [&ioc]
                     {

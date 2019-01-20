@@ -15,7 +15,7 @@ add_library(pull
   #src/handler.cc
   #src/handler.h
   #$<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:civetweb>>
-  src/beast_exposer.cc)
+  src/beast_exposer.cc src/beast_session.h)
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
 

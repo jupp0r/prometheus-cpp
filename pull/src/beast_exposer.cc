@@ -6,12 +6,8 @@
 
 #include <boost/asio.hpp>
 
-#include "beast_session.h"
-
-//#include "prometheus/client_metric.h"
-
-//#include "CivetServer.h"
-//#include "handler.h"
+#include "beast_listener.h"
+#include "beast_shared_state.h"
 
 namespace prometheus {
 
@@ -28,12 +24,13 @@ namespace prometheus {
         auto const address = boost::asio::ip::make_address(host);
         boost::asio::ip::tcp::endpoint endpoint{address, port};
 
+        auto shared_state = std::make_shared<BeastSharedState>(uri, collectables_);
+
         // Create and launch a listening port
-        std::make_shared<listener>(
+        std::make_shared<BeastListener>(
                 ioc,
                 endpoint,
-                uri_,
-                collectables_)->run();
+                shared_state)->run();
 
         // Run the I/O service on the requested number of threads
         worker_.reserve(num_threads - 1);

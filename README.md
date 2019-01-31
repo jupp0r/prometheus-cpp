@@ -81,7 +81,7 @@ mkdir _build
 cd _build
 
 # run cmake
-cmake ..
+cmake .. -DBUILD_SHARED_LIB=ON # or OFF for static libraries
 
 # build
 make -j 4

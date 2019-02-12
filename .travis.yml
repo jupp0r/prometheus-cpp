@@ -39,6 +39,7 @@ addons:
     - bazelbuild/tap/bazel
     - prometheus
     - telegraf
+    - doxygen
     taps:
     - bazelbuild/tap
 

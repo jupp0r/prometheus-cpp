@@ -3,3 +3,5 @@ cmake-build-*/
 _*/
 .idea/
 doc/html/
+.vscode
+build

@@ -81,8 +81,8 @@ script:
 deploy:
   provider: pages
   local-dir: doc/html
-  skip-cleanup: true
   github-token: $GITHUB_TOKEN
+  skip-cleanup: true
   on:
     branch: master
-    condition: "$TRAVIS_OS_NAME" == "linux"
+    condition: $TRAVIS_OS_NAME == linux

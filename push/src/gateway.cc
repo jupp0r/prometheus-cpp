@@ -170,10 +170,10 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     }));
   }
 
-  return std::async(std::launch::async, [&] {
+  const auto reduceFutures = [](std::vector<std::future<int>> lfutures) {
     auto final_status_code = 200;
 
-    for (auto& future : futures) {
+    for (auto& future : lfutures) {
       auto status_code = future.get();
 
       if (status_code >= 400) {
@@ -182,7 +182,9 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     }
 
     return final_status_code;
-  });
+  };
+
+  return std::async(std::launch::async, reduceFutures, std::move(futures));
 }
 
 int Gateway::Delete() {

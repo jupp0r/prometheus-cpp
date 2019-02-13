@@ -81,17 +81,8 @@ script:
 deploy:
   provider: pages
   local-dir: doc/html
-  skip-cleanup: true
   github-token: $GITHUB_TOKEN
+  skip-cleanup: true
   on:
     branch: master
-    condition: "$TRAVIS_OS_NAME" == "linux"
-
-# addons:
-#   coverity_scan:
-#     project:
-#       name: "jupp0r/prometheus-cpp"
-#     notification_email: jupp0r@gmail.com
-#     build_command_prepend: ""
-#     build_command:   "bazel build --spawn_strategy=standalone //lib:all"
-#     branch_pattern:  "master"
+    condition: $TRAVIS_OS_NAME == linux

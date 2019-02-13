@@ -75,7 +75,7 @@ script:
 
   - pushd .
   - cd doc
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; doxygen && touch html/.nojekyll; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then doxygen && touch html/.nojekyll; fi
   - popd
 
 deploy:

@@ -146,13 +146,6 @@ template <typename T>
 template <typename... Args>
 T& Family<T>::Add(const std::map<std::string, std::string>& labels,
                   Args&&... args) {
-#ifndef NDEBUG
-  for (auto& label_pair : labels) {
-    auto& label_name = label_pair.first;
-    assert(CheckLabelName(label_name));
-  }
-#endif
-
   auto hash = detail::hash_labels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
@@ -166,6 +159,13 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
 #endif
     return *metrics_iter->second;
   } else {
+#ifndef NDEBUG
+    for (auto& label_pair : labels) {
+      auto& label_name = label_pair.first;
+      assert(CheckLabelName(label_name));
+    }
+#endif
+
     auto metric =
         metrics_.insert(std::make_pair(hash, detail::make_unique<T>(args...)));
     assert(metric.second);

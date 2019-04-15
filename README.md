@@ -101,6 +101,7 @@ this repo to your project as a dependency. Just add the following
 to your `WORKSPACE`:
 
 ```python
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 http_archive(
     name = "com_github_jupp0r_prometheus_cpp",
     strip_prefix = "prometheus-cpp-master",
@@ -119,7 +120,7 @@ demonstrated with the sample server included in this repository:
 cc_binary(
     name = "sample_server",
     srcs = ["sample_server.cc"],
-    deps = ["@com_github_jupp0r_prometheus_cpp//:pull"],
+    deps = ["@com_github_jupp0r_prometheus_cpp//pull:pull"],
 )
 ```
 

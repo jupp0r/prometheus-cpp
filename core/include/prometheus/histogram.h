@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <ctime>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"

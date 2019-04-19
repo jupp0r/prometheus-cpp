@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <ctime>
 #include <mutex>
 #include <vector>
 
@@ -81,7 +82,7 @@ class Summary {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
-  bool Expired(double) const;
+  bool Expired(std::time_t, double) const;
 
  private:
   const Quantiles quantiles_;

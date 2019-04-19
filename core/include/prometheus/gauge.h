@@ -56,7 +56,7 @@ class Gauge {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired(double) const;
+  bool Expired(std::time_t, double) const;
 
  private:
   void Change(double);

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <ctime>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -193,13 +194,14 @@ void Family<T>::Remove(T* metric) {
 
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() {
+  const auto time = std::time(nullptr);
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
   family.name = name_;
   family.help = help_;
   family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    if (!m.second.get()->Expired(seconds_)) {
+    if (!m.second.get()->Expired(time, seconds_)) {
       family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
     }
   }

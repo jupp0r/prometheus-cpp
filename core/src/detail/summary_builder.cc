@@ -21,8 +21,13 @@ SummaryBuilder& SummaryBuilder::Help(const std::string& help) {
   return *this;
 }
 
+SummaryBuilder& SummaryBuilder::Seconds(double seconds) {
+  seconds_ = seconds;
+  return *this;
+}
+
 Family<Summary>& SummaryBuilder::Register(Registry& registry) {
-  return registry.Add<Summary>(name_, help_, labels_);
+  return registry.Add<Summary>(name_, help_, labels_, seconds_);
 }
 
 }  // namespace detail

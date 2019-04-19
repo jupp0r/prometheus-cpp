@@ -14,7 +14,7 @@ ClientMetric Counter::Collect() const {
   return metric;
 }
 
-bool Counter::Expired() const {
+bool Counter::Expired(double seconds) const {
   return false;
 }
 

@@ -34,7 +34,7 @@ ClientMetric Summary::Collect() {
   return metric;
 }
 
-bool Summary::Expired() const {
+bool Summary::Expired(double seconds) const {
   return false;
 }
 

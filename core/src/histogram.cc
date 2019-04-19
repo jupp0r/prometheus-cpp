@@ -43,7 +43,7 @@ ClientMetric Histogram::Collect() const {
   return metric;
 }
 
-bool Histogram::Expired() const {
+bool Histogram::Expired(double seconds) const {
   return false;
 }
 

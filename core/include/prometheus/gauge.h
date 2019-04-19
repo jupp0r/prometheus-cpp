@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <ctime>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/gauge_builder.h"
@@ -55,11 +56,12 @@ class Gauge {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired() const;
+  bool Expired(double) const;
 
  private:
   void Change(double);
   std::atomic<double> value_{0.0};
+  std::atomic<std::time_t> time_{0};
 };
 
 /// \brief Return a builder to configure and register a Gauge metric.

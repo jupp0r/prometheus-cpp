@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <ctime>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
@@ -55,7 +56,7 @@ class Histogram {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired() const;
+  bool Expired(double) const;
 
  private:
   const BucketBoundaries bucket_boundaries_;

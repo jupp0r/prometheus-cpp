@@ -4,7 +4,7 @@
 
 namespace prometheus {
 
-Gauge::Gauge(const double value) : value_{value} {}
+Gauge::Gauge(const double value) : value_{value}, time_{std::time(nullptr)} {}
 
 void Gauge::Increment() { Increment(1.0); }
 
@@ -24,12 +24,16 @@ void Gauge::Decrement(const double value) {
   Change(-1.0 * value);
 }
 
-void Gauge::Set(const double value) { value_.store(value); }
+void Gauge::Set(const double value) {
+  value_.store(value);
+  time_.store(std::time(nullptr));
+}
 
 void Gauge::Change(const double value) {
   auto current = value_.load();
   while (!value_.compare_exchange_weak(current, current + value))
     ;
+  time_.store(std::time(nullptr));
 }
 
 void Gauge::SetToCurrentTime() {
@@ -45,8 +49,9 @@ ClientMetric Gauge::Collect() const {
   return metric;
 }
 
-bool Gauge::Expired() const {
-  return false;
+bool Gauge::Expired(double seconds) const {
+  const auto time = std::time(nullptr);
+  return std::difftime(time, time_);
 }
 
 detail::GaugeBuilder BuildGauge() { return {}; }

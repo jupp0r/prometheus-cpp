@@ -88,7 +88,8 @@ class Family : public Collectable {
   /// metric. All these labels are propagated to each time series within the
   /// metric.
   Family(const std::string& name, const std::string& help,
-         const std::map<std::string, std::string>& constant_labels);
+         const std::map<std::string, std::string>& constant_labels,
+         double seconds);
 
   /// \brief Add a new dimensional data.
   ///
@@ -130,6 +131,7 @@ class Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
+  double seconds_;
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
@@ -137,8 +139,9 @@ class Family : public Collectable {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const std::map<std::string, std::string>& constant_labels)
-    : name_(name), help_(help), constant_labels_(constant_labels) {
+                  const std::map<std::string, std::string>& constant_labels,
+                  double seconds)
+    : name_(name), help_(help), constant_labels_(constant_labels), seconds_(seconds) {
   assert(CheckMetricName(name_));
 }
 
@@ -196,7 +199,7 @@ std::vector<MetricFamily> Family<T>::Collect() {
   family.help = help_;
   family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    if (!m.second.get()->Expired()) {
+    if (!m.second.get()->Expired(seconds_)) {
       family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
     }
   }

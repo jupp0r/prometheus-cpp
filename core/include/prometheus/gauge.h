@@ -61,7 +61,7 @@ class Gauge {
  private:
   void Change(double);
   std::atomic<double> value_{0.0};
-  std::atomic<std::time_t> time_{0};
+  std::atomic<std::time_t> time_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Gauge metric.

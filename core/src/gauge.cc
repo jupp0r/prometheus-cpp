@@ -4,7 +4,7 @@
 
 namespace prometheus {
 
-Gauge::Gauge(const double value) : value_{value}, time_{std::time(nullptr)} {}
+Gauge::Gauge(const double value) : value_{value} {}
 
 void Gauge::Increment() { Increment(1.0); }
 

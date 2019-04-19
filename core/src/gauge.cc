@@ -51,7 +51,7 @@ ClientMetric Gauge::Collect() const {
 
 bool Gauge::Expired(double seconds) const {
   const auto time = std::time(nullptr);
-  return std::difftime(time, time_);
+  return std::difftime(time, time_) > seconds;
 }
 
 detail::GaugeBuilder BuildGauge() { return {}; }

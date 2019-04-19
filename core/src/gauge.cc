@@ -24,12 +24,16 @@ void Gauge::Decrement(const double value) {
   Change(-1.0 * value);
 }
 
-void Gauge::Set(const double value) { value_.store(value); }
+void Gauge::Set(const double value) {
+  value_.store(value);
+  time_.store(std::time(nullptr));
+}
 
 void Gauge::Change(const double value) {
   auto current = value_.load();
   while (!value_.compare_exchange_weak(current, current + value))
     ;
+  time_.store(std::time(nullptr));
 }
 
 void Gauge::SetToCurrentTime() {
@@ -43,6 +47,11 @@ ClientMetric Gauge::Collect() const {
   ClientMetric metric;
   metric.gauge.value = Value();
   return metric;
+}
+
+bool Gauge::Expired(double seconds) const {
+  const auto time = std::time(nullptr);
+  return std::difftime(time, time_) > seconds;
 }
 
 detail::GaugeBuilder BuildGauge() { return {}; }

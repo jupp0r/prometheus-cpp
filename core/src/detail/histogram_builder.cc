@@ -21,8 +21,13 @@ HistogramBuilder& HistogramBuilder::Help(const std::string& help) {
   return *this;
 }
 
+HistogramBuilder& HistogramBuilder::Seconds(double seconds) {
+  seconds_ = seconds;
+  return *this;
+}
+
 Family<Histogram>& HistogramBuilder::Register(Registry& registry) {
-  return registry.Add<Histogram>(name_, help_, labels_);
+  return registry.Add<Histogram>(name_, help_, labels_, seconds_);
 }
 
 }  // namespace detail

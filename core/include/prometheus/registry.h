@@ -52,7 +52,8 @@ class Registry : public Collectable {
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
-                 const std::map<std::string, std::string>& labels);
+                 const std::map<std::string, std::string>& labels,
+                 double seconds);
 
   std::vector<std::unique_ptr<Collectable>> collectables_;
   std::mutex mutex_;
@@ -60,9 +61,10 @@ class Registry : public Collectable {
 
 template <typename T>
 Family<T>& Registry::Add(const std::string& name, const std::string& help,
-                         const std::map<std::string, std::string>& labels) {
+                         const std::map<std::string, std::string>& labels,
+                         double seconds) {
   std::lock_guard<std::mutex> lock{mutex_};
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto family = detail::make_unique<Family<T>>(name, help, labels, seconds);
   auto& ref = *family;
   collectables_.push_back(std::move(family));
   return ref;

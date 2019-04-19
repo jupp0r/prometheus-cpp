@@ -21,8 +21,13 @@ GaugeBuilder& GaugeBuilder::Help(const std::string& help) {
   return *this;
 }
 
+GaugeBuilder& GaugeBuilder::Seconds(double seconds) {
+  seconds_ = seconds;
+  return *this;
+}
+
 Family<Gauge>& GaugeBuilder::Register(Registry& registry) {
-  return registry.Add<Gauge>(name_, help_, labels_);
+  return registry.Add<Gauge>(name_, help_, labels_, seconds_);
 }
 
 }  // namespace detail

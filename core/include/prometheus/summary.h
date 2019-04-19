@@ -81,6 +81,7 @@ class Summary {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
+  bool Expired(double) const;
 
  private:
   const Quantiles quantiles_;

@@ -17,12 +17,14 @@ class GaugeBuilder {
   GaugeBuilder& Labels(const std::map<std::string, std::string>& labels);
   GaugeBuilder& Name(const std::string&);
   GaugeBuilder& Help(const std::string&);
+  GaugeBuilder& Seconds(double);
   Family<Gauge>& Register(Registry&);
 
  private:
   std::map<std::string, std::string> labels_;
   std::string name_;
   std::string help_;
+  double seconds_;
 };
 
 }  // namespace detail

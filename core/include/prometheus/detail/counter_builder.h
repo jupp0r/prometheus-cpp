@@ -17,12 +17,14 @@ class CounterBuilder {
   CounterBuilder& Labels(const std::map<std::string, std::string>& labels);
   CounterBuilder& Name(const std::string&);
   CounterBuilder& Help(const std::string&);
+  CounterBuilder& Seconds(double);
   Family<Counter>& Register(Registry&);
 
  private:
   std::map<std::string, std::string> labels_;
   std::string name_;
   std::string help_;
+  double seconds_;
 };
 
 }  // namespace detail

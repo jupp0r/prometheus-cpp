@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ctime>
+
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/counter_builder.h"
 #include "prometheus/gauge.h"
@@ -44,7 +46,7 @@ class Counter {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired(double) const;
+  bool Expired(std::time_t, double) const;
 
  private:
   Gauge gauge_{0.0};

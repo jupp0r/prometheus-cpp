@@ -1,7 +1,5 @@
 #include "prometheus/gauge.h"
 
-#include <ctime>
-
 namespace prometheus {
 
 Gauge::Gauge(const double value) : value_{value} {}
@@ -49,8 +47,7 @@ ClientMetric Gauge::Collect() const {
   return metric;
 }
 
-bool Gauge::Expired(double seconds) const {
-  const auto time = std::time(nullptr);
+bool Gauge::Expired(std::time_t time, double seconds) const {
   return std::difftime(time, time_) > seconds;
 }
 

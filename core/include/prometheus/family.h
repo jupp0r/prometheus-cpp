@@ -196,7 +196,9 @@ std::vector<MetricFamily> Family<T>::Collect() {
   family.help = help_;
   family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    if (!m.second.get()->Expired()) {
+      family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    }
   }
   return {family};
 }

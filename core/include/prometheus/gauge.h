@@ -55,6 +55,7 @@ class Gauge {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
+  bool Expired() const;
 
  private:
   void Change(double);

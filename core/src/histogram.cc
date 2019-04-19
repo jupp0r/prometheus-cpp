@@ -43,6 +43,10 @@ ClientMetric Histogram::Collect() const {
   return metric;
 }
 
+bool Histogram::Expired() const {
+  return false;
+}
+
 detail::HistogramBuilder BuildHistogram() { return {}; }
 
 }  // namespace prometheus

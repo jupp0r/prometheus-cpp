@@ -44,6 +44,7 @@ class Counter {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
+  bool Expired() const;
 
  private:
   Gauge gauge_{0.0};

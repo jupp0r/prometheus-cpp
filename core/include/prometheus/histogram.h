@@ -55,6 +55,7 @@ class Histogram {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
+  bool Expired() const;
 
  private:
   const BucketBoundaries bucket_boundaries_;

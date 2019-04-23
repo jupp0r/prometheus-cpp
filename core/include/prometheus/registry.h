@@ -43,6 +43,7 @@ class Registry : public Collectable {
   ///
   /// \return Zero or more metrics and their samples.
   std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect(std::time_t) override;
 
  private:
   friend class detail::CounterBuilder;

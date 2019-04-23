@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ctime>
 #include <vector>
 
 namespace prometheus {
@@ -18,6 +19,7 @@ class Collectable {
 
   /// \brief Returns a list of metrics and their samples.
   virtual std::vector<MetricFamily> Collect() = 0;
+  virtual std::vector<MetricFamily> Collect(std::time_t) = 0;
 };
 
 }  // namespace prometheus

@@ -123,6 +123,7 @@ class Family : public Collectable {
   ///
   /// \return Zero or more samples for each dimensional data.
   std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect(std::time_t) override;
 
  private:
   std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
@@ -195,6 +196,11 @@ void Family<T>::Remove(T* metric) {
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() {
   const auto time = std::time(nullptr);
+  return Collect(time);
+}
+
+template <typename T>
+std::vector<MetricFamily> Family<T>::Collect(std::time_t time) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
   family.name = name_;
@@ -207,6 +213,7 @@ std::vector<MetricFamily> Family<T>::Collect() {
   }
   return {family};
 }
+
 
 template <typename T>
 ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {

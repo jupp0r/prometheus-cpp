@@ -29,7 +29,7 @@ if(ENABLE_TESTING)
   else()
     find_package(GTest 1.8.1 CONFIG REQUIRED)
   endif()
-  find_package(GoogleBenchmark)
+  find_package(benchmark CONFIG)
   enable_testing()
 endif()
 

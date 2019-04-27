@@ -82,3 +82,11 @@ install(
   FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
+
+# summary
+
+include(FeatureSummary)
+add_feature_info("Pull" "${ENABLE_PULL}" "support for pulling metrics")
+add_feature_info("Push" "${ENABLE_PUSH}" "support for pushing metrics to a push-gateway")
+add_feature_info("Compression" "${ENABLE_COMPRESSION}" "support for zlib compression of metrics")
+feature_summary(WHAT ALL)

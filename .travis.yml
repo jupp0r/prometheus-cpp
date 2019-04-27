@@ -37,6 +37,7 @@ addons:
     packages:
     - cmake
     - bazelbuild/tap/bazel
+    - google-benchmark
     - prometheus
     - telegraf
     taps:

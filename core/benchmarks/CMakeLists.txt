@@ -13,7 +13,7 @@ add_executable(benchmarks
 target_link_libraries(benchmarks
   PRIVATE
     ${PROJECT_NAME}::core
-    Google::Benchmark
+    benchmark::benchmark
 )
 
 add_test(

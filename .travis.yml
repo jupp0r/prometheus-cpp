@@ -1,9 +1,6 @@
 sudo: required
-dist: trusty
+dist: xenial
 language: c++
-
-before_install:
-      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
 env:
   global:
@@ -19,15 +16,15 @@ addons:
     sources:
     - sourceline: 'deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8'
       key_url: 'https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg'
-    - sourceline: 'deb https://repos.influxdata.com/ubuntu trusty stable'
+    - sourceline: 'deb https://repos.influxdata.com/ubuntu xenial stable'
       key_url: 'https://repos.influxdata.com/influxdb.key'
     packages:
     - bazel
-    - cmake3
+    - cmake
     - curl
     - doxygen
-    - g++-4.8
-    - gcc-4.8
+    - g++
+    - gcc
     - git
     - lcov
     - libcurl4-openssl-dev

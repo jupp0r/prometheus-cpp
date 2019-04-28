@@ -1,5 +1,6 @@
 
 add_executable(prometheus_test
+  builder_test.cc
   check_names_test.cc
   counter_test.cc
   family_test.cc

@@ -139,7 +139,7 @@ int Gateway::push(HttpMethod method) {
     auto uri = getUri(wcollectable);
     auto status_code = performHttpRequest(method, uri, body);
 
-    if (status_code >= 400) {
+    if (status_code < 100 || status_code >= 400) {
       return status_code;
     }
   }
@@ -176,7 +176,7 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     for (auto& future : lfutures) {
       auto status_code = future.get();
 
-      if (status_code >= 400) {
+      if (status_code < 100 || status_code >= 400) {
         final_status_code = status_code;
       }
     }

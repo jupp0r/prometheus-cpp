@@ -1,6 +1,7 @@
 
 #include "prometheus/gateway.h"
 
+#include <memory>
 #include <sstream>
 
 #include "prometheus/client_metric.h"
@@ -162,11 +163,11 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     }
 
     auto metrics = collectable->Collect();
-    auto body = serializer.Serialize(metrics);
+    auto body = std::make_shared<std::string>(serializer.Serialize(metrics));
     auto uri = getUri(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
-      return performHttpRequest(method, uri, body);
+      return performHttpRequest(method, uri, *body);
     }));
   }
 

@@ -1,6 +1,7 @@
 
 #include "prometheus/gateway.h"
 
+#include <memory>
 #include <sstream>
 
 #include "prometheus/client_metric.h"
@@ -139,7 +140,7 @@ int Gateway::push(HttpMethod method) {
     auto uri = getUri(wcollectable);
     auto status_code = performHttpRequest(method, uri, body);
 
-    if (status_code >= 400) {
+    if (status_code < 100 || status_code >= 400) {
       return status_code;
     }
   }
@@ -162,11 +163,11 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     }
 
     auto metrics = collectable->Collect();
-    auto body = serializer.Serialize(metrics);
+    auto body = std::make_shared<std::string>(serializer.Serialize(metrics));
     auto uri = getUri(wcollectable);
 
-    futures.push_back(std::async(std::launch::async, [&] {
-      return performHttpRequest(method, uri, body);
+    futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
+      return performHttpRequest(method, uri, *body);
     }));
   }
 
@@ -176,7 +177,7 @@ std::future<int> Gateway::async_push(HttpMethod method) {
     for (auto& future : lfutures) {
       auto status_code = future.get();
 
-      if (status_code >= 400) {
+      if (status_code < 100 || status_code >= 400) {
         final_status_code = status_code;
       }
     }

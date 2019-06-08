@@ -1,4 +1,5 @@
 #include <chrono>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
@@ -56,7 +57,8 @@ int main() {
     second_counter.Increment();
 
     // push metrics
-    gateway.Push();
+    auto returnCode = gateway.Push();
+    std::cout << "returnCode is " << returnCode << std::endl;
   }
   return 0;
 }

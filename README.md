@@ -10,6 +10,8 @@ other push/pull collections can be added as plugins.
 
 ## Usage
 
+See https://jupp0r.github.io/prometheus-cpp for more detailed interface documentation.
+
 ``` c++
 #include <chrono>
 #include <map>

@@ -31,6 +31,7 @@ addons:
     - python-pip
     - telegraf
   homebrew:
+    update: true
     packages:
     - cmake
     - bazelbuild/tap/bazel

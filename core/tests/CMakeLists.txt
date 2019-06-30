@@ -7,6 +7,7 @@ add_executable(prometheus_test
   gauge_test.cc
   histogram_test.cc
   registry_test.cc
+  serializer_test.cc
   summary_test.cc
   utils_test.cc
 )

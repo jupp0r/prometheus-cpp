@@ -9,7 +9,8 @@ fi
 pull/tests/integration/sample-server&
 sample_server_pid=$!
 sleep 1
-telegraf_output="$(telegraf -test -config pull/tests/integration/scrape.conf)"
+## needs telegraf > 1.11.1
+telegraf_output="$(telegraf --test --test-wait 3 --config pull/tests/integration/scrape.conf)"
 telegraf_run_result=$?
 kill -9 $sample_server_pid
 

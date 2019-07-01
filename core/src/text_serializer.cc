@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <limits>
+#include <locale>
 #include <ostream>
 
 namespace prometheus {
@@ -9,59 +10,48 @@ namespace prometheus {
 namespace {
 
 // Write a double as a string, with proper formatting for infinity and NaN
-std::string ToString(double v) {
-  if (std::isnan(v)) {
-    return "Nan";
+void WriteValue(std::ostream& out, double value) {
+  if (std::isnan(value)) {
+    out << "Nan";
+  } else if (std::isinf(value)) {
+    out << (value < 0 ? "-Inf" : "+Inf");
+  } else {
+    auto saved_flags = out.setf(std::ios::fixed, std::ios::floatfield);
+    out << value;
+    out.setf(saved_flags, std::ios::floatfield);
   }
-  if (std::isinf(v)) {
-    return (v < 0 ? "-Inf" : "+Inf");
-  }
-  return std::to_string(v);
 }
 
-const std::string& EscapeLabelValue(const std::string& value,
-                                    std::string* tmp) {
-  bool copy = false;
-  for (size_t i = 0; i < value.size(); ++i) {
-    auto c = value[i];
+void WriteValue(std::ostream& out, const std::string& value) {
+  for (auto c : value) {
     if (c == '\\' || c == '"' || c == '\n') {
-      if (!copy) {
-        tmp->reserve(value.size() + 1);
-        tmp->assign(value, 0, i);
-        copy = true;
-      }
-      if (c == '\\') {
-        tmp->append("\\\\");
-      } else if (c == '"') {
-        tmp->append("\\\"");
-      } else {
-        tmp->append("\\\n");
-      }
-    } else if (copy) {
-      tmp->push_back(c);
+      out << "\\";
     }
+    out << c;
   }
-  return copy ? *tmp : value;
 }
 
 // Write a line header: metric name and labels
+template <typename T = std::string>
 void WriteHead(std::ostream& out, const MetricFamily& family,
                const ClientMetric& metric, const std::string& suffix = "",
                const std::string& extraLabelName = "",
-               const std::string& extraLabelValue = "") {
+               const T& extraLabelValue = T()) {
   out << family.name << suffix;
   if (!metric.label.empty() || !extraLabelName.empty()) {
     out << "{";
     const char* prefix = "";
-    std::string tmp;
+
     for (auto& lp : metric.label) {
-      out << prefix << lp.name << "=\"" << EscapeLabelValue(lp.value, &tmp)
-          << "\"";
+      out << prefix << lp.name << "=\"";
+      WriteValue(out, lp.value);
+      out << "\"";
       prefix = ",";
     }
     if (!extraLabelName.empty()) {
-      out << prefix << extraLabelName << "=\""
-          << EscapeLabelValue(extraLabelValue, &tmp) << "\"";
+      out << prefix << extraLabelName << "=\"";
+      WriteValue(out, extraLabelValue);
+      out << "\"";
     }
     out << "}";
   }
@@ -79,14 +69,14 @@ void WriteTail(std::ostream& out, const ClientMetric& metric) {
 void SerializeCounter(std::ostream& out, const MetricFamily& family,
                       const ClientMetric& metric) {
   WriteHead(out, family, metric);
-  out << ToString(metric.counter.value);
+  WriteValue(out, metric.counter.value);
   WriteTail(out, metric);
 }
 
 void SerializeGauge(std::ostream& out, const MetricFamily& family,
                     const ClientMetric& metric) {
   WriteHead(out, family, metric);
-  out << ToString(metric.gauge.value);
+  WriteValue(out, metric.gauge.value);
   WriteTail(out, metric);
 }
 
@@ -98,12 +88,12 @@ void SerializeSummary(std::ostream& out, const MetricFamily& family,
   WriteTail(out, metric);
 
   WriteHead(out, family, metric, "_sum");
-  out << ToString(sum.sample_sum);
+  WriteValue(out, sum.sample_sum);
   WriteTail(out, metric);
 
   for (auto& q : sum.quantile) {
-    WriteHead(out, family, metric, "", "quantile", ToString(q.quantile));
-    out << ToString(q.value);
+    WriteHead(out, family, metric, "", "quantile", q.quantile);
+    WriteValue(out, q.value);
     WriteTail(out, metric);
   }
 }
@@ -111,7 +101,7 @@ void SerializeSummary(std::ostream& out, const MetricFamily& family,
 void SerializeUntyped(std::ostream& out, const MetricFamily& family,
                       const ClientMetric& metric) {
   WriteHead(out, family, metric);
-  out << ToString(metric.untyped.value);
+  WriteValue(out, metric.untyped.value);
   WriteTail(out, metric);
 }
 
@@ -123,12 +113,12 @@ void SerializeHistogram(std::ostream& out, const MetricFamily& family,
   WriteTail(out, metric);
 
   WriteHead(out, family, metric, "_sum");
-  out << ToString(hist.sample_sum);
+  WriteValue(out, hist.sample_sum);
   WriteTail(out, metric);
 
   double last = -std::numeric_limits<double>::infinity();
   for (auto& b : hist.bucket) {
-    WriteHead(out, family, metric, "_bucket", "le", ToString(b.upper_bound));
+    WriteHead(out, family, metric, "_bucket", "le", b.upper_bound);
     last = b.upper_bound;
     out << b.cumulative_count;
     WriteTail(out, metric);
@@ -184,8 +174,11 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
 
 void TextSerializer::Serialize(std::ostream& out,
                                const std::vector<MetricFamily>& metrics) const {
+  std::locale saved_locale = out.getloc();
+  out.imbue(std::locale::classic());
   for (auto& family : metrics) {
     SerializeFamily(out, family);
   }
+  out.imbue(saved_locale);
 }
 }  // namespace prometheus

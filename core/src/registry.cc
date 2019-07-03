@@ -1,5 +1,7 @@
 #include "prometheus/registry.h"
 
+#include <iterator>
+
 namespace prometheus {
 
 std::vector<MetricFamily> Registry::Collect() {
@@ -7,7 +9,8 @@ std::vector<MetricFamily> Registry::Collect() {
   auto results = std::vector<MetricFamily>{};
   for (auto&& collectable : collectables_) {
     auto metrics = collectable->Collect();
-    results.insert(results.end(), metrics.begin(), metrics.end());
+    results.insert(results.end(), std::make_move_iterator(metrics.begin()),
+                   std::make_move_iterator(metrics.end()));
   }
 
   return results;

@@ -8,6 +8,7 @@
 #include <mutex>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -89,6 +90,13 @@ class Family : public Collectable {
   /// metric.
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
+
+  bool IsSameAs(
+      const std::string& name, const std::string& help,
+      const std::map<std::string, std::string>& constant_labels) const {
+    return std::tie(name, help, constant_labels) ==
+           std::tie(name_, help_, constant_labels_);
+  }
 
   /// \brief Add a new dimensional data.
   ///

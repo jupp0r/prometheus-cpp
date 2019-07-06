@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "prometheus/collectable.h"
@@ -36,6 +37,9 @@ namespace prometheus {
 /// a data race.
 class Registry : public Collectable {
  public:
+  explicit Registry(bool merge_families = false)
+      : merge_families_{merge_families} {}
+
   /// \brief Returns a list of metrics and their samples.
   ///
   /// Every time the Registry is scraped it calls each of the metrics Collect
@@ -54,7 +58,12 @@ class Registry : public Collectable {
   Family<T>& Add(const std::string& name, const std::string& help,
                  const std::map<std::string, std::string>& labels);
 
-  std::vector<std::unique_ptr<Collectable>> collectables_;
+  bool merge_families_;
+
+  using Families = std::variant<Family<Counter>, Family<Gauge>,
+                                Family<Histogram>, Family<Summary>>;
+
+  std::vector<std::unique_ptr<Families>> families_;
   std::mutex mutex_;
 };
 
@@ -62,9 +71,20 @@ template <typename T>
 Family<T>& Registry::Add(const std::string& name, const std::string& help,
                          const std::map<std::string, std::string>& labels) {
   std::lock_guard<std::mutex> lock{mutex_};
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
-  auto& ref = *family;
-  collectables_.push_back(std::move(family));
+
+  if (merge_families_) {
+    for (auto& all_types : families_) {
+      if (auto family = std::get_if<Family<T>>(&*all_types))
+        if (family->IsSameAs(name, help, labels)) {
+          return *family;
+        }
+    }
+  }
+
+  auto family = detail::make_unique<Families>(std::in_place_type<Family<T>>,
+                                              name, help, labels);
+  auto& ref = std::get<Family<T>>(*family);
+  families_.push_back(std::move(family));
   return ref;
 }
 

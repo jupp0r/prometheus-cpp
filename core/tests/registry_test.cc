@@ -37,5 +37,20 @@ TEST(RegistryTest, build_histogram_family) {
   ASSERT_EQ(collected.size(), 1U);
 }
 
+TEST(RegistryTest, merge_same_families) {
+  Registry registry{true};
+
+  std::size_t loops = 4;
+
+  while (loops-- > 0) {
+    auto& family =
+        BuildCounter().Name("counter").Help("Test Counter").Register(registry);
+    auto& counter = family.Add({{"name", "test_counter"}});
+  }
+
+  auto collected = registry.Collect();
+  EXPECT_EQ(1U, collected.size());
+}
+
 }  // namespace
 }  // namespace prometheus

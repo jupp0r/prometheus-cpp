@@ -100,12 +100,12 @@ class Family : public Collectable {
   ///     http_requests_total{job= "prometheus",method= "POST"}
   ///
   /// \param labels Assign a set of key-value pairs (= labels) to the
-  /// dimensional data. The function does nothing, if the same set of lables
+  /// dimensional data. The function does nothing, if the same set of labels
   /// already exists.
   /// \param args Arguments are passed to the constructor of metric type T. See
   /// Counter, Gauge, Histogram or Summary for required constructor arguments.
   /// \return Return the newly created dimensional data or - if a same set of
-  /// lables already exists - the already existing dimensional data.
+  /// labels already exists - the already existing dimensional data.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
 

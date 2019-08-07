@@ -29,7 +29,7 @@ void Gauge::Set(const double value) { value_.store(value); }
 void Gauge::Change(const double value) {
   auto current = value_.load();
   while (!value_.compare_exchange_weak(current, current + value))
-    ;
+    current = value_.load();
 }
 
 void Gauge::SetToCurrentTime() {

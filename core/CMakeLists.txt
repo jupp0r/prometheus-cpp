@@ -3,10 +3,6 @@ add_library(core
   src/check_names.cc
   src/counter.cc
   src/detail/ckms_quantiles.cc
-  src/detail/counter_builder.cc
-  src/detail/gauge_builder.cc
-  src/detail/histogram_builder.cc
-  src/detail/summary_builder.cc
   src/detail/time_window_quantiles.cc
   src/detail/utils.cc
   src/gauge.cc

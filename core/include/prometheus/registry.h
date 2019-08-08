@@ -7,20 +7,18 @@
 #include <vector>
 
 #include "prometheus/collectable.h"
-#include "prometheus/counter.h"
-#include "prometheus/detail/counter_builder.h"
 #include "prometheus/detail/future_std.h"
-#include "prometheus/detail/gauge_builder.h"
-#include "prometheus/detail/histogram_builder.h"
-#include "prometheus/detail/summary_builder.h"
 #include "prometheus/family.h"
-#include "prometheus/gauge.h"
-#include "prometheus/histogram.h"
 #include "prometheus/metric_family.h"
-#include "prometheus/summary.h"
 
 namespace prometheus {
 
+namespace detail {
+
+template <typename T>
+class Builder;
+
+}
 /// \brief Manages the collection of a number of metrics.
 ///
 /// The Registry is responsible to expose data to a class/method/function
@@ -45,10 +43,8 @@ class Registry : public Collectable {
   std::vector<MetricFamily> Collect() override;
 
  private:
-  friend class detail::CounterBuilder;
-  friend class detail::GaugeBuilder;
-  friend class detail::HistogramBuilder;
-  friend class detail::SummaryBuilder;
+  template <typename T>
+  friend class detail::Builder;
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,

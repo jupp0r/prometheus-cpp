@@ -45,6 +45,6 @@ ClientMetric Gauge::Collect() const {
   return metric;
 }
 
-detail::GaugeBuilder BuildGauge() { return {}; }
+detail::Builder<Gauge> BuildGauge() { return {}; }
 
 }  // namespace prometheus

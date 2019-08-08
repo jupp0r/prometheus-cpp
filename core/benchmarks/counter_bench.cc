@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include <prometheus/counter.h>
 #include <prometheus/registry.h>
 
 static void BM_Counter_Increment(benchmark::State& state) {

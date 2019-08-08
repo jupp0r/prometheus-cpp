@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 
+#include <prometheus/counter.h>
 #include <prometheus/gateway.h>
 #include <prometheus/registry.h>
 

@@ -24,6 +24,15 @@ void Histogram::Observe(const double value) {
   bucket_counts_[bucket_index].Increment();
 }
 
+void Histogram::ObserveMultiple(const std::vector<double> bucket_increments,
+                                const double sum_of_values) {
+  sum_.Increment(sum_of_values);
+
+  for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
+    { bucket_counts_[i].Increment(bucket_increments[i]); }
+  }
+}
+
 ClientMetric Histogram::Collect() const {
   auto metric = ClientMetric{};
 

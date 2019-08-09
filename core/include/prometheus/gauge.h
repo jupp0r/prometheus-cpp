@@ -3,7 +3,7 @@
 #include <atomic>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/detail/gauge_builder.h"
+#include "prometheus/detail/builder.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -88,6 +88,6 @@ class Gauge {
 ///
 /// To finish the configuration of the Gauge metric register it with
 /// Register(Registry&).
-detail::GaugeBuilder BuildGauge();
+detail::Builder<Gauge> BuildGauge();
 
 }  // namespace prometheus

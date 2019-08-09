@@ -4,7 +4,7 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
-#include "prometheus/detail/histogram_builder.h"
+#include "prometheus/detail/builder.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -89,6 +89,6 @@ class Histogram {
 ///
 /// To finish the configuration of the Histogram metric register it with
 /// Register(Registry&).
-detail::HistogramBuilder BuildHistogram();
+detail::Builder<Histogram> BuildHistogram();
 
 }  // namespace prometheus

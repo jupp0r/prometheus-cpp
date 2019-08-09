@@ -1,7 +1,7 @@
 #pragma once
 
 #include "prometheus/client_metric.h"
-#include "prometheus/detail/counter_builder.h"
+#include "prometheus/detail/builder.h"
 #include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
 
@@ -76,6 +76,6 @@ class Counter {
 ///
 /// To finish the configuration of the Counter metric, register it with
 /// Register(Registry&).
-detail::CounterBuilder BuildCounter();
+detail::Builder<Counter> BuildCounter();
 
 }  // namespace prometheus

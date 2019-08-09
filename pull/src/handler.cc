@@ -1,4 +1,6 @@
 #include "handler.h"
+#include "prometheus/counter.h"
+#include "prometheus/summary.h"
 
 #include <cstring>
 #include <iterator>

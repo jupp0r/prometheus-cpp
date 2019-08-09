@@ -4,7 +4,9 @@
 #include <vector>
 
 #include "CivetServer.h"
+#include "prometheus/counter.h"
 #include "prometheus/registry.h"
+#include "prometheus/summary.h"
 
 namespace prometheus {
 namespace detail {

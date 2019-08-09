@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include <prometheus/gauge.h>
 #include <prometheus/registry.h>
 
 static void BM_Gauge_Increment(benchmark::State& state) {

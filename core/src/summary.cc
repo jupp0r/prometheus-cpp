@@ -34,6 +34,6 @@ ClientMetric Summary::Collect() {
   return metric;
 }
 
-detail::SummaryBuilder BuildSummary() { return {}; }
+detail::Builder<Summary> BuildSummary() { return {}; }
 
 }  // namespace prometheus

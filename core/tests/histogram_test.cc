@@ -101,5 +101,13 @@ TEST(HistogramTest, observe_multiple_test_total_sum) {
   EXPECT_EQ(h.sample_sum, 54);
 }
 
+TEST(HistogramTest, observe_multiple_test_length_error) {
+  Histogram histogram{{1, 2}};
+  // 2 bucket boundaries means there are 3 buckets, so giving just 2 bucket
+  // increments should result in a length_error.
+  ASSERT_THROW(histogram.ObserveMultiple({5, 9}, 20),
+               std::length_error);
+}
+
 }  // namespace
 }  // namespace prometheus

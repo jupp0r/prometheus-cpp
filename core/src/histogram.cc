@@ -26,6 +26,11 @@ void Histogram::Observe(const double value) {
 
 void Histogram::ObserveMultiple(const std::vector<double> bucket_increments,
                                 const double sum_of_values) {
+  if (bucket_increments.size() != bucket_counts_.size()) {
+    throw std::length_error("The size of bucket_increments was not equal to"
+                            "the number of buckets in the histogram.");
+  }
+
   sum_.Increment(sum_of_values);
 
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {

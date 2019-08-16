@@ -35,7 +35,7 @@ endif()
 
 # build flags for CI system
 
-if(ENABLE_WARNINGS_AS_ERRORS)
+if(ENABLE_WARNINGS_AS_ERRORS AND NOT MSVC)
   add_compile_options(
     $<$<AND:$<STREQUAL:$<COMPILE_LANGUAGE>,CXX>,$<CXX_COMPILER_ID:AppleClang>>:-Werror>
     $<$<AND:$<STREQUAL:$<COMPILE_LANGUAGE>,CXX>,$<CXX_COMPILER_ID:AppleClang>>:-Wall>

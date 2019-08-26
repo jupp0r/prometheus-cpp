@@ -19,6 +19,7 @@ See https://jupp0r.github.io/prometheus-cpp for more detailed interface document
 #include <string>
 #include <thread>
 
+#include <prometheus/counter.h>
 #include <prometheus/exposer.h>
 #include <prometheus/registry.h>
 

@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(prometheus-cpp VERSION 0.8.0)
 
-include(GenerateExportHeader)
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+option(BUILD_SHARED_LIBS "Build libraries as shared ones" OFF)
 option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)

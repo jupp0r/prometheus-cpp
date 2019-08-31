@@ -18,11 +18,6 @@ add_library(core
 
 add_library(${PROJECT_NAME}::core ALIAS core)
 
-generate_export_header(core
-  EXPORT_FILE_NAME include/prometheus/detail/core_export.h
-  PREFIX_NAME PROMETHEUS_CPP_
-)
-
 target_link_libraries(core
   PRIVATE
     Threads::Threads
@@ -32,12 +27,12 @@ target_link_libraries(core
 target_include_directories(core
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 )
 
 set_target_properties(core
   PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME}-core
+    DEFINE_SYMBOL PROMETHEUS_CPP_COMPILE_CORE
     VERSION "${PROJECT_VERSION}"
     SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
 )
@@ -52,7 +47,7 @@ install(
 )
 
 install(
-  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
+  DIRECTORY include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

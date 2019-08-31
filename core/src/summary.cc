@@ -1,5 +1,9 @@
 #include "prometheus/summary.h"
 
+#include "detail/builder.impl.h"
+#include "family.impl.h"
+#include "registry.impl.h"
+
 namespace prometheus {
 
 Summary::Summary(const Quantiles& quantiles,
@@ -33,6 +37,13 @@ ClientMetric Summary::Collect() {
 
   return metric;
 }
+
+template class Family<Summary>;
+template class detail::Builder<Summary>;
+
+template Family<Summary>& Registry::Add(
+    const std::string& name, const std::string& help,
+    const std::map<std::string, std::string>& labels);
 
 detail::Builder<Summary> BuildSummary() { return {}; }
 

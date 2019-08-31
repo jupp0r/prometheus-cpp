@@ -2,12 +2,15 @@
 add_library(core
   src/check_names.cc
   src/counter.cc
+  src/detail/builder.impl.h
   src/detail/ckms_quantiles.cc
   src/detail/time_window_quantiles.cc
   src/detail/utils.cc
   src/gauge.cc
+  src/family.impl.h
   src/histogram.cc
   src/registry.cc
+  src/registry.impl.h
   src/serializer.cc
   src/summary.cc
   src/text_serializer.cc

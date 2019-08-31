@@ -21,6 +21,11 @@ if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_EXTENSIONS Off)
 endif()
 
+# Put DLLs and binaries into same directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
 # Hide things by default for shared libraries
 if(BUILD_SHARED_LIBS)
   set(CMAKE_C_VISIBILITY_PRESET hidden)

@@ -5,9 +5,11 @@
 #include <tuple>
 #include <vector>
 
+#include "prometheus/detail/core_export.h"
+
 namespace prometheus {
 
-struct ClientMetric {
+struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
   // Label
 
   struct Label {

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "prometheus/collectable.h"
+#include "prometheus/detail/core_export.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/family.h"
 #include "prometheus/metric_family.h"
@@ -32,7 +33,7 @@ class Builder;
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class Registry : public Collectable {
+class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
  public:
   /// \brief Returns a list of metrics and their samples.
   ///

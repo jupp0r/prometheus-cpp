@@ -61,8 +61,8 @@ ClientMetric Histogram::Collect() const {
   return metric;
 }
 
-template class Family<Histogram>;
-template class detail::Builder<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Histogram>;
 
 template Family<Histogram>& Registry::Add(
     const std::string& name, const std::string& help,

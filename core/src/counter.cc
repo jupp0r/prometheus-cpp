@@ -18,8 +18,8 @@ ClientMetric Counter::Collect() const {
   return metric;
 }
 
-template class detail::Builder<Counter>;
-template class Family<Counter>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Counter>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;
 
 template Family<Counter>& Registry::Add(
     const std::string& name, const std::string& help,

@@ -1,8 +1,9 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(prometheus-cpp)
+project(prometheus-cpp VERSION 0.8.0)
 
+include(GenerateExportHeader)
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -18,6 +19,13 @@ option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the C
 if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_EXTENSIONS Off)
+endif()
+
+# Hide things by default for shared libraries
+if(BUILD_SHARED_LIBS)
+  set(CMAKE_C_VISIBILITY_PRESET hidden)
+  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+  set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 endif()
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

@@ -38,8 +38,8 @@ ClientMetric Summary::Collect() {
   return metric;
 }
 
-template class Family<Summary>;
-template class detail::Builder<Summary>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Summary>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Summary>;
 
 template Family<Summary>& Registry::Add(
     const std::string& name, const std::string& help,

@@ -49,8 +49,8 @@ ClientMetric Gauge::Collect() const {
   return metric;
 }
 
-template class Family<Gauge>;
-template class detail::Builder<Gauge>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Gauge>;
 
 template Family<Gauge>& Registry::Add(
     const std::string& name, const std::string& help,

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -euo pipefail
+
+BUILDSYSTEM_ARG=${1:?}
+OS_ARG=${2:?}
+
+case "${OS_ARG}" in
+    ubuntu*)
+        packages=(locales)
+
+        case "${BUILDSYSTEM_ARG}" in
+            bazel)
+                curl -sL https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+                echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+                packages+=(bazel)
+                ;;
+            cmake)
+                packages+=(libcurl4-openssl-dev)
+                ;;
+        esac
+
+        curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+        source /etc/lsb-release
+        echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+        packages+=(telegraf)
+
+        sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
+        sudo apt-get update
+        sudo apt-get install -y "${packages[@]}"
+        sudo locale-gen de_DE.UTF-8 # used by SerializerTest
+        ;;
+
+    macOS*)
+        packages=(google-benchmark prometheus telegraf)
+
+        case "${BUILDSYSTEM_ARG}" in
+            bazel)
+                packages+=(bazelbuild/tap/bazel)
+                ;;
+            cmake)
+                ;;
+        esac
+
+        brew install "${packages[@]}"
+        ;;
+esac

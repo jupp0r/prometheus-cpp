@@ -23,6 +23,7 @@ class SerializerTest : public testing::Test {
   TextSerializer textSerializer;
 };
 
+#ifndef _WIN32
 TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
   // save and change locale
   const std::locale oldLocale = std::locale::classic();
@@ -34,6 +35,7 @@ TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
   // restore locale
   std::locale::global(oldLocale);
 }
+#endif
 
 TEST_F(SerializerTest, shouldRestoreStreamState) {
   std::ostringstream os;

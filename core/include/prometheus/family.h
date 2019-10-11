@@ -187,7 +187,7 @@ std::map<std::string, std::string> Family<T>::VariableLabels(const std::vector<s
   for (auto str : variable_labels_) {
     labels_map.emplace(str, values[i++]);
   }
-  return std::move(labels_map);
+  return labels_map;
 }
 
 template <typename T>

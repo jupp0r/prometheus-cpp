@@ -101,22 +101,11 @@ detail::Builder<Histogram> BuildHistogram();
 
 template <>
 Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values);
-/*{
-  assert(variable_labels_.size() == values.size());
-  std::map<std::string, std::string> labels_map(constant_labels_);
 
-  int i = 0;
-  for (auto str : variable_labels_) {
-    labels_map.emplace(str, values[i++]);
-  }
-  return Add(std::move(labels_map), bucket_boundaries_);
-}*/
-
+namespace detail {
 template<>
-Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry);
-/*{
-  Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
-  return family.SetBucketBoundaries(bucket_boundaries_);
-}*/
+Family <Histogram> &Builder<Histogram>::Register(Registry &registry);
+
+}  // namespace prometheus
 
 }  // namespace prometheus

@@ -64,9 +64,11 @@ Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& va
   return Add(VariableLabels(values), bucket_boundaries_);
 }
 
+namespace detail {
 template<>
 Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry){
   Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
   return family.SetBucketBoundaries(bucket_boundaries_);
 }
+}  // namespace prometheus
 }  // namespace prometheus

@@ -149,8 +149,8 @@ class Family : public Collectable {
 
   const std::string name_;
   const std::string help_;
-  const std::map<std::string, std::string> constant_labels_;
   std::vector<std::string> variable_labels_;
+  const std::map<std::string, std::string> constant_labels_;
   std::vector<detail::CKMSQuantiles::Quantile> quantiles_;
   std::vector<double> bucket_boundaries_;
   std::mutex mutex_;

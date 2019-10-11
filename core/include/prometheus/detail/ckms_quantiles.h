@@ -11,10 +11,10 @@ namespace detail {
 class CKMSQuantiles {
  public:
   struct Quantile {
-    const double quantile;
-    const double error;
-    const double u;
-    const double v;
+    double quantile;
+    double error;
+    double u;
+    double v;
 
     Quantile(double quantile, double error);
   };

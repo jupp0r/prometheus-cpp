@@ -119,4 +119,25 @@ class Summary {
 /// Register(Registry&).
 detail::Builder<Summary> BuildSummary();
 
+template <>
+Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values);
+/*{
+  assert(variable_labels_.size() == values.size());
+  std::map<std::string, std::string> labels_map(constant_labels_);
+
+  int i = 0;
+  for (auto str : variable_labels_) {
+    labels_map.emplace(str, values[i++]);
+  }
+  std::initializer_list<std::string> quantiles;
+  return Add(labels_map, quantiles_);
+}*/
+
+template<>
+Family<Summary>& detail::Builder<Summary>::Register(Registry& registry);
+/*{
+  Family<Summary>& family = registry.Add<Summary>(name_, help_, variable_labels_, labels_);
+  return family.SetQuantiles(quantiles_);
+}*/
+
 }  // namespace prometheus

@@ -36,4 +36,15 @@ ClientMetric Summary::Collect() {
 
 detail::Builder<Summary> BuildSummary() { return {}; }
 
+template <>
+Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values) {
+  return Add(VariableLabels(values), quantiles_);
+}
+
+template<>
+Family<Summary>& detail::Builder<Summary>::Register(Registry& registry){
+  Family<Summary>& family = registry.Add<Summary>(name_, help_, variable_labels_, labels_);
+  return family.SetQuantiles(quantiles_);
+}
+
 }  // namespace prometheus

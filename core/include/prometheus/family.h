@@ -17,9 +17,13 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/detail/utils.h"
+#include "prometheus/detail/ckms_quantiles.h"
 #include "prometheus/metric_family.h"
 
 namespace prometheus {
+
+class Summary;
+class Histogram;
 
 /// \brief A metric of type T with a set of labeled dimensions.
 ///
@@ -90,6 +94,10 @@ class Family : public Collectable {
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
 
+  Family(const std::string& name, const std::string& help,
+         const std::vector<std::string>& variable_labels,
+         const std::map<std::string, std::string>& constant_labels);
+
   /// \brief Add a new dimensional data.
   ///
   /// Each new set of labels adds a new dimensional data and is exposed in
@@ -108,6 +116,18 @@ class Family : public Collectable {
   /// labels already exists - the already existing dimensional data.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
+
+  T& WithLabelValues(const std::vector<std::string>& values);
+
+  template <typename U = T>
+  typename std::enable_if<(std::is_same<U, Summary>::value), Family<T>&>::type
+  SetQuantiles(std::vector<detail::CKMSQuantiles::Quantile>& quantiles);
+
+  template <typename U = T>
+  typename std::enable_if<(std::is_same<U, Histogram>::value), Family<T>&>::type
+  SetBucketBoundaries(std::vector<double>& bucket_boundaries);
+
+
 
   /// \brief Remove the given dimensional data.
   ///
@@ -130,17 +150,67 @@ class Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
+  std::vector<std::string> variable_labels_;
+  std::vector<detail::CKMSQuantiles::Quantile> quantiles_;
+  std::vector<double> bucket_boundaries_;
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
+  std::map<std::string, std::string> VariableLabels(const std::vector<std::string>& values);
 };
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
                   const std::map<std::string, std::string>& constant_labels)
-    : name_(name), help_(help), constant_labels_(constant_labels) {
+        : name_(name), help_(help), constant_labels_(constant_labels) {
   assert(CheckMetricName(name_));
 }
+template <typename T>
+Family<T>::Family(const std::string& name, const std::string& help,
+                  const std::vector<std::string>& variable_labels,
+                  const std::map<std::string, std::string>& constant_labels)
+    : name_(name), help_(help), variable_labels_(variable_labels),
+    constant_labels_(constant_labels) {
+  assert(CheckMetricName(name_));
+}
+
+template <typename T>
+std::map<std::string, std::string> Family<T>::VariableLabels(const std::vector<std::string>& values)
+{
+  if (variable_labels_.size() != values.size()) {
+    throw std::length_error("The size of variable_labels was not equal to"
+                            "the number of values when call WithLabelValues.");
+  }
+  std::map<std::string, std::string> labels_map;
+
+  int i = 0;
+  for (auto str : variable_labels_) {
+    labels_map.emplace(str, values[i++]);
+  }
+  return std::move(labels_map);
+}
+
+template <typename T>
+T& Family<T>::WithLabelValues(const std::vector<std::string>& values) {
+  return Add(VariableLabels(values));
+}
+
+template <typename T>
+template <typename U>
+typename std::enable_if<(std::is_same<U, Summary>::value), Family<T>&>::type
+Family<T>::SetQuantiles(std::vector<detail::CKMSQuantiles::Quantile>& quantiles){
+  quantiles_ = quantiles;
+  return *this;
+}
+
+template <typename T>
+template <typename U>
+typename std::enable_if<(std::is_same<U, Histogram>::value), Family<T>&>::type
+Family<T>::SetBucketBoundaries(std::vector<double>& bucket_boundaries){
+  bucket_boundaries_ = bucket_boundaries;
+  return *this;
+}
+
 
 template <typename T>
 template <typename... Args>

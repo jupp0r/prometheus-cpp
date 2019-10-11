@@ -59,4 +59,14 @@ ClientMetric Histogram::Collect() const {
 
 detail::Builder<Histogram> BuildHistogram() { return {}; }
 
+template <>
+Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values) {\
+  return Add(VariableLabels(values), bucket_boundaries_);
+}
+
+template<>
+Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry){
+  Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
+  return family.SetBucketBoundaries(bucket_boundaries_);
+}
 }  // namespace prometheus

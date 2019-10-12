@@ -117,17 +117,24 @@ class Family : public Collectable {
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args);
 
+  /// \brief Add a new dimensional data.
+  /// different with Add, this method call only when build<T>.LavelVec(...)
+  /// is call before.
+  /// then this method call Add
   T& WithLabelValues(const std::vector<std::string>& values);
 
+
+  /// \brief when T is Summary, set the Quantiles.
+  /// should be call before call WithLabelValues
   template <typename U = T>
   typename std::enable_if<(std::is_same<U, Summary>::value), Family<T>&>::type
   SetQuantiles(std::vector<detail::CKMSQuantiles::Quantile>& quantiles);
 
+  /// \brief when T is Summary, set the BucketBoundaries.
+  /// should be call before call WithLabelValues
   template <typename U = T>
   typename std::enable_if<(std::is_same<U, Histogram>::value), Family<T>&>::type
   SetBucketBoundaries(std::vector<double>& bucket_boundaries);
-
-
 
   /// \brief Remove the given dimensional data.
   ///

@@ -104,6 +104,23 @@ class Summary {
 ///                            .Labels({{"key", "value"}})
 ///                            .Register(*registry);
 ///
+/// summary_family.Add({{"key1","value1"}}, Summary::Quantiles{}).Observe(1.0);
+/// ...
+/// \endcode
+///
+/// Example usage2:
+///
+/// \code
+/// auto registry = std::make_shared<Registry>();
+/// auto& summary_family = prometheus::BuildSummary()
+///                            .Name("some_name")
+///                            .Help("Additional description.")
+///                            .Labels({{"key", "value"}})
+/////                          .LabelsVec({"key2","key3"})
+///                            .Quantiles(Summary::Quantiles{})
+///                            .Register(*registry);
+///
+/// summary_family.WithLabelValues({"value2","value3"}).Observe(1.0);
 /// ...
 /// \endcode
 ///
@@ -114,15 +131,24 @@ class Summary {
 /// - Help(const std::string&) to set an additional description.
 /// - Label(const std::map<std::string, std::string>&) to assign a set of
 ///   key-value pairs (= labels) to the metric.
+/// - LabelsVec(const std::vector<std::string&) to pre-affirmation pairs(= labels)'s
+///   key; and you and use family.WithLabelValues({"value1","value1"}) to get the T;
+///   note than: vector<names>.size() == vector<values>.size()
+/// - BucketBoundaries(const std::vector<double>&) to pre-affirmation bucketBoundaries
+///   when use WithLabelValues()
 ///
 /// To finish the configuration of the Summary metric register it with
 /// Register(Registry&).
 detail::Builder<Summary> BuildSummary();
 
+
+/// \brief Specialization of WithLabelValues<Summary>.
 template <>
 Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values);
 
 namespace detail {
+
+/// \brief Specialization of Register<Summary>.
 template<>
 Family<Summary>& detail::Builder<Summary>::Register(Registry& registry);
 }  // namespace prometheus

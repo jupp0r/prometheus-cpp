@@ -84,6 +84,23 @@ class Histogram {
 ///                              .Labels({{"key", "value"}})
 ///                              .Register(*registry);
 ///
+/// histogram_family.Add({{"key1","value1"}}, Histogram::BucketBoundaries{1, 2}).Observe(1.0);
+/// ...
+/// \endcode
+///
+/// Example usage2:
+///
+/// \code
+/// auto registry = std::make_shared<Registry>();
+/// auto& histogram_family = prometheus::BuildHistogram()
+///                              .Name("some_name")
+///                              .Help("Additional description.")
+///                              .Labels({{"key", "value"}})
+///                              .LabelsVec({"key2","key3"})
+///                              .BucketBoundaries({Histogram::BucketBoundaries{1, 2}})
+///                              .Register(*registry);
+///
+/// histogram_family.WithLabelValues({"value2","value3"}).Observe(1.0);
 /// ...
 /// \endcode
 ///
@@ -94,15 +111,24 @@ class Histogram {
 /// - Help(const std::string&) to set an additional description.
 /// - Label(const std::map<std::string, std::string>&) to assign a set of
 ///   key-value pairs (= labels) to the metric.
+/// - LabelsVec(const std::vector<std::string&) to pre-affirmation pairs(= labels)'s
+///   key; and you and use family.WithLabelValues({"value1","value1"}) to get the T;
+///   note than: vector<names>.size() == vector<values>.size()
+/// - BucketBoundaries(const std::vector<double>&) to pre-affirmation bucketBoundaries
+///   when use WithLabelValues()
 ///
 /// To finish the configuration of the Histogram metric register it with
 /// Register(Registry&).
 detail::Builder<Histogram> BuildHistogram();
 
+
+/// \brief Specialization of WithLabelValues<Histogram>.
 template <>
 Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values);
 
 namespace detail {
+
+/// \brief Specialization of Register<Histogram>.
 template<>
 Family <Histogram> &Builder<Histogram>::Register(Registry &registry);
 

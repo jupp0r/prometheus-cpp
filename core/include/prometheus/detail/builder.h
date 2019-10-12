@@ -32,7 +32,6 @@ class Builder {
   template <typename U= T, typename = typename std::enable_if<std::is_same<U, Histogram>::value,Histogram>::type>
   Builder& BucketBoundaries(const std::vector<double>&);
 
-//  template <typename N = T, typename = typename std::enable_if<std::is_same<T, Guage>::value || std::is_same<T, Counter>::value, Guage>::type>
   Family<T>& Register(Registry&);
 
  private:

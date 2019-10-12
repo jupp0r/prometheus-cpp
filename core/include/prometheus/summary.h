@@ -134,7 +134,7 @@ class Summary {
 /// - LabelsVec(const std::vector<std::string&) to pre-affirmation pairs(= labels)'s
 ///   key; and you and use family.WithLabelValues({"value1","value1"}) to get the T;
 ///   note than: vector<names>.size() == vector<values>.size()
-/// - BucketBoundaries(const std::vector<double>&) to pre-affirmation bucketBoundaries
+/// - Quantiles(const std::vector<detail::CKMSQuantiles::Quantile>&) to pre-affirmation Quantiles
 ///   when use WithLabelValues()
 ///
 /// To finish the configuration of the Summary metric register it with

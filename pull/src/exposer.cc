@@ -11,11 +11,11 @@
 
 namespace prometheus {
 
-Exposer::Exposer(const std::string& bind_address, const std::string& uri, const std::size_t num_threads)
-    : server_(new CivetServer{
-            std::vector<std::string>{
-                "listening_ports", bind_address,
-                "num_threads", std::to_string(num_threads)}}),
+Exposer::Exposer(const std::string& bind_address, const std::string& uri,
+                 const std::size_t num_threads)
+    : server_(new CivetServer{std::vector<std::string>{
+          "listening_ports", bind_address, "num_threads",
+          std::to_string(num_threads)}}),
       exposer_registry_(std::make_shared<Registry>()),
       metrics_handler_(
           new detail::MetricsHandler{collectables_, *exposer_registry_}),

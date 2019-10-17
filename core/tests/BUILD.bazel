@@ -5,7 +5,7 @@ cc_test(
         "*.h",
     ]),
     copts = ["-Iexternal/googletest/include"],
-    linkstatic = 1,
+    linkstatic = True,
     deps = [
         "//core",
         "@com_google_googletest//:gtest_main",

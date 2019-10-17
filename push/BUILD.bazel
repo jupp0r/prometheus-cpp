@@ -7,14 +7,14 @@ cc_library(
     hdrs = glob(
         ["include/**/*.h"],
     ),
-    copts = [
-        "-DPROMETHEUS_CPP_COMPILE_PUSH",
-    ],
     linkopts = select({
         "//:windows": [],
         "//:windows_msvc": [],
         "//conditions:default": ["-lpthread"],
     }),
+    local_defines = [
+        "PROMETHEUS_CPP_COMPILE_PUSH",
+    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [

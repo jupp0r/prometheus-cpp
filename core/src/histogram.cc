@@ -1,5 +1,9 @@
 #include "prometheus/histogram.h"
 
+#include "detail/builder.impl.h"
+#include "family.impl.h"
+#include "registry.impl.h"
+
 #include <algorithm>
 #include <cassert>
 #include <iterator>
@@ -56,6 +60,13 @@ ClientMetric Histogram::Collect() const {
 
   return metric;
 }
+
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Histogram>;
+
+template Family<Histogram>& Registry::Add(
+    const std::string& name, const std::string& help,
+    const std::map<std::string, std::string>& labels);
 
 detail::Builder<Histogram> BuildHistogram() { return {}; }
 

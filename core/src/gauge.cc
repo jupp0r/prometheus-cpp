@@ -1,5 +1,9 @@
 #include "prometheus/gauge.h"
 
+#include "detail/builder.impl.h"
+#include "family.impl.h"
+#include "registry.impl.h"
+
 #include <ctime>
 
 namespace prometheus {
@@ -44,6 +48,13 @@ ClientMetric Gauge::Collect() const {
   metric.gauge.value = Value();
   return metric;
 }
+
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
+template class PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Gauge>;
+
+template Family<Gauge>& Registry::Add(
+    const std::string& name, const std::string& help,
+    const std::map<std::string, std::string>& labels);
 
 detail::Builder<Gauge> BuildGauge() { return {}; }
 

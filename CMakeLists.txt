@@ -1,13 +1,14 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(prometheus-cpp)
+project(prometheus-cpp VERSION 0.8.0)
 
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+option(BUILD_SHARED_LIBS "Build libraries as shared ones" OFF)
 option(ENABLE_PULL "Build prometheus-cpp pull library" ON)
 option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)
@@ -18,6 +19,18 @@ option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the C
 if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_EXTENSIONS Off)
+endif()
+
+# Put DLLs and binaries into same directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
+# Hide things by default for shared libraries
+if(BUILD_SHARED_LIBS)
+  set(CMAKE_C_VISIBILITY_PRESET hidden)
+  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+  set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 endif()
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

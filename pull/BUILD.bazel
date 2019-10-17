@@ -9,6 +9,7 @@ cc_library(
     ),
     copts = [
         "-DHAVE_ZLIB",
+        "-DPROMETHEUS_CPP_COMPILE_PULL",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],

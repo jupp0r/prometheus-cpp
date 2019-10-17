@@ -2,12 +2,15 @@
 add_library(core
   src/check_names.cc
   src/counter.cc
+  src/detail/builder.impl.h
   src/detail/ckms_quantiles.cc
   src/detail/time_window_quantiles.cc
   src/detail/utils.cc
   src/gauge.cc
+  src/family.impl.h
   src/histogram.cc
   src/registry.cc
+  src/registry.impl.h
   src/serializer.cc
   src/summary.cc
   src/text_serializer.cc
@@ -26,7 +29,13 @@ target_include_directories(core
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-set_target_properties(core PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-core)
+set_target_properties(core
+  PROPERTIES
+    OUTPUT_NAME ${PROJECT_NAME}-core
+    DEFINE_SYMBOL PROMETHEUS_CPP_COMPILE_CORE
+    VERSION "${PROJECT_VERSION}"
+    SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+)
 
 install(
   TARGETS core

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "prometheus/collectable.h"
+#include "prometheus/detail/core_export.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/family.h"
 #include "prometheus/metric_family.h"
@@ -32,7 +33,7 @@ class Builder;
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class Registry : public Collectable {
+class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
  public:
   /// \brief Returns a list of metrics and their samples.
   ///
@@ -53,15 +54,5 @@ class Registry : public Collectable {
   std::vector<std::unique_ptr<Collectable>> collectables_;
   std::mutex mutex_;
 };
-
-template <typename T>
-Family<T>& Registry::Add(const std::string& name, const std::string& help,
-                         const std::map<std::string, std::string>& labels) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
-  auto& ref = *family;
-  collectables_.push_back(std::move(family));
-  return ref;
-}
 
 }  // namespace prometheus

@@ -7,6 +7,9 @@ cc_library(
     hdrs = glob(
         ["include/**/*.h"],
     ),
+    copts = [
+        "-DPROMETHEUS_CPP_COMPILE_CORE",
+    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
 )

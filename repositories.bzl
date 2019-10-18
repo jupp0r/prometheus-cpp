@@ -3,10 +3,10 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 def load_civetweb():
     http_archive(
         name = "civetweb",
-        strip_prefix = "civetweb-1.11",
-        sha256 = "de7d5e7a2d9551d325898c71e41d437d5f7b51e754b242af897f7be96e713a42",
+        strip_prefix = "civetweb-2c1caa6e690bfe3b435a10c372ab2dcd14b872e8",
+        sha256 = "d576b2257fe116523e5644232868670dcdd6c89b8e42b69d51e26b146575ab6a",
         urls = [
-            "https://github.com/civetweb/civetweb/archive/v1.11.tar.gz",
+            "https://github.com/civetweb/civetweb/archive/2c1caa6e690bfe3b435a10c372ab2dcd14b872e8.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )

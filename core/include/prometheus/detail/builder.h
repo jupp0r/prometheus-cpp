@@ -3,12 +3,11 @@
 #include <map>
 #include <string>
 
-#include "prometheus/registry.h"
-
 namespace prometheus {
 
 template <typename T>
 class Family;
+class Registry;
 
 namespace detail {
 

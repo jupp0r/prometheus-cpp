@@ -1,6 +1,10 @@
-#pragma once
-
 #include "prometheus/detail/builder.h"
+
+#include "prometheus/counter.h"
+#include "prometheus/gauge.h"
+#include "prometheus/histogram.h"
+#include "prometheus/registry.h"
+#include "prometheus/summary.h"
 
 namespace prometheus {
 
@@ -30,6 +34,16 @@ Family<T>& Builder<T>::Register(Registry& registry) {
   return registry.Add<T>(name_, help_, labels_);
 }
 
+template class PROMETHEUS_CPP_CORE_EXPORT Builder<Counter>;
+template class PROMETHEUS_CPP_CORE_EXPORT Builder<Gauge>;
+template class PROMETHEUS_CPP_CORE_EXPORT Builder<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT Builder<Summary>;
+
 }  // namespace detail
+
+detail::Builder<Counter> BuildCounter() { return {}; }
+detail::Builder<Gauge> BuildGauge() { return {}; }
+detail::Builder<Histogram> BuildHistogram() { return {}; }
+detail::Builder<Summary> BuildSummary() { return {}; }
 
 }  // namespace prometheus

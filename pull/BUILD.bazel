@@ -7,9 +7,9 @@ cc_library(
     hdrs = glob(
         ["include/**/*.h"],
     ),
-    copts = [
-        "-DHAVE_ZLIB",
-        "-DPROMETHEUS_CPP_COMPILE_PULL",
+    local_defines = [
+        "HAVE_ZLIB",
+        "PROMETHEUS_CPP_COMPILE_PULL",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],

@@ -1,6 +1,9 @@
-#pragma once
-
 #include "prometheus/family.h"
+
+#include "prometheus/counter.h"
+#include "prometheus/gauge.h"
+#include "prometheus/histogram.h"
+#include "prometheus/summary.h"
 
 namespace prometheus {
 
@@ -83,5 +86,10 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
+
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Summary>;
 
 }  // namespace prometheus

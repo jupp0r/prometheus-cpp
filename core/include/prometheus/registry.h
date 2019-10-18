@@ -14,6 +14,11 @@
 
 namespace prometheus {
 
+class Counter;
+class Gauge;
+class Histogram;
+class Summary;
+
 namespace detail {
 
 template <typename T>
@@ -35,6 +40,12 @@ class Builder;
 /// a data race.
 class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
  public:
+  /// \brief name Create a new registry.
+  Registry();
+
+  /// \brief name Destroys a registry.
+  ~Registry();
+
   /// \brief Returns a list of metrics and their samples.
   ///
   /// Every time the Registry is scraped it calls each of the metrics Collect

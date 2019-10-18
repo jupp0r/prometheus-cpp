@@ -2,8 +2,8 @@
 #include <random>
 
 #include <benchmark/benchmark.h>
-#include <prometheus/summary.h>
 #include <prometheus/registry.h>
+#include <prometheus/summary.h>
 
 using prometheus::Summary;
 

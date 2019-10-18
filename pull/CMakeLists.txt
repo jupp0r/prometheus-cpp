@@ -31,6 +31,7 @@ target_link_libraries(pull
 target_include_directories(pull
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   PRIVATE
     ${CIVETWEB_INCLUDE_DIRS}
 )
@@ -43,9 +44,14 @@ target_compile_definitions(pull
 set_target_properties(pull
   PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME}-pull
-    DEFINE_SYMBOL PROMETHEUS_CPP_COMPILE_PULL
+    DEFINE_SYMBOL PROMETHEUS_CPP_PULL_EXPORTS
     VERSION "${PROJECT_VERSION}"
     SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+)
+
+generate_export_header(pull
+  BASE_NAME ${PROJECT_NAME}-pull
+  EXPORT_FILE_NAME include/prometheus/detail/pull_export.h
 )
 
 install(
@@ -58,7 +64,7 @@ install(
 )
 
 install(
-  DIRECTORY include/
+  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

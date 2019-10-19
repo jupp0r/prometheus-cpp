@@ -26,14 +26,20 @@ target_link_libraries(core
 target_include_directories(core
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 )
 
 set_target_properties(core
   PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME}-core
-    DEFINE_SYMBOL PROMETHEUS_CPP_COMPILE_CORE
+    DEFINE_SYMBOL PROMETHEUS_CPP_CORE_EXPORTS
     VERSION "${PROJECT_VERSION}"
     SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+)
+
+generate_export_header(core
+  BASE_NAME ${PROJECT_NAME}-core
+  EXPORT_FILE_NAME include/prometheus/detail/core_export.h
 )
 
 install(
@@ -46,7 +52,7 @@ install(
 )
 
 install(
-  DIRECTORY include/
+  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

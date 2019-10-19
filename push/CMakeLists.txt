@@ -19,6 +19,7 @@ target_link_libraries(push
 target_include_directories(push
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   PRIVATE
     ${CURL_INCLUDE_DIRS}
 )
@@ -26,9 +27,14 @@ target_include_directories(push
 set_target_properties(push
   PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME}-push
-    DEFINE_SYMBOL PROMETHEUS_CPP_COMPILE_PUSH
+    DEFINE_SYMBOL PROMETHEUS_CPP_PUSH_EXPORTS
     VERSION "${PROJECT_VERSION}"
     SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+)
+
+generate_export_header(push
+  BASE_NAME ${PROJECT_NAME}-push
+  EXPORT_FILE_NAME include/prometheus/detail/push_export.h
 )
 
 install(
@@ -41,7 +47,7 @@ install(
 )
 
 install(
-  DIRECTORY include/
+  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

@@ -60,6 +60,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
+                 const std::vector<std::string>& variable_labels,
                  const std::map<std::string, std::string>& labels);
 
   std::vector<std::unique_ptr<Collectable>> collectables_;

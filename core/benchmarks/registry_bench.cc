@@ -41,3 +41,37 @@ static void BM_Registry_CreateCounter(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_Registry_CreateCounter)->Range(0, 4096);
+
+static void BM_Registry_CreateCounter_WithLabelValues(benchmark::State& state) {
+  using prometheus::BuildCounter;
+  using prometheus::Counter;
+  using prometheus::Registry;
+  Registry registry;
+
+  const auto& labels = GenerateRandomLabels(state.range(0));
+  std::vector<std::string> label_names;
+  std::vector<std::string> label_values;
+  std::for_each(labels.begin(), labels.end(),
+                [&](const std::pair<std::string,std::string>& p){
+                  label_names.push_back(p.first);
+                  label_values.push_back(p.second);
+                });
+
+  auto& counter_family = BuildCounter()
+          .Labels(GenerateRandomLabels(10))
+          .Name("benchmark_counter")
+          .Help("")
+          .LabelsVec(label_names)
+          .Register(registry);
+
+  while (state.KeepRunning()) {
+    auto start = std::chrono::high_resolution_clock::now();
+    counter_family.WithLabelValues(label_values);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+    state.SetIterationTime(elapsed_seconds.count());
+  }
+}
+BENCHMARK(BM_Registry_CreateCounter_WithLabelValues)->Range(0, 4096);

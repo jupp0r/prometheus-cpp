@@ -13,10 +13,10 @@ namespace detail {
 class PROMETHEUS_CPP_CORE_EXPORT CKMSQuantiles {
  public:
   struct PROMETHEUS_CPP_CORE_EXPORT Quantile {
-    const double quantile;
-    const double error;
-    const double u;
-    const double v;
+    double quantile;
+    double error;
+    double u;
+    double v;
 
     Quantile(double quantile, double error);
   };

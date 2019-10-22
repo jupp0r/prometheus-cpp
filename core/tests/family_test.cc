@@ -26,6 +26,22 @@ TEST(FamilyTest, labels) {
               ::testing::ElementsAre(const_label, dynamic_label));
 }
 
+TEST(FamilyTest, variable_labels) {
+  auto const_label = ClientMetric::Label{"component", "test"};
+  auto dynamic_label = ClientMetric::Label{"status", "200"};
+
+  Family<Counter> family{"total_requests",
+                         "Counts all requests",
+                         {dynamic_label.name},
+                         {{const_label.name, const_label.value}}};
+  family.WithLabelValues({{dynamic_label.value}});
+  auto collected = family.Collect();
+  ASSERT_GE(collected.size(), 1U);
+  ASSERT_GE(collected.at(0).metric.size(), 1U);
+  EXPECT_THAT(collected.at(0).metric.at(0).label,
+              ::testing::ElementsAre(const_label, dynamic_label));
+}
+
 TEST(FamilyTest, counter_value) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto& counter = family.Add({});
@@ -34,6 +50,24 @@ TEST(FamilyTest, counter_value) {
   ASSERT_GE(collected.size(), 1U);
   ASSERT_GE(collected[0].metric.size(), 1U);
   EXPECT_EQ(1, collected[0].metric.at(0).counter.value);
+}
+
+TEST(FamilyTest, variable_counter_value) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  auto& counter = family.WithLabelValues({});
+  counter.Increment();
+  auto collected = family.Collect();
+  ASSERT_GE(collected.size(), 1U);
+  ASSERT_GE(collected[0].metric.size(), 1U);
+  EXPECT_EQ(1, collected[0].metric.at(0).counter.value);
+}
+
+TEST(FamilyTest, should_assert_error_variable_value_size) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  auto create_family_with_invalid_name = [&]() {
+    family.WithLabelValues({"haha"});
+  };
+  EXPECT_ANY_THROW(create_family_with_invalid_name());
 }
 
 TEST(FamilyTest, remove) {

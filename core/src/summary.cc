@@ -1,4 +1,5 @@
 #include "prometheus/summary.h"
+#include "prometheus/registry.h"
 
 namespace prometheus {
 
@@ -33,5 +34,18 @@ ClientMetric Summary::Collect() {
 
   return metric;
 }
+
+template <>
+Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values) {
+  return Add(VariableLabels(values), quantiles_);
+}
+
+namespace detail {
+template<>
+Family<Summary> &detail::Builder<Summary>::Register(Registry &registry) {
+  Family<Summary> &family = registry.Add<Summary>(name_, help_, variable_labels_, labels_);
+  return family.SetQuantiles(quantiles_);
+}
+} // namespace detail
 
 }  // namespace prometheus

@@ -1,4 +1,5 @@
 #include "prometheus/histogram.h"
+#include "prometheus/registry.h"
 
 #include <algorithm>
 #include <cassert>
@@ -59,5 +60,18 @@ ClientMetric Histogram::Collect() const {
 
   return metric;
 }
+
+template <>
+Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values) {\
+  return Add(VariableLabels(values), bucket_boundaries_);
+}
+
+namespace detail {
+template<>
+Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry){
+  Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
+  return family.SetBucketBoundaries(bucket_boundaries_);
+}
+}  // namespace detail
 
 }  // namespace prometheus

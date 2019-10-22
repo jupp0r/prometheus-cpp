@@ -18,9 +18,13 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/detail/utils.h"
+#include "prometheus/detail/ckms_quantiles.h"
 #include "prometheus/metric_family.h"
 
 namespace prometheus {
+
+class Summary;
+class Histogram;
 
 /// \brief A metric of type T with a set of labeled dimensions.
 ///
@@ -91,6 +95,10 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
 
+  Family(const std::string& name, const std::string& help,
+         const std::vector<std::string>& variable_labels,
+         const std::map<std::string, std::string>& constant_labels);
+
   /// \brief Add a new dimensional data.
   ///
   /// Each new set of labels adds a new dimensional data and is exposed in
@@ -111,6 +119,23 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
     return Add(labels, detail::make_unique<T>(args...));
   }
+  /// \brief Add a new dimensional data.
+  /// different with Add, this method call only when build<T>.LavelVec(...)
+  /// is call before.
+  /// then this method call Add
+  T& WithLabelValues(const std::vector<std::string>& values);
+
+  /// \brief when T is Summary, set the Quantiles.
+  /// should be call before call WithLabelValues
+  template <typename U = T>
+  typename std::enable_if<(std::is_same<U, Summary>::value), Family<T>&>::type
+  SetQuantiles(std::vector<detail::CKMSQuantiles::Quantile>& quantiles);
+
+  /// \brief when T is Summary, set the BucketBoundaries.
+  /// should be call before call WithLabelValues
+  template <typename U = T>
+  typename std::enable_if<(std::is_same<U, Histogram>::value), Family<T>&>::type
+  SetBucketBoundaries(std::vector<double>& bucket_boundaries);
 
   /// \brief Remove the given dimensional data.
   ///
@@ -132,12 +157,34 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
 
   const std::string name_;
   const std::string help_;
+  std::vector<std::string> variable_labels_;
   const std::map<std::string, std::string> constant_labels_;
+  std::vector<detail::CKMSQuantiles::Quantile> quantiles_;
+  std::vector<double> bucket_boundaries_;
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);
   T& Add(const std::map<std::string, std::string>& labels,
          std::unique_ptr<T> object);
+  std::map<std::string, std::string> VariableLabels(
+          const std::vector<std::string>& values);
 };
+
+template <typename T>
+template <typename U>
+typename std::enable_if<(std::is_same<U, Summary>::value), Family<T>&>::type
+Family<T>::SetQuantiles(std::vector<detail::CKMSQuantiles::Quantile>& quantiles){
+  quantiles_ = quantiles;
+  return *this;
+}
+
+template <typename T>
+template <typename U>
+typename std::enable_if<(std::is_same<U, Histogram>::value), Family<T>&>::type
+Family<T>::SetBucketBoundaries(std::vector<double>& bucket_boundaries){
+  bucket_boundaries_ = bucket_boundaries;
+  return *this;
+}
+
 
 }  // namespace prometheus

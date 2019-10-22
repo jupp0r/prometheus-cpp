@@ -15,6 +15,36 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
+Family<T>::Family(const std::string& name, const std::string& help,
+                  const std::vector<std::string>& variable_labels,
+                  const std::map<std::string, std::string>& constant_labels)
+        : name_(name), help_(help), variable_labels_(variable_labels),
+          constant_labels_(constant_labels) {
+  assert(CheckMetricName(name_));
+}
+
+template <typename T>
+std::map<std::string, std::string> Family<T>::VariableLabels(const std::vector<std::string>& values)
+{
+  if (variable_labels_.size() != values.size()) {
+    throw std::length_error("The size of variable_labels was not equal to"
+                            "the number of values when call WithLabelValues.");
+  }
+  std::map<std::string, std::string> labels_map;
+
+  int i = 0;
+  for (auto str : variable_labels_) {
+    labels_map.emplace(str, values[i++]);
+  }
+  return labels_map;
+}
+
+template <typename T>
+T& Family<T>::WithLabelValues(const std::vector<std::string>& values) {
+  return Add(VariableLabels(values));
+}
+
+template <typename T>
 T& Family<T>::Add(const std::map<std::string, std::string>& labels,
                   std::unique_ptr<T> object) {
   auto hash = detail::hash_labels(labels);
@@ -86,7 +116,6 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
   std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
   return collected;
 }
-
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;

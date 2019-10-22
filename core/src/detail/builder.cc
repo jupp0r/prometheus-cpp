@@ -18,6 +18,13 @@ Builder<T>& Builder<T>::Labels(
 }
 
 template <typename T>
+Builder<T>& Builder<T>::LabelsVec(
+        const std::vector<std::string>& labels) {
+  variable_labels_ = labels;
+  return *this;
+}
+
+template <typename T>
 Builder<T>& Builder<T>::Name(const std::string& name) {
   name_ = name;
   return *this;
@@ -31,7 +38,7 @@ Builder<T>& Builder<T>::Help(const std::string& help) {
 
 template <typename T>
 Family<T>& Builder<T>::Register(Registry& registry) {
-  return registry.Add<T>(name_, help_, labels_);
+  return registry.Add<T>(name_, help_, variable_labels_, labels_);
 }
 
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Counter>;

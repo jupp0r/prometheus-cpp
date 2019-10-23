@@ -3,6 +3,19 @@
 
 namespace prometheus {
 
+std::vector<double> ExponentialBuckets(double start,
+        double factor, int count) {
+  assert(count >= 1);
+  assert(start > 1);
+  assert(factor > 1);
+
+  std::vector<double> buckets;
+  for (int i=0; i < count; i++) {
+    buckets.push_back(start);
+    start *= factor;
+  }
+  return buckets;
+}
 Summary::Summary(const Quantiles& quantiles,
                  const std::chrono::milliseconds max_age, const int age_buckets)
     : quantiles_{quantiles},

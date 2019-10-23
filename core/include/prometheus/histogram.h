@@ -29,6 +29,18 @@ namespace prometheus {
 /// a data race.
 class PROMETHEUS_CPP_CORE_EXPORT Histogram {
  public:
+
+  /// \brief ExponentialBuckets creates 'count' buckets, where the lowest bucket has an
+  /// upper bound of 'start' and each following bucket's upper bound is 'factor'
+  /// times the previous bucket's upper bound. The final +Inf bucket is not counted
+  /// and not included in the returned vector. The returned vector is meant to be
+  /// used for the Buckets field of Histogram.
+  ///
+  /// The function assert if 'count' is 0 or negative, if 'start' is 0 or negative,
+  /// or if 'factor' is less than or equal 1.
+  static std::vector<double> ExponentialBuckets(double begin,
+         double factor, int count);
+ public:
   using BucketBoundaries = std::vector<double>;
 
   static const MetricType metric_type{MetricType::Histogram};

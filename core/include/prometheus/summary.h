@@ -11,7 +11,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/time_window_quantiles.h"
 #include "prometheus/metric_type.h"
-#include "family.h"
+#include "prometheus/family.h"
 
 namespace prometheus {
 

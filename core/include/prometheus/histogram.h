@@ -7,7 +7,7 @@
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/metric_type.h"
-#include "family.h"
+#include "prometheus/family.h"
 
 namespace prometheus {
 
@@ -38,7 +38,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   ///
   /// The function assert if 'count' is 0 or negative, if 'start' is 0 or negative,
   /// or if 'factor' is less than or equal 1.
-  static std::vector<double> ExponentialBuckets(double begin,
+  static std::vector<double> ExponentialBuckets(double start,
          double factor, int count);
  public:
   using BucketBoundaries = std::vector<double>;
@@ -136,12 +136,12 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
 PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Histogram> BuildHistogram();
 
 /// \brief Specialization of WithLabelValues<Histogram>.
-template <>
+PROMETHEUS_CPP_CORE_EXPORT template <>
 Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values);
 
 namespace detail {
 /// \brief Specialization of Register<Histogram>.
-template<>
+PROMETHEUS_CPP_CORE_EXPORT template<>
 Family <Histogram> &Builder<Histogram>::Register(Registry &registry);
 }  // namespace detail
 

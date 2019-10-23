@@ -5,6 +5,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/family.h"
 
 namespace prometheus {
 
@@ -97,5 +98,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
 /// To finish the configuration of the Counter metric, register it with
 /// Register(Registry&).
 PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Counter> BuildCounter();
+
+/// \brief Specialization of WithLabelValues<Counter>.
+PROMETHEUS_CPP_CORE_EXPORT template <>
+Counter& Family<Counter>::WithLabelValues(const std::vector<std::string>& values);
 
 }  // namespace prometheus

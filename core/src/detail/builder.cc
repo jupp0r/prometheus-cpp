@@ -46,6 +46,20 @@ template class PROMETHEUS_CPP_CORE_EXPORT Builder<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Histogram>;
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Summary>;
 
+
+template<>
+Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry){
+  Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
+  return family.SetBucketBoundaries(bucket_boundaries_);
+}
+
+template<>
+Family<Summary> &detail::Builder<Summary>::Register(Registry &registry) {
+  Family<Summary> &family = registry.Add<Summary>(name_, help_, variable_labels_, labels_);
+  return family.SetQuantiles(quantiles_);
+}
+
+
 }  // namespace detail
 
 detail::Builder<Counter> BuildCounter() { return {}; }

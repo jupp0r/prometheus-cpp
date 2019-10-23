@@ -3,19 +3,6 @@
 
 namespace prometheus {
 
-std::vector<double> ExponentialBuckets(double start,
-        double factor, int count) {
-  assert(count >= 1);
-  assert(start > 1);
-  assert(factor > 1);
-
-  std::vector<double> buckets;
-  for (int i=0; i < count; i++) {
-    buckets.push_back(start);
-    start *= factor;
-  }
-  return buckets;
-}
 Summary::Summary(const Quantiles& quantiles,
                  const std::chrono::milliseconds max_age, const int age_buckets)
     : quantiles_{quantiles},
@@ -47,18 +34,5 @@ ClientMetric Summary::Collect() {
 
   return metric;
 }
-
-template <>
-Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values) {
-  return Add(VariableLabels(values), quantiles_);
-}
-
-namespace detail {
-template<>
-Family<Summary> &detail::Builder<Summary>::Register(Registry &registry) {
-  Family<Summary> &family = registry.Add<Summary>(name_, help_, variable_labels_, labels_);
-  return family.SetQuantiles(quantiles_);
-}
-} // namespace detail
 
 }  // namespace prometheus

@@ -24,6 +24,7 @@ int main() {
                              .Name("time_running_seconds_total")
                              .Help("How many seconds is this server running?")
                              .Labels({{"label", "value"}})
+                             .LabelNamesVec({"label", "value"})
                              .Register(*registry);
 
   // add a counter to the metric family
@@ -37,6 +38,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // increment the counter by one (second)
     second_counter.Increment();
+    counter_family.WithLabelValues({"v1", "v2"}).Increment();
   }
   return 0;
 }

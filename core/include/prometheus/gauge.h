@@ -6,6 +6,7 @@
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/family.h"
 
 namespace prometheus {
 
@@ -109,5 +110,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
 /// To finish the configuration of the Gauge metric register it with
 /// Register(Registry&).
 PROMETHEUS_CPP_CORE_EXPORT detail::Builder<Gauge> BuildGauge();
+
+/// \brief Specialization of WithLabelValues<Gauge>.
+PROMETHEUS_CPP_CORE_EXPORT template <>
+Gauge& Family<Gauge>::WithLabelValues(const std::vector<std::string>& values);
 
 }  // namespace prometheus

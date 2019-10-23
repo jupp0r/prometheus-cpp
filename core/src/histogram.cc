@@ -8,6 +8,20 @@
 
 namespace prometheus {
 
+std::vector<double> Histogram::ExponentialBuckets(double start,
+        double factor, int count) {
+  assert(count >= 1);
+  assert(start > 0);
+  assert(factor > 1);
+
+  std::vector<double> buckets;
+  for (int i=0; i < count; i++) {
+    buckets.push_back(start);
+    start *= factor;
+  }
+  return buckets;
+}
+
 Histogram::Histogram(const BucketBoundaries& buckets)
     : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {
   assert(std::is_sorted(std::begin(bucket_boundaries_),
@@ -60,18 +74,5 @@ ClientMetric Histogram::Collect() const {
 
   return metric;
 }
-
-template <>
-Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values) {\
-  return Add(VariableLabels(values), bucket_boundaries_);
-}
-
-namespace detail {
-template<>
-Family<Histogram>& detail::Builder<Histogram>::Register(Registry& registry){
-  Family<Histogram>& family = registry.Add<Histogram>(name_, help_, variable_labels_, labels_);
-  return family.SetBucketBoundaries(bucket_boundaries_);
-}
-}  // namespace detail
 
 }  // namespace prometheus

@@ -121,4 +121,25 @@ template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Summary>;
 
+
+template <>
+Gauge& Family<Gauge>::WithLabelValues(const std::vector<std::string>& values) {\
+  return Add(VariableLabels(values));
+}
+
+template <>
+Counter& Family<Counter>::WithLabelValues(const std::vector<std::string>& values) {\
+  return Add(VariableLabels(values));
+}
+
+template <>
+Summary& Family<Summary>::WithLabelValues(const std::vector<std::string>& values) {
+  return Add(VariableLabels(values), quantiles_);
+}
+
+template <>
+Histogram& Family<Histogram>::WithLabelValues(const std::vector<std::string>& values) {\
+  return Add(VariableLabels(values), bucket_boundaries_);
+}
+
 }  // namespace prometheus

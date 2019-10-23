@@ -129,7 +129,7 @@ TEST_F(BuilderTest, build_histogram_vec) {
           .Name(name)
           .Help(help)
           .Labels(const_labels)
-          .LabelsVec(variable_labels)
+          .LabelNamesVec(variable_labels)
           .BucketBoundaries({Histogram::BucketBoundaries{1, 2}})
           .Register(registry);
   family.WithLabelValues(variable_values);
@@ -153,7 +153,7 @@ TEST_F(BuilderTest, build_summary_vec) {
           .Name(name)
           .Help(help)
           .Labels(const_labels)
-          .LabelsVec(variable_labels)
+          .LabelNamesVec(variable_labels)
           .Quantiles(Summary::Quantiles{})
           .Register(registry);
   family.WithLabelValues(variable_values);

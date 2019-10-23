@@ -20,7 +20,7 @@ template <typename T>
 class Builder {
  public:
   Builder& Labels(const std::map<std::string, std::string>& labels);
-  Builder& LabelsVec(const std::vector<std::string>& labels);
+  Builder& LabelNamesVec(const std::vector<std::string>& labels);
   Builder& Name(const std::string&);
   Builder& Help(const std::string&);
   Family<T>& Register(Registry&);

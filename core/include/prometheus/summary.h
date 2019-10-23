@@ -118,7 +118,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
 ///                            .Name("some_name")
 ///                            .Help("Additional description.")
 ///                            .Labels({{"key", "value"}})
-/////                          .LabelsVec({"key2","key3"})
+/////                          .LabelNamesVec({"key2","key3"})
 ///                            .Quantiles(Summary::Quantiles{})
 ///                            .Register(*registry);
 ///
@@ -133,7 +133,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
 /// - Help(const std::string&) to set an additional description.
 /// - Label(const std::map<std::string, std::string>&) to assign a set of
 ///   key-value pairs (= labels) to the metric.
-/// - LabelsVec(const std::vector<std::string&) to pre-affirmation pairs(= labels)'s
+/// - LabelNamesVec(const std::vector<std::string&) to pre-affirmation pairs(= labels)'s
 ///   key; and you and use family.WithLabelValues({"value1","value1"}) to get the T;
 ///   note than: vector<names>.size() == vector<values>.size()
 /// - Quantiles(const std::vector<detail::CKMSQuantiles::Quantile>&) to pre-affirmation Quantiles

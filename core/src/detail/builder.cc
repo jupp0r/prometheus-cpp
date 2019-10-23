@@ -18,7 +18,7 @@ Builder<T>& Builder<T>::Labels(
 }
 
 template <typename T>
-Builder<T>& Builder<T>::LabelsVec(
+Builder<T>& Builder<T>::LabelNamesVec(
         const std::vector<std::string>& labels) {
   variable_labels_ = labels;
   return *this;

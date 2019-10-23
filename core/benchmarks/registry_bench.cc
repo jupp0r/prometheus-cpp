@@ -61,7 +61,7 @@ static void BM_Registry_CreateCounter_WithLabelValues(benchmark::State& state) {
           .Labels(GenerateRandomLabels(10))
           .Name("benchmark_counter")
           .Help("")
-          .LabelsVec(label_names)
+          .LabelNamesVec(label_names)
           .Register(registry);
 
   while (state.KeepRunning()) {

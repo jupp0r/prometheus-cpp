@@ -1,4 +1,9 @@
-# Prometheus Client Library for Modern C++ [![Build Status](https://travis-ci.org/jupp0r/prometheus-cpp.svg?branch=master)](https://travis-ci.org/jupp0r/prometheus-cpp)[![Coverage Status](https://coveralls.io/repos/github/jupp0r/prometheus-cpp/badge.svg?branch=master)](https://coveralls.io/github/jupp0r/prometheus-cpp?branch=master)[![Coverity Scan](https://scan.coverity.com/projects/10567/badge.svg)](https://scan.coverity.com/projects/jupp0r-prometheus-cpp)
+# Prometheus Client Library for Modern C++
+
+[![CI Status](https://github.com/jupp0r/prometheus-cpp/workflows/Continuous%20Integration/badge.svg)](https://github.com/jupp0r/prometheus-cpp/actions?workflow=Continuous+Integration)
+[![Travis Status](https://travis-ci.org/jupp0r/prometheus-cpp.svg?branch=master)](https://travis-ci.org/jupp0r/prometheus-cpp)
+[![Coverage Status](https://coveralls.io/repos/github/jupp0r/prometheus-cpp/badge.svg?branch=master)](https://coveralls.io/github/jupp0r/prometheus-cpp?branch=master)
+[![Coverity Scan](https://scan.coverity.com/projects/10567/badge.svg)](https://scan.coverity.com/projects/jupp0r-prometheus-cpp)
 
 This library aims to enable
 [Metrics-Driven Development](https://sookocheff.com/post/mdd/mdd/) for

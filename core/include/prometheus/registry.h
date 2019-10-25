@@ -40,8 +40,27 @@ class Builder;
 /// a data race.
 class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
  public:
+  /// \brief How to deal with repeatedly added family names for a type.
+  ///
+  /// Adding a family with the same name but different types is always an error
+  /// and will lead to an exception.
+  enum class InsertBehavior {
+    /// \brief If a family with the same name and labels already exists return
+    /// the existing one. If no family with that name exists create it.
+    /// Otherwise throw.
+    Merge,
+    /// \brief Throws if a family with the same name already exists.
+    Throw,
+    /// \brief Never merge and always create a new family. This violates the
+    /// prometheus specification but was the default behavior in earlier
+    /// versions
+    NonStandardAppend,
+  };
+
   /// \brief name Create a new registry.
-  Registry();
+  ///
+  /// \param insert_behavior How to handle families with the same name.
+  explicit Registry(InsertBehavior insert_behavior = InsertBehavior::Merge);
 
   /// \brief name Destroys a registry.
   ~Registry();
@@ -59,10 +78,20 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   friend class detail::Builder;
 
   template <typename T>
+  std::vector<std::unique_ptr<Family<T>>>& GetFamilies();
+
+  template <typename T>
+  bool NameExistsInOtherType(const std::string& name) const;
+
+  template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
                  const std::map<std::string, std::string>& labels);
 
-  std::vector<std::unique_ptr<Collectable>> collectables_;
+  const InsertBehavior insert_behavior_;
+  std::vector<std::unique_ptr<Family<Counter>>> counters_;
+  std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
+  std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
+  std::vector<std::unique_ptr<Family<Summary>>> summaries_;
   std::mutex mutex_;
 };
 

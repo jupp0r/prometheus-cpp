@@ -89,6 +89,16 @@ void Family<T>::Remove(T* metric) {
 }
 
 template <typename T>
+const std::string& Family<T>::GetName() const {
+  return name_;
+}
+
+template <typename T>
+const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
+  return constant_labels_;
+}
+
+template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};

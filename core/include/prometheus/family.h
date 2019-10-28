@@ -143,6 +143,16 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// if the given metric was not returned by Add().
   void Remove(T* metric);
 
+  /// \brief Returns the name for this family.
+  ///
+  /// \return The family name.
+  const std::string& GetName() const;
+
+  /// \brief Returns the constant labels for this family.
+  ///
+  /// \return All constant labels as key-value pairs.
+  const std::map<std::string, std::string> GetConstantLabels() const;
+
   /// \brief Returns the current value of each dimensional data.
   ///
   /// Collect is called by the Registry when collecting metrics.

@@ -1,0 +1,21 @@
+name: Coverage
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Coverage ${{ matrix.buildsystem }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        buildsystem: [cmake]
+        os: [ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: true
+      - name: Prepare
+        run: .github/scripts/run-prepare ${{ matrix.buildsystem }} ${{ matrix.os }}
+      - name: Test
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: .github/scripts/run-cmake-coverage

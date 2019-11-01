@@ -11,27 +11,9 @@ env:
 addons:
   apt:
     packages:
-    - cmake
-    - curl
     - doxygen
-    - g++
-    - gcc
-    - git
-    - lcov
-    - libcurl4-openssl-dev
-    - python-pip
 
 script:
-  - pushd .
-  - mkdir _build_coverage
-  - cd _build_coverage
-  - CFLAGS="--coverage" CXXFLAGS="--coverage" LDFLAGS="--coverage" cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON
-  - make -j 4
-  - ctest -V -LE Benchmark
-  - pip install --user cpp-coveralls
-  - coveralls --root .. --build-root . -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*"
-  - popd
-
   - pushd .
   - cd doc
   - doxygen

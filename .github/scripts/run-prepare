@@ -16,7 +16,7 @@ case "${OS_ARG}" in
                 packages+=(bazel)
                 ;;
             cmake)
-                packages+=(libcurl4-openssl-dev)
+                packages+=(libcurl4-openssl-dev python-pip python-wheel)
                 ;;
         esac
 

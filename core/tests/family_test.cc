@@ -46,6 +46,11 @@ TEST(FamilyTest, remove) {
   EXPECT_EQ(collected[0].metric.size(), 1U);
 }
 
+TEST(FamilyTest, removeUnknownMetricMustNotCrash) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  family.Remove(nullptr);
+}
+
 TEST(FamilyTest, Histogram) {
   Family<Histogram> family{"request_latency", "Latency Histogram", {}};
   auto& histogram1 = family.Add({{"name", "histogram1"}},

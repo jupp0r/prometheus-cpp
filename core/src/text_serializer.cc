@@ -166,8 +166,6 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
         SerializeHistogram(out, family, metric);
       }
       break;
-    default:
-      break;
   }
 }
 }  // namespace

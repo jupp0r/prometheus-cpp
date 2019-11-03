@@ -24,10 +24,23 @@ void WriteValue(std::ostream& out, double value) {
 
 void WriteValue(std::ostream& out, const std::string& value) {
   for (auto c : value) {
-    if (c == '\\' || c == '"' || c == '\n') {
-      out << "\\";
+    switch (c) {
+      case '\n':
+        out << '\\' << 'n';
+        break;
+
+      case '\\':
+        out << '\\' << c;
+        break;
+
+      case '"':
+        out << '\\' << c;
+        break;
+
+      default:
+        out << c;
+        break;
     }
-    out << c;
   }
 }
 

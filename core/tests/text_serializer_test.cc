@@ -56,7 +56,7 @@ TEST_F(TextSerializerTest, shouldEscapeBackslash) {
 TEST_F(TextSerializerTest, shouldEscapeNewline) {
   metric.label.resize(1, ClientMetric::Label{"k", "v\nv"});
   EXPECT_THAT(Serialize(MetricType::Gauge),
-              testing::HasSubstr(name + "{k=\"v\\\nv\"}"));
+              testing::HasSubstr(name + "{k=\"v\\nv\"}"));
 }
 
 TEST_F(TextSerializerTest, shouldEscapeDoubleQuote) {

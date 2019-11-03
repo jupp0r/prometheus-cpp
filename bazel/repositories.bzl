@@ -16,10 +16,10 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_google_googletest",
-        sha256 = "9bf1fe5182a604b4135edc1a425ae356c9ad15e9b23f9f12a02e80184c3a249c",
-        strip_prefix = "googletest-release-1.8.1",
+        sha256 = "9dc9157a9a1551ec7a7e43daea9a694a0bb5fb8bec81235d8a1e6ef64c716dcb",
+        strip_prefix = "googletest-release-1.10.0",
         urls = [
-            "https://github.com/google/googletest/archive/release-1.8.1.tar.gz",
+            "https://github.com/google/googletest/archive/release-1.10.0.tar.gz",
         ],
     )
 
@@ -38,10 +38,10 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_github_google_benchmark",
-        sha256 = "f8e525db3c42efc9c7f3bc5176a8fa893a9a9920bbd08cef30fb56a51854d60d",
-        strip_prefix = "benchmark-1.4.1",
+        sha256 = "3c6a165b6ecc948967a1ead710d4a181d7b0fbcaa183ef7ea84604994966221a",
+        strip_prefix = "benchmark-1.5.0",
         urls = [
-            "https://github.com/google/benchmark/archive/v1.4.1.tar.gz",
+            "https://github.com/google/benchmark/archive/v1.5.0.tar.gz",
         ],
     )
 

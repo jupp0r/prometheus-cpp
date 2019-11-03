@@ -72,6 +72,24 @@ TEST_F(TextSerializerTest, shouldSerializeUntyped) {
   EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.000000"));
 }
 
+TEST_F(TextSerializerTest, shouldSerializeTimestamp) {
+  metric.counter.value = 64.0;
+  metric.timestamp_ms = 1234;
+
+  const auto serialized = Serialize(MetricType::Counter);
+  EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.000000 1234"));
+}
+
+TEST_F(TextSerializerTest, shouldSerializeHistogramWithNoBuckets) {
+  metric.histogram.sample_count = 2;
+  metric.histogram.sample_sum = 32.0;
+
+  const auto serialized = Serialize(MetricType::Histogram);
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_count 2"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 32.00000"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_bucket{le=\"+Inf\"} 2"));
+}
+
 TEST_F(TextSerializerTest, shouldSerializeHistogram) {
   Histogram histogram{{1}};
   histogram.Observe(0);

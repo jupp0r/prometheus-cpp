@@ -72,6 +72,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   ///
   /// \return Zero or more metrics and their samples.
   std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect(const std::time_t&);
 
  private:
   template <typename T>
@@ -85,7 +86,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
-                 const std::map<std::string, std::string>& labels);
+                 const std::map<std::string, std::string>& labels,
+                 const double& seconds);
 
   const InsertBehavior insert_behavior_;
   std::vector<std::unique_ptr<Family<Counter>>> counters_;

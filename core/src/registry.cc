@@ -11,9 +11,9 @@ namespace prometheus {
 
 namespace {
 template <typename T>
-void CollectAll(std::vector<MetricFamily>& results, const T& families) {
+void CollectAll(std::vector<MetricFamily>& results, const T& families, const std::time_t& time) {
   for (auto&& collectable : families) {
-    auto metrics = collectable->Collect();
+    auto metrics = collectable->Collect(time);
     results.insert(results.end(), std::make_move_iterator(metrics.begin()),
                    std::make_move_iterator(metrics.end()));
   }
@@ -39,13 +39,18 @@ Registry::Registry(InsertBehavior insert_behavior)
 Registry::~Registry() = default;
 
 std::vector<MetricFamily> Registry::Collect() {
+  const auto time = std::time(nullptr);
+  return Collect(time);
+}
+
+std::vector<MetricFamily> Registry::Collect(const std::time_t& time) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto results = std::vector<MetricFamily>{};
 
-  CollectAll(results, counters_);
-  CollectAll(results, gauges_);
-  CollectAll(results, histograms_);
-  CollectAll(results, summaries_);
+  CollectAll(results, counters_, time);
+  CollectAll(results, gauges_, time);
+  CollectAll(results, histograms_, time);
+  CollectAll(results, summaries_, time);
 
   return results;
 }
@@ -91,8 +96,9 @@ bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
 }
 
 template <typename T>
-Family<T>& Registry::Add(const std::string& name, const std::string& help,
-                         const std::map<std::string, std::string>& labels) {
+Family<T>& Registry::Add(const std::string& name, const std::string& help, 
+                         const std::map<std::string, std::string>& labels, 
+                         const double& seconds) {
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (NameExistsInOtherType<T>(name)) {
@@ -127,7 +133,7 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto family = detail::make_unique<Family<T>>(name, help, labels, seconds);
   auto& ref = *family;
   families.push_back(std::move(family));
   return ref;
@@ -135,18 +141,22 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
 
 template Family<Counter>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+    const std::map<std::string, std::string>& labels,
+    const double& seconds);
 
 template Family<Gauge>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+    const std::map<std::string, std::string>& labels,
+    const double& seconds);
 
 template Family<Summary>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+    const std::map<std::string, std::string>& labels,
+    const double& seconds);
 
 template Family<Histogram>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+    const std::map<std::string, std::string>& labels,
+    const double& seconds);
 
 }  // namespace prometheus

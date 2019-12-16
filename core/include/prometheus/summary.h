@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <ctime>
 #include <mutex>
 #include <vector>
 
@@ -82,6 +83,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
+  bool Expired(const std::time_t&, const double&) const;
 
  private:
   const Quantiles quantiles_;

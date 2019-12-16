@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <ctime>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -89,7 +90,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// metric. All these labels are propagated to each time series within the
   /// metric.
   Family(const std::string& name, const std::string& help,
-         const std::map<std::string, std::string>& constant_labels);
+         const std::map<std::string, std::string>& constant_labels,
+         const double& seconds = 1e9);
 
   /// \brief Add a new dimensional data.
   ///
@@ -134,6 +136,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   ///
   /// \return Zero or more samples for each dimensional data.
   std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect(const std::time_t&);
 
  private:
   std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
@@ -143,6 +146,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
+  double seconds_;
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);

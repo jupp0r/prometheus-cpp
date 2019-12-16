@@ -60,4 +60,8 @@ ClientMetric Histogram::Collect() const {
   return metric;
 }
 
+bool Histogram::Expired(const std::time_t& time, const double& seconds) const {
+  return false;
+}
+
 }  // namespace prometheus

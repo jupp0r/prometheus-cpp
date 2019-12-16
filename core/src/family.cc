@@ -5,12 +5,15 @@
 #include "prometheus/histogram.h"
 #include "prometheus/summary.h"
 
+#include <boost/regex.hpp>
+
 namespace prometheus {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const std::map<std::string, std::string>& constant_labels, const double& seconds)
-    : name_(name), help_(help), constant_labels_(constant_labels), seconds_(seconds) {
+                  const std::map<std::string, std::string>& constant_labels, 
+                  const RetentionBehavior& retention_behavior)
+    : name_(name), help_(help), constant_labels_(constant_labels), retention_behavior_(retention_behavior) {
   assert(CheckMetricName(name_));
 }
 
@@ -70,23 +73,75 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() {
-  const auto time = std::time(nullptr);
-  return Collect(time);
-}
-
-template <typename T>
-std::vector<MetricFamily> Family<T>::Collect(const std::time_t& time) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
   family.name = name_;
   family.help = help_;
   family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    if (!m.second.get()->Expired(time, seconds_)) {
+    if (!m.second.get()->Expired()) {
       family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    } else if (retention_behavior_ == RetentionBehavior::Remove) {
+      Remove(m.second.get());
     }
   }
   return {family};
+}
+
+template <typename T>
+bool Family<T>::UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const bool& bump, const bool& debug) {
+  /* Setup */
+  bool modified(false);
+  const boost::regex name_expr(re_name);
+  if (debug) {  
+    printf("UpdateRetentionTime: %s \n", re_name.c_str());
+  }
+  /* Check if the name is a match */
+  if (boost::regex_match(name_, name_expr)) {
+    for (const auto& metric: metrics_) {
+      bool matched(true);
+      auto hash = labels_reverse_lookup_.at(metric.second.get());
+      for (const auto& re_label: re_labels) {
+        /* Setup */
+        bool found(false);
+        const boost::regex key_expr(re_label.first);
+        const boost::regex value_expr(re_label.second);        
+        /* Check constant labels */
+        for (const auto& label: constant_labels_) {
+          if (boost::regex_match(label.first, key_expr) && boost::regex_match(label.second, value_expr)) {
+            found = true;
+            break;
+          }
+        }
+        /* Check metric labels */
+        for (const auto& label: labels_.at(hash)) {
+          if (boost::regex_match(label.first, key_expr) && boost::regex_match(label.second, value_expr)) {
+            found = true;
+            break;
+          }
+        }
+        /* Update matched status (matched = true if all labels up to this point are a match) */
+        if (found) {
+          matched = true;
+        } else {
+          matched = false;
+          break;
+        }
+      } // End for loop (const auto& re_label: re_labels)
+      if (matched) {
+        /* Update retention time (name and labels match) */
+        metric.second->UpdateRetentionTime(retention_time, bump);
+        modified = true;
+        if (debug) {
+          printf("UpdateRetentionTime: name  = %s\n", name_.c_str());
+          for (auto label: labels_.at(hash)) {
+            printf("UpdateRetentionTime: label = <%s,%s>\n", label.first.c_str(), label.second.c_str());
+          }
+        }
+      }
+    } // End for loop (auto metric: metrics_)
+  }
+  return modified;
 }
 
 template <typename T>

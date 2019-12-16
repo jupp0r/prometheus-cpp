@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <atomic>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/builder.h"
@@ -47,10 +48,13 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired(const std::time_t&, const double&) const;
+  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
+  bool Expired() const;
 
  private:
   Gauge gauge_{0.0};
+  std::atomic<double> retention_time_{1e9};
+  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Counter metric.

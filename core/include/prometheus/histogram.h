@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <atomic>
 #include <vector>
 
 #include "prometheus/client_metric.h"
@@ -65,12 +66,17 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired(const std::time_t&, const double&) const;
+  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
+
+  /// \brief Check if the metric has expired
+  bool Expired() const;
 
  private:
   const BucketBoundaries bucket_boundaries_;
   std::vector<Counter> bucket_counts_;
   Counter sum_;
+  std::atomic<double> retention_time_{1e9};
+  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Histogram metric.

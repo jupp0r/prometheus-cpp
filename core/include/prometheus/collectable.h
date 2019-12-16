@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ctime>
 #include <vector>
 
 #include "prometheus/detail/core_export.h"
@@ -21,7 +20,6 @@ class PROMETHEUS_CPP_CORE_EXPORT Collectable {
 
   /// \brief Returns a list of metrics and their samples.
   virtual std::vector<MetricFamily> Collect() = 0;
-  virtual std::vector<MetricFamily> Collect(const std::time_t&) = 0;
 };
 
 }  // namespace prometheus

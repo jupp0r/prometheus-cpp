@@ -26,11 +26,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
  public:
   static const MetricType metric_type{MetricType::Gauge};
 
-  /// \brief Create a gauge that starts at 0.
-  Gauge() = default;
-
   /// \brief Create a gauge that starts at the given amount.
-  Gauge(double);
+  Gauge(const double& = 0);
 
   /// \brief Increment the gauge by 1.
   void Increment();
@@ -57,12 +54,16 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  bool Expired(const std::time_t& , const double&) const;
+  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
+
+  /// \brief Check if the metric has expired
+  bool Expired() const;
 
  private:
   void Change(double);
+  std::atomic<double> retention_time_{1e9};
   std::atomic<double> value_{0.0};
-  std::atomic<std::time_t> time_{std::time(nullptr)};
+  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Gauge metric.

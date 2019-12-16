@@ -17,14 +17,12 @@ class Builder {
   Builder& Labels(const std::map<std::string, std::string>& labels);
   Builder& Name(const std::string&);
   Builder& Help(const std::string&);
-  Builder& Seconds(const double&);
   Family<T>& Register(Registry&);
 
  private:
   std::map<std::string, std::string> labels_;
   std::string name_;
   std::string help_;
-  double seconds_;
 };
 
 }  // namespace detail

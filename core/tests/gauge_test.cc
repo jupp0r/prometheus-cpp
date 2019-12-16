@@ -72,11 +72,5 @@ TEST(GaugeTest, set_multiple) {
   EXPECT_EQ(gauge.Value(), 1.0);
 }
 
-TEST(GaugeTest, set_to_current_time) {
-  Gauge gauge;
-  gauge.SetToCurrentTime();
-  EXPECT_GT(gauge.Value(), 0.0);
-}
-
 }  // namespace
 }  // namespace prometheus

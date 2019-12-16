@@ -5,6 +5,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
@@ -72,7 +73,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   ///
   /// \return Zero or more metrics and their samples.
   std::vector<MetricFamily> Collect() override;
-  std::vector<MetricFamily> Collect(const std::time_t&);
+
+  bool UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const std::set<MetricType>& families = {MetricType::Counter, MetricType::Gauge, MetricType::Summary, MetricType::Histogram}, const bool& bump = true, const bool& debug = false);
 
  private:
   template <typename T>
@@ -86,8 +88,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
-                 const std::map<std::string, std::string>& labels,
-                 const double& seconds);
+                 const std::map<std::string, std::string>& labels);
 
   const InsertBehavior insert_behavior_;
   std::vector<std::unique_ptr<Family<Counter>>> counters_;

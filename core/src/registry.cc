@@ -11,9 +11,9 @@ namespace prometheus {
 
 namespace {
 template <typename T>
-void CollectAll(std::vector<MetricFamily>& results, const T& families, const std::time_t& time) {
+void CollectAll(std::vector<MetricFamily>& results, const T& families) {
   for (auto&& collectable : families) {
-    auto metrics = collectable->Collect(time);
+    auto metrics = collectable->Collect();
     results.insert(results.end(), std::make_move_iterator(metrics.begin()),
                    std::make_move_iterator(metrics.end()));
   }
@@ -33,24 +33,18 @@ bool FamilyNameExists(const std::string& name, const T& families,
 }
 }  // namespace
 
-Registry::Registry(InsertBehavior insert_behavior)
-    : insert_behavior_{insert_behavior} {}
+Registry::Registry(InsertBehavior insert_behavior) : insert_behavior_{insert_behavior} {}
 
 Registry::~Registry() = default;
 
 std::vector<MetricFamily> Registry::Collect() {
-  const auto time = std::time(nullptr);
-  return Collect(time);
-}
-
-std::vector<MetricFamily> Registry::Collect(const std::time_t& time) {
   std::lock_guard<std::mutex> lock{mutex_};
   auto results = std::vector<MetricFamily>{};
 
-  CollectAll(results, counters_, time);
-  CollectAll(results, gauges_, time);
-  CollectAll(results, histograms_, time);
-  CollectAll(results, summaries_, time);
+  CollectAll(results, counters_);
+  CollectAll(results, gauges_);
+  CollectAll(results, histograms_);
+  CollectAll(results, summaries_);
 
   return results;
 }
@@ -97,8 +91,7 @@ bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
 
 template <typename T>
 Family<T>& Registry::Add(const std::string& name, const std::string& help, 
-                         const std::map<std::string, std::string>& labels, 
-                         const double& seconds) {
+                         const std::map<std::string, std::string>& labels) {
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (NameExistsInOtherType<T>(name)) {
@@ -115,8 +108,7 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
                  std::tie(family->GetName(), family->GetConstantLabels());
         };
 
-    auto it =
-        std::find_if(families.begin(), families.end(), same_name_and_labels);
+    auto it = std::find_if(families.begin(), families.end(), same_name_and_labels);
     if (it != families.end()) {
       return **it;
     }
@@ -133,30 +125,51 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  auto family = detail::make_unique<Family<T>>(name, help, labels, seconds);
+  auto family = detail::make_unique<Family<T>>(name, help, labels);
   auto& ref = *family;
   families.push_back(std::move(family));
   return ref;
 }
 
+bool Registry::UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const std::set<MetricType>& families, const bool& bump, const bool& debug) {
+  bool updated(false);
+  if (families.find(MetricType::Counter) != families.end()) {
+    for (auto& family: counters_) {
+      updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
+    }
+  }
+  if (families.find(MetricType::Gauge) != families.end()) {
+    for (auto& family: gauges_) {
+      updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
+    }
+  }
+  if (families.find(MetricType::Histogram) != families.end()) {
+    for (auto& family: histograms_) {
+      updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
+    }
+  }
+  if (families.find(MetricType::Summary) != families.end()) {
+    for (auto& family: summaries_) {
+      updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
+    }
+  }
+  return updated;
+}
+
 template Family<Counter>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels,
-    const double& seconds);
+    const std::map<std::string, std::string>& labels);
 
 template Family<Gauge>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels,
-    const double& seconds);
+    const std::map<std::string, std::string>& labels);
 
 template Family<Summary>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels,
-    const double& seconds);
+    const std::map<std::string, std::string>& labels);
 
 template Family<Histogram>& Registry::Add(
     const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels,
-    const double& seconds);
+    const std::map<std::string, std::string>& labels);
 
 }  // namespace prometheus

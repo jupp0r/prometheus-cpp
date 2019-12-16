@@ -8,7 +8,7 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {
+    : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1), sum_() {
   assert(std::is_sorted(std::begin(bucket_boundaries_),
                         std::end(bucket_boundaries_)));
 }
@@ -22,6 +22,7 @@ void Histogram::Observe(const double value) {
           [value](const double boundary) { return boundary >= value; })));
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
+  last_update_.store(std::time(nullptr));
 }
 
 void Histogram::ObserveMultiple(const std::vector<double> bucket_increments,
@@ -39,6 +40,7 @@ void Histogram::ObserveMultiple(const std::vector<double> bucket_increments,
       bucket_counts_[i].Increment(bucket_increments[i]);
     }
   }
+  last_update_.store(std::time(nullptr));
 }
 
 ClientMetric Histogram::Collect() const {
@@ -60,8 +62,13 @@ ClientMetric Histogram::Collect() const {
   return metric;
 }
 
-bool Histogram::Expired(const std::time_t& time, const double& seconds) const {
-  return false;
+void Histogram::UpdateRetentionTime(const double& retention_time, const bool& bump) {
+  if (bump) last_update_.store(std::time(nullptr));
+  retention_time_ = retention_time; 
+};
+
+bool Histogram::Expired() const {
+  return std::difftime(std::time(nullptr), last_update_) > retention_time_;
 }
 
 }  // namespace prometheus

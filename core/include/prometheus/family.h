@@ -62,6 +62,8 @@ namespace prometheus {
 template <typename T>
 class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
  public:
+  enum class RetentionBehavior {Keep, Remove};
+
   /// \brief Create a new metric.
   ///
   /// Every metric is uniquely identified by its name and a set of key-value
@@ -91,7 +93,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// metric.
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels,
-         const double& seconds = 1e9);
+         const RetentionBehavior& retention_behavior = RetentionBehavior::Keep);
 
   /// \brief Add a new dimensional data.
   ///
@@ -111,7 +113,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// labels already exists - the already existing dimensional data.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
-    return Add(labels, detail::make_unique<T>(args...));
+    return Add(labels, detail::make_unique<T>(std::forward<Args>(args)...));
   }
 
   /// \brief Remove the given dimensional data.
@@ -136,7 +138,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   ///
   /// \return Zero or more samples for each dimensional data.
   std::vector<MetricFamily> Collect() override;
-  std::vector<MetricFamily> Collect(const std::time_t&);
+
+  bool UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const bool& bump = true, const bool& debug = false);
 
  private:
   std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
@@ -146,7 +149,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
-  double seconds_;
+  RetentionBehavior retention_behavior_;
   std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, T* metric);

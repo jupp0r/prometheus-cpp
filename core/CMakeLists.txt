@@ -17,9 +17,13 @@ add_library(core
 
 add_library(${PROJECT_NAME}::core ALIAS core)
 
+find_package(Boost REQUIRED COMPONENTS regex)
+include_directories(${Boost_INCLUDE_DIRS})
+
 target_link_libraries(core
   PRIVATE
     Threads::Threads
+    ${Boost_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 

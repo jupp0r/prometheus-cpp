@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdint>
 #include <ctime>
+#include <atomic>
 #include <mutex>
 #include <vector>
 
@@ -73,8 +74,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// effectively results in a complete reset of the summary each time max_age
   /// has passed. The default value is 5.
   Summary(const Quantiles& quantiles,
-          std::chrono::milliseconds max_age = std::chrono::seconds{60},
-          int age_buckets = 5);
+          const std::chrono::milliseconds& max_age = std::chrono::seconds{60},
+          const int& age_buckets = 5);
 
   /// \brief Observe the given amount.
   void Observe(double value);
@@ -83,7 +84,10 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
-  bool Expired(const std::time_t&, const double&) const;
+  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
+
+  /// \brief Check if the metric has expired
+  bool Expired() const;
 
  private:
   const Quantiles quantiles_;
@@ -91,6 +95,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   std::uint64_t count_;
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
+  std::atomic<double> retention_time_{1e9};
+  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Summary metric.

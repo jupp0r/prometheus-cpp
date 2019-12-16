@@ -30,14 +30,8 @@ Builder<T>& Builder<T>::Help(const std::string& help) {
 }
 
 template <typename T>
-Builder<T>& Builder<T>::Seconds(const double& seconds) {
-  seconds_ = seconds;
-  return *this;
-}
-
-template <typename T>
 Family<T>& Builder<T>::Register(Registry& registry) {
-  return registry.Add<T>(name_, help_, labels_, seconds_);
+  return registry.Add<T>(name_, help_, labels_);
 }
 
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Counter>;

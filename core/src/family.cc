@@ -43,6 +43,7 @@ std::shared_ptr<T> Family<T>::Add(const std::map<std::string, std::string>& labe
     assert(metric.second);
     labels_.insert({hash, labels});
     labels_reverse_lookup_.insert({metric.first->second, hash});
+    object->has_family_ = true;
     return metric.first->second;
   }
 }
@@ -58,6 +59,7 @@ void Family<T>::Remove(std::shared_ptr<T> metric) {
   metrics_.erase(hash);
   labels_.erase(hash);
   labels_reverse_lookup_.erase(metric);
+  metric->has_family_ = false;
 }
 
 template <typename T>

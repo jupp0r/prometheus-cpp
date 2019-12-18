@@ -8,39 +8,39 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1), sum_() {
+    : bucket_boundaries_(buckets), bucket_counts_(buckets.size() + 1), sum_(0) {
   assert(std::is_sorted(std::begin(bucket_boundaries_),
                         std::end(bucket_boundaries_)));
 }
 
-void Histogram::Observe(const double value) {
+void Histogram::Observe(const double& value, const bool& alert) {
   // TODO: determine bucket list size at which binary search would be faster
   const auto bucket_index = static_cast<std::size_t>(std::distance(
       bucket_boundaries_.begin(),
       std::find_if(
           std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
           [value](const double boundary) { return boundary >= value; })));
-  sum_.Increment(value);
-  bucket_counts_[bucket_index].Increment();
-  last_update_.store(std::time(nullptr));
+  sum_ = sum_ + value;
+  bucket_counts_[bucket_index] = bucket_counts_[bucket_index] + 1;
+  last_update_ = std::time(nullptr);
+  if (alert) AlertIfNoFamily();
 }
 
-void Histogram::ObserveMultiple(const std::vector<double> bucket_increments,
-                                const double sum_of_values) {
+void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
+                                const double& sum_of_values, const bool& alert) {
   if (bucket_increments.size() != bucket_counts_.size()) {
     throw std::length_error(
         "The size of bucket_increments was not equal to"
         "the number of buckets in the histogram.");
   }
 
-  sum_.Increment(sum_of_values);
+  sum_ = sum_ + sum_of_values;
 
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
-    {
-      bucket_counts_[i].Increment(bucket_increments[i]);
-    }
+    bucket_counts_[i] = bucket_counts_[i] + bucket_increments[i];
   }
-  last_update_.store(std::time(nullptr));
+  last_update_ = std::time(nullptr);
+  if (alert) AlertIfNoFamily();
 }
 
 ClientMetric Histogram::Collect() const {
@@ -48,7 +48,7 @@ ClientMetric Histogram::Collect() const {
 
   auto cumulative_count = 0ULL;
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
-    cumulative_count += bucket_counts_[i].Value();
+    cumulative_count += bucket_counts_[i];
     auto bucket = ClientMetric::Bucket{};
     bucket.cumulative_count = cumulative_count;
     bucket.upper_bound = (i == bucket_boundaries_.size()
@@ -57,18 +57,9 @@ ClientMetric Histogram::Collect() const {
     metric.histogram.bucket.push_back(std::move(bucket));
   }
   metric.histogram.sample_count = cumulative_count;
-  metric.histogram.sample_sum = sum_.Value();
+  metric.histogram.sample_sum = sum_;
 
   return metric;
-}
-
-void Histogram::UpdateRetentionTime(const double& retention_time, const bool& bump) {
-  if (bump) last_update_.store(std::time(nullptr));
-  retention_time_ = retention_time; 
-};
-
-bool Histogram::Expired() const {
-  return std::difftime(std::time(nullptr), last_update_) > retention_time_;
 }
 
 }  // namespace prometheus

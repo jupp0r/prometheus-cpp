@@ -10,13 +10,14 @@ Summary::Summary(const Quantiles& quantiles,
       sum_(0),
       quantile_values_(quantiles_, max_age, age_buckets) {}
 
-void Summary::Observe(const double value) {
+void Summary::Observe(const double value, const bool& alert) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   count_ += 1;
   sum_ += value;
   quantile_values_.insert(value);
-  last_update_.store(std::time(nullptr));
+  last_update_ = std::time(nullptr);
+  if (alert) AlertIfNoFamily();
 }
 
 ClientMetric Summary::Collect() {
@@ -34,15 +35,6 @@ ClientMetric Summary::Collect() {
   metric.summary.sample_sum = sum_;
 
   return metric;
-}
-
-void Summary::UpdateRetentionTime(const double& retention_time, const bool& bump) {
-  if (bump) last_update_.store(std::time(nullptr));
-  retention_time_ = retention_time; 
-};
-
-bool Summary::Expired() const {
-  return std::difftime(std::time(nullptr), last_update_) > retention_time_;
 }
 
 }  // namespace prometheus

@@ -9,6 +9,7 @@
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/metric_base.h"
 
 namespace prometheus {
 
@@ -28,7 +29,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Histogram {
+class PROMETHEUS_CPP_CORE_EXPORT Histogram: public MetricBase {
  public:
   using BucketBoundaries = std::vector<double>;
 
@@ -52,31 +53,25 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// chosen for which the given amount falls into the half-open interval [b_n,
   /// b_n+1). The counter of the observed bucket is incremented. Also the total
   /// sum of all observations is incremented.
-  void Observe(double value);
+  void Observe(const double& value, const bool& alert = true);
 
   /// \brief Observe multiple data points.
   ///
   /// Increments counters given a count for each bucket. (i.e. the caller of
   /// this function must have already sorted the values into buckets).
   /// Also increments the total sum of all observations by the given value.
-  void ObserveMultiple(const std::vector<double> bucket_increments,
-                       const double sum_of_values);
+  void ObserveMultiple(const std::vector<double>& bucket_increments,
+                       const double& sum_of_values, const bool& alert = true);
 
   /// \brief Get the current value of the counter.
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;
-  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
-
-  /// \brief Check if the metric has expired
-  bool Expired() const;
 
  private:
   const BucketBoundaries bucket_boundaries_;
-  std::vector<Counter> bucket_counts_;
-  Counter sum_;
-  std::atomic<double> retention_time_{1e9};
-  std::atomic<std::time_t> last_update_{std::time(nullptr)};
+  std::atomic<double> sum_{0.0};
+  std::vector<std::atomic<double>> bucket_counts_;
 };
 
 /// \brief Return a builder to configure and register a Histogram metric.

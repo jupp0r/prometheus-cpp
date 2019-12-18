@@ -23,6 +23,9 @@
 
 namespace prometheus {
 
+enum class RetentionBehavior {Keep, Remove};
+
+
 /// \brief A metric of type T with a set of labeled dimensions.
 ///
 /// One of Prometheus main feature is a multi-dimensional data model with time
@@ -62,7 +65,6 @@ namespace prometheus {
 template <typename T>
 class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
  public:
-  enum class RetentionBehavior {Keep, Remove};
 
   /// \brief Create a new metric.
   ///
@@ -89,8 +91,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \param name Set the metric name.
   /// \param help Set an additional description.
   /// \param constant_labels Assign a set of key-value pairs (= labels) to the
-  /// metric. All these labels are propagated to each time series within the
-  /// metric.
+  ///        metric. All these labels are propagated to each time series within
+  ///        the metric.
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels,
          const RetentionBehavior& retention_behavior = RetentionBehavior::Keep);

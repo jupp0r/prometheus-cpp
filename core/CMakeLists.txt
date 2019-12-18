@@ -12,6 +12,7 @@ add_library(core
   src/registry.cc
   src/serializer.cc
   src/summary.cc
+  src/metric_base.cc
   src/text_serializer.cc
 )
 

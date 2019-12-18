@@ -12,28 +12,28 @@ TEST(CounterTest, initialize_with_zero) {
 
 TEST(CounterTest, inc) {
   Counter counter;
-  counter.Increment();
+  counter.Increment(1, false);
   EXPECT_EQ(counter.Value(), 1.0);
 }
 
 TEST(CounterTest, inc_number) {
   Counter counter;
-  counter.Increment(4);
+  counter.Increment(4, false);
   EXPECT_EQ(counter.Value(), 4.0);
 }
 
 TEST(CounterTest, inc_multiple) {
   Counter counter;
-  counter.Increment();
-  counter.Increment();
-  counter.Increment(5);
+  counter.Increment(1, false);
+  counter.Increment(1, false);
+  counter.Increment(5, false);
   EXPECT_EQ(counter.Value(), 7.0);
 }
 
 TEST(CounterTest, inc_negative_value) {
   Counter counter;
-  counter.Increment(5.0);
-  counter.Increment(-5.0);
+  counter.Increment(5.0, false);
+  counter.Increment(-5.0, false);
   EXPECT_EQ(counter.Value(), 5.0);
 }
 

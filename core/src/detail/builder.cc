@@ -11,8 +11,13 @@ namespace prometheus {
 namespace detail {
 
 template <typename T>
-Builder<T>& Builder<T>::Labels(
-    const std::map<std::string, std::string>& labels) {
+Builder<T>& Builder<T>::RetentionBehavior(const prometheus::RetentionBehavior& retention_behavior) {
+  retention_behavior_ = retention_behavior;
+  return *this;
+}
+
+template <typename T>
+Builder<T>& Builder<T>::Labels(const std::map<std::string, std::string>& labels) {
   labels_ = labels;
   return *this;
 }

@@ -13,6 +13,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/time_window_quantiles.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/metric_base.h"
 
 namespace prometheus {
 
@@ -40,7 +41,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Summary {
+class PROMETHEUS_CPP_CORE_EXPORT Summary: public MetricBase {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
 
@@ -78,16 +79,12 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
           const int& age_buckets = 5);
 
   /// \brief Observe the given amount.
-  void Observe(double value);
+  void Observe(double value, const bool& alert = true);
 
   /// \brief Get the current value of the summary.
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect();
-  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
-
-  /// \brief Check if the metric has expired
-  bool Expired() const;
 
  private:
   const Quantiles quantiles_;
@@ -95,8 +92,6 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   std::uint64_t count_;
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;
-  std::atomic<double> retention_time_{1e9};
-  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Summary metric.

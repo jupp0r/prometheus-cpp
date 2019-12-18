@@ -92,8 +92,8 @@ TEST_F(TextSerializerTest, shouldSerializeHistogramWithNoBuckets) {
 
 TEST_F(TextSerializerTest, shouldSerializeHistogram) {
   Histogram histogram{{1}};
-  histogram.Observe(0);
-  histogram.Observe(200);
+  histogram.Observe(0, false);
+  histogram.Observe(200, false);
   metric = histogram.Collect();
 
   const auto serialized = Serialize(MetricType::Histogram);
@@ -106,8 +106,8 @@ TEST_F(TextSerializerTest, shouldSerializeHistogram) {
 
 TEST_F(TextSerializerTest, shouldSerializeSummary) {
   Summary summary{Summary::Quantiles{{0.5, 0.05}}};
-  summary.Observe(0);
-  summary.Observe(200);
+  summary.Observe(0, false);
+  summary.Observe(200, false);
   metric = summary.Collect();
 
   const auto serialized = Serialize(MetricType::Summary);

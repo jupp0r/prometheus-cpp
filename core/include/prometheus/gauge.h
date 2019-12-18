@@ -7,6 +7,7 @@
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/metric_base.h"
 
 namespace prometheus {
 
@@ -22,27 +23,21 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Gauge {
+class PROMETHEUS_CPP_CORE_EXPORT Gauge: public MetricBase {
  public:
   static const MetricType metric_type{MetricType::Gauge};
 
   /// \brief Create a gauge that starts at the given amount.
-  Gauge(const double& = 0);
-
-  /// \brief Increment the gauge by 1.
-  void Increment();
+  Gauge(const double& value = 0);
 
   /// \brief Increment the gauge by the given amount.
-  void Increment(double);
-
-  /// \brief Decrement the gauge by 1.
-  void Decrement();
+  void Increment(const double& value = 1, const bool& alert = true);
 
   /// \brief Decrement the gauge by the given amount.
-  void Decrement(double);
+  void Decrement(const double& value = 1, const bool& alert = true);
 
   /// \brief Set the gauge to the given value.
-  void Set(double);
+  void Set(const double& value, const bool& alert = true);
 
   /// \brief Set the gauge to the current unixtime in seconds.
   void SetToCurrentTime();
@@ -53,17 +48,10 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   /// \brief Get the current value of the gauge.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
-  void UpdateRetentionTime(const double& retention_time, const bool& bump = true);
-
-  /// \brief Check if the metric has expired
-  bool Expired() const;
+  ClientMetric Collect() const; 
 
  private:
-  void Change(double);
-  std::atomic<double> retention_time_{1e9};
   std::atomic<double> value_{0.0};
-  std::atomic<std::time_t> last_update_{std::time(nullptr)};
 };
 
 /// \brief Return a builder to configure and register a Gauge metric.

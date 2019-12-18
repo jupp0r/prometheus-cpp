@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
                              .Name("time_running_seconds_total")
                              .Help("How many seconds is this server running?")
                              .Labels({{"label", "value"}})
+                             .RetentionBehavior(prometheus::RetentionBehavior::Keep)
                              .Register(*registry);
 
   // add a counter to the metric family

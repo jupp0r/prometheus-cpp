@@ -17,7 +17,7 @@ void MetricBase::UpdateRetentionTime(const double& retention_time, const bool& b
 };
 
 bool MetricBase::Expired() const {
-  return std::difftime(std::time(nullptr), last_update_.load()) > retention_time_.load();
+  return std::difftime(std::time(nullptr), last_update_) > retention_time_;
 }
 
 }  // namespace prometheus

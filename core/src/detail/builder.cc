@@ -36,7 +36,7 @@ Builder<T>& Builder<T>::Help(const std::string& help) {
 
 template <typename T>
 std::shared_ptr<Family<T>> Builder<T>::Register(Registry& registry) {
-  return registry.Add<T>(name_, help_, labels_);
+  return registry.Add<T>(name_, help_, labels_, retention_behavior_);
 }
 
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Counter>;

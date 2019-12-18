@@ -112,15 +112,15 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \return Return the newly created dimensional data or - if a same set of
   /// labels already exists - the already existing dimensional data.
   template <typename... Args>
-  T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
-    return Add(labels, detail::make_unique<T>(std::forward<Args>(args)...));
+  std::shared_ptr<T> Add(const std::map<std::string, std::string>& labels, Args&&... args) {
+    return Add(labels, std::make_shared<T>(std::forward<Args>(args)...));
   }
 
   /// \brief Remove the given dimensional data.
   ///
   /// \param metric Dimensional data to be removed. The function does nothing,
   /// if the given metric was not returned by Add().
-  void Remove(T* metric);
+  void Remove(std::shared_ptr<T> metric);
 
   /// \brief Returns the name for this family.
   ///
@@ -142,9 +142,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   bool UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const bool& bump = true, const bool& debug = false);
 
  private:
-  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
+  std::unordered_map<std::size_t, std::shared_ptr<T>> metrics_;
   std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
-  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+  std::unordered_map<std::shared_ptr<T>, std::size_t> labels_reverse_lookup_;
 
   const std::string name_;
   const std::string help_;
@@ -152,9 +152,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   RetentionBehavior retention_behavior_;
   std::mutex mutex_;
 
-  ClientMetric CollectMetric(std::size_t hash, T* metric);
-  T& Add(const std::map<std::string, std::string>& labels,
-         std::unique_ptr<T> object);
+  ClientMetric CollectMetric(std::size_t hash, std::shared_ptr<T> metric);
+  std::shared_ptr<T> Add(const std::map<std::string, std::string>& labels, std::shared_ptr<T> object);
 };
 
 }  // namespace prometheus

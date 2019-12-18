@@ -49,45 +49,45 @@ class BuilderTest : public testing::Test {
 };
 
 TEST_F(BuilderTest, build_counter) {
-  auto& family = BuildCounter()
+  auto family = BuildCounter()
                      .Name(name)
                      .Help(help)
                      .Labels(const_labels)
                      .Register(registry);
-  family.Add(more_labels);
+  family->Add(more_labels);
 
   verifyCollectedLabels();
 }
 
 TEST_F(BuilderTest, build_gauge) {
-  auto& family = BuildGauge()
+  auto family = BuildGauge()
                      .Name(name)
                      .Help(help)
                      .Labels(const_labels)
                      .Register(registry);
-  family.Add(more_labels);
+  family->Add(more_labels);
 
   verifyCollectedLabels();
 }
 
 TEST_F(BuilderTest, build_histogram) {
-  auto& family = BuildHistogram()
+  auto family = BuildHistogram()
                      .Name(name)
                      .Help(help)
                      .Labels(const_labels)
                      .Register(registry);
-  family.Add(more_labels, Histogram::BucketBoundaries{1, 2});
+  family->Add(more_labels, Histogram::BucketBoundaries{1, 2});
 
   verifyCollectedLabels();
 }
 
 TEST_F(BuilderTest, build_summary) {
-  auto& family = BuildSummary()
+  auto family = BuildSummary()
                      .Name(name)
                      .Help(help)
                      .Labels(const_labels)
                      .Register(registry);
-  family.Add(more_labels, Summary::Quantiles{});
+  family->Add(more_labels, Summary::Quantiles{});
 
   verifyCollectedLabels();
 }

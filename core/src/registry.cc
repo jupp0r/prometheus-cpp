@@ -50,22 +50,22 @@ std::vector<MetricFamily> Registry::Collect() {
 }
 
 template <>
-std::vector<std::unique_ptr<Family<Counter>>>& Registry::GetFamilies() {
+std::vector<std::shared_ptr<Family<Counter>>>& Registry::GetFamilies() {
   return counters_;
 }
 
 template <>
-std::vector<std::unique_ptr<Family<Gauge>>>& Registry::GetFamilies() {
+std::vector<std::shared_ptr<Family<Gauge>>>& Registry::GetFamilies() {
   return gauges_;
 }
 
 template <>
-std::vector<std::unique_ptr<Family<Histogram>>>& Registry::GetFamilies() {
+std::vector<std::shared_ptr<Family<Histogram>>>& Registry::GetFamilies() {
   return histograms_;
 }
 
 template <>
-std::vector<std::unique_ptr<Family<Summary>>>& Registry::GetFamilies() {
+std::vector<std::shared_ptr<Family<Summary>>>& Registry::GetFamilies() {
   return summaries_;
 }
 
@@ -90,7 +90,7 @@ bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
 }
 
 template <typename T>
-Family<T>& Registry::Add(const std::string& name, const std::string& help, 
+std::shared_ptr<Family<T>> Registry::Add(const std::string& name, const std::string& help, 
                          const std::map<std::string, std::string>& labels) {
   std::lock_guard<std::mutex> lock{mutex_};
 
@@ -103,19 +103,19 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
 
   if (insert_behavior_ == InsertBehavior::Merge) {
     auto same_name_and_labels =
-        [&name, &labels](const std::unique_ptr<Family<T>>& family) {
+        [&name, &labels](const std::shared_ptr<Family<T>> family) {
           return std::tie(name, labels) ==
                  std::tie(family->GetName(), family->GetConstantLabels());
         };
 
     auto it = std::find_if(families.begin(), families.end(), same_name_and_labels);
     if (it != families.end()) {
-      return **it;
+      return *it;
     }
   }
 
   if (insert_behavior_ != InsertBehavior::NonStandardAppend) {
-    auto same_name = [&name](const std::unique_ptr<Family<T>>& family) {
+    auto same_name = [&name](const std::shared_ptr<Family<T>> family) {
       return name == family->GetName();
     };
 
@@ -125,50 +125,49 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
-  auto& ref = *family;
-  families.push_back(std::move(family));
-  return ref;
+  auto family = std::make_shared<Family<T>>(name, help, labels);
+  families.push_back(family);
+  return family;
 }
 
 bool Registry::UpdateRetentionTime(const double& retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const std::set<MetricType>& families, const bool& bump, const bool& debug) {
   bool updated(false);
   if (families.find(MetricType::Counter) != families.end()) {
-    for (auto& family: counters_) {
+    for (auto family: counters_) {
       updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
     }
   }
   if (families.find(MetricType::Gauge) != families.end()) {
-    for (auto& family: gauges_) {
+    for (auto family: gauges_) {
       updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
     }
   }
   if (families.find(MetricType::Histogram) != families.end()) {
-    for (auto& family: histograms_) {
+    for (auto family: histograms_) {
       updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
     }
   }
   if (families.find(MetricType::Summary) != families.end()) {
-    for (auto& family: summaries_) {
+    for (auto family: summaries_) {
       updated |= family->UpdateRetentionTime(retention_time, re_name, re_labels, bump, debug);
     }
   }
   return updated;
 }
 
-template Family<Counter>& Registry::Add(
+template std::shared_ptr<Family<Counter>> Registry::Add(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels);
 
-template Family<Gauge>& Registry::Add(
+template std::shared_ptr<Family<Gauge>> Registry::Add(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels);
 
-template Family<Summary>& Registry::Add(
+template std::shared_ptr<Family<Summary>> Registry::Add(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels);
 
-template Family<Histogram>& Registry::Add(
+template std::shared_ptr<Family<Histogram>> Registry::Add(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels);
 

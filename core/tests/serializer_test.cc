@@ -13,8 +13,8 @@ class SerializerTest : public testing::Test {
  public:
   void SetUp() override {
     Family<Counter> family{"requests_total", "", {}};
-    auto& counter = family.Add({});
-    counter.Increment();
+    auto counter = family.Add({});
+    counter->Increment();
 
     collected = family.Collect();
   }

@@ -30,7 +30,7 @@ Builder<T>& Builder<T>::Help(const std::string& help) {
 }
 
 template <typename T>
-Family<T>& Builder<T>::Register(Registry& registry) {
+std::shared_ptr<Family<T>> Builder<T>::Register(Registry& registry) {
   return registry.Add<T>(name_, help_, labels_);
 }
 

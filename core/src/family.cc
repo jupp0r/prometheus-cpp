@@ -18,8 +18,7 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
-T& Family<T>::Add(const std::map<std::string, std::string>& labels,
-                  std::unique_ptr<T> object) {
+std::shared_ptr<T> Family<T>::Add(const std::map<std::string, std::string>& labels, std::shared_ptr<T> object) {
   auto hash = detail::hash_labels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
@@ -31,7 +30,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     const auto& old_labels = labels_iter->second;
     assert(labels == old_labels);
 #endif
-    return *metrics_iter->second;
+    return metrics_iter->second;
   } else {
 #ifndef NDEBUG
     for (auto& label_pair : labels) {
@@ -40,16 +39,16 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     }
 #endif
 
-    auto metric = metrics_.insert(std::make_pair(hash, std::move(object)));
+    auto metric = metrics_.insert(std::make_pair(hash, object));
     assert(metric.second);
     labels_.insert({hash, labels});
-    labels_reverse_lookup_.insert({metric.first->second.get(), hash});
-    return *(metric.first->second);
+    labels_reverse_lookup_.insert({metric.first->second, hash});
+    return metric.first->second;
   }
 }
 
 template <typename T>
-void Family<T>::Remove(T* metric) {
+void Family<T>::Remove(std::shared_ptr<T> metric) {
   std::lock_guard<std::mutex> lock{mutex_};
   if (labels_reverse_lookup_.count(metric) == 0) {
     return;
@@ -79,10 +78,10 @@ std::vector<MetricFamily> Family<T>::Collect() {
   family.help = help_;
   family.type = T::metric_type;
   for (const auto& m : metrics_) {
-    if (!m.second.get()->Expired()) {
-      family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    if (!m.second->Expired()) {
+      family.metric.push_back(std::move(CollectMetric(m.first, m.second)));
     } else if (retention_behavior_ == RetentionBehavior::Remove) {
-      Remove(m.second.get());
+      Remove(m.second);
     }
   }
   return {family};
@@ -98,9 +97,9 @@ bool Family<T>::UpdateRetentionTime(const double& retention_time, const std::str
   }
   /* Check if the name is a match */
   if (boost::regex_match(name_, name_expr)) {
-    for (const auto& metric: metrics_) {
+    for (auto metric: metrics_) {
       bool matched(true);
-      auto hash = labels_reverse_lookup_.at(metric.second.get());
+      auto hash = labels_reverse_lookup_.at(metric.second);
       for (const auto& re_label: re_labels) {
         /* Setup */
         bool found(false);
@@ -145,7 +144,7 @@ bool Family<T>::UpdateRetentionTime(const double& retention_time, const std::str
 }
 
 template <typename T>
-ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
+ClientMetric Family<T>::CollectMetric(std::size_t hash, std::shared_ptr<T> metric) {
   auto collected = metric->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {

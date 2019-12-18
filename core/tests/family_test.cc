@@ -29,8 +29,8 @@ TEST(FamilyTest, labels) {
 
 TEST(FamilyTest, counter_value) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto& counter = family.Add({});
-  counter.Increment();
+  auto counter = family.Add({});
+  counter->Increment();
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1U);
   ASSERT_GE(collected[0].metric.size(), 1U);
@@ -39,9 +39,9 @@ TEST(FamilyTest, counter_value) {
 
 TEST(FamilyTest, remove) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto& counter1 = family.Add({{"name", "counter1"}});
+  auto counter1 = family.Add({{"name", "counter1"}});
   family.Add({{"name", "counter2"}});
-  family.Remove(&counter1);
+  family.Remove(counter1);
   auto collected = family.Collect();
   ASSERT_GE(collected.size(), 1U);
   EXPECT_EQ(collected[0].metric.size(), 1U);
@@ -54,9 +54,9 @@ TEST(FamilyTest, removeUnknownMetricMustNotCrash) {
 
 TEST(FamilyTest, Histogram) {
   Family<Histogram> family{"request_latency", "Latency Histogram", {}};
-  auto& histogram1 = family.Add({{"name", "histogram1"}},
+  auto histogram1 = family.Add({{"name", "histogram1"}},
                                 Histogram::BucketBoundaries{0, 1, 2});
-  histogram1.Observe(0);
+  histogram1->Observe(0);
   auto collected = family.Collect();
   ASSERT_EQ(collected.size(), 1U);
   ASSERT_GE(collected[0].metric.size(), 1U);
@@ -65,9 +65,9 @@ TEST(FamilyTest, Histogram) {
 
 TEST(FamilyTest, add_twice) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto& counter = family.Add({{"name", "counter1"}});
-  auto& counter1 = family.Add({{"name", "counter1"}});
-  ASSERT_EQ(&counter, &counter1);
+  auto counter = family.Add({{"name", "counter1"}});
+  auto counter1 = family.Add({{"name", "counter1"}});
+  ASSERT_EQ(counter, counter1);
 }
 
 TEST(FamilyTest, should_assert_on_invalid_metric_name) {

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 namespace prometheus {
 
@@ -17,7 +18,7 @@ class Builder {
   Builder& Labels(const std::map<std::string, std::string>& labels);
   Builder& Name(const std::string&);
   Builder& Help(const std::string&);
-  Family<T>& Register(Registry&);
+  std::shared_ptr<Family<T>> Register(Registry&);
 
  private:
   std::map<std::string, std::string> labels_;

@@ -143,9 +143,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
 
-  ClientMetric CollectMetric(std::size_t hash, T* metric);
+  ClientMetric CollectMetric(std::size_t hash, T* metric) const;
   T& Add(const std::map<std::string, std::string>& labels,
          std::unique_ptr<T> object);
 };

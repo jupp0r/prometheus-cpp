@@ -92,7 +92,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
   std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
   std::vector<std::unique_ptr<Family<Summary>>> summaries_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
 };
 
 }  // namespace prometheus

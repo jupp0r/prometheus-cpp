@@ -82,7 +82,7 @@ std::vector<MetricFamily> Family<T>::Collect() const {
 }
 
 template <typename T>
-ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
+ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) const {
   auto collected = metric->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {

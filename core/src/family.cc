@@ -74,19 +74,29 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() {
-  std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
-  family.name = name_;
-  family.help = help_;
-  family.type = T::metric_type;
-  for (const auto& m : metrics_) {
-    if (!m.second->Expired()) {
-      family.metric.push_back(std::move(CollectMetric(m.first, m.second)));
-    } else if (retention_behavior_ == RetentionBehavior::Remove) {
-      Remove(m.second);
+  std::vector<std::shared_ptr<T>> to_be_removed;
+  {
+    std::lock_guard<std::mutex> lock{mutex_};
+    family.name = name_;
+    family.help = help_;
+    family.type = T::metric_type;
+    for (const auto& m : metrics_) {
+      if (!m.second->Expired()) {
+        family.metric.push_back(std::move(CollectMetric(m.first, m.second)));
+      } else if (retention_behavior_ == RetentionBehavior::Remove) {
+        to_be_removed.push_back(m.second);
+      }
     }
+  } // end mutex
+  for (auto metric: to_be_removed) {
+    Remove(metric);
   }
-  return {family};
+  if (family.metric.empty()) {
+    return {};
+  } else {
+    return {family};
+  }
 }
 
 template <typename T>

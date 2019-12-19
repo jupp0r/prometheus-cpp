@@ -69,7 +69,7 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 }
 
 template <typename T>
-std::vector<MetricFamily> Family<T>::Collect() {
+std::vector<MetricFamily> Family<T>::Collect() const {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
   family.name = name_;

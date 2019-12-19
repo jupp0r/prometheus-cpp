@@ -19,7 +19,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Collectable {
   virtual ~Collectable() = default;
 
   /// \brief Returns a list of metrics and their samples.
-  virtual std::vector<MetricFamily> Collect() = 0;
+  virtual std::vector<MetricFamily> Collect() const = 0;
 };
 
 }  // namespace prometheus

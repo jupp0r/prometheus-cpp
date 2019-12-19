@@ -22,4 +22,5 @@ jobs:
       - name: Test
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_GIT_BRANCH: "${{ github.ref }}"
         run: .github/scripts/run-cmake-coverage

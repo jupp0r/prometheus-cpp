@@ -38,7 +38,7 @@ Registry::Registry(InsertBehavior insert_behavior)
 
 Registry::~Registry() = default;
 
-std::vector<MetricFamily> Registry::Collect() {
+std::vector<MetricFamily> Registry::Collect() const {
   std::lock_guard<std::mutex> lock{mutex_};
   auto results = std::vector<MetricFamily>{};
 

@@ -71,7 +71,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// function.
   ///
   /// \return Zero or more metrics and their samples.
-  std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect() const override;
 
  private:
   template <typename T>

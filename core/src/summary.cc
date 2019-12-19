@@ -17,7 +17,7 @@ void Summary::Observe(const double value) {
   quantile_values_.insert(value);
 }
 
-ClientMetric Summary::Collect() {
+ClientMetric Summary::Collect() const {
   auto metric = ClientMetric{};
 
   std::lock_guard<std::mutex> lock(mutex_);

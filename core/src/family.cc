@@ -69,7 +69,7 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 }
 
 template <typename T>
-std::vector<MetricFamily> Family<T>::Collect() {
+std::vector<MetricFamily> Family<T>::Collect() const {
   std::lock_guard<std::mutex> lock{mutex_};
   auto family = MetricFamily{};
   family.name = name_;
@@ -82,7 +82,7 @@ std::vector<MetricFamily> Family<T>::Collect() {
 }
 
 template <typename T>
-ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
+ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) const {
   auto collected = metric->Collect();
   auto add_label =
       [&collected](const std::pair<std::string, std::string>& label_pair) {

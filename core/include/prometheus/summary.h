@@ -81,11 +81,11 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// \brief Get the current value of the summary.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect();
+  ClientMetric Collect() const;
 
  private:
   const Quantiles quantiles_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
   std::uint64_t count_;
   double sum_;
   detail::TimeWindowQuantiles quantile_values_;

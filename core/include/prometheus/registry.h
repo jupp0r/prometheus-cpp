@@ -71,7 +71,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// function.
   ///
   /// \return Zero or more metrics and their samples.
-  std::vector<MetricFamily> Collect() override;
+  std::vector<MetricFamily> Collect() const override;
 
  private:
   template <typename T>
@@ -92,7 +92,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
   std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
   std::vector<std::unique_ptr<Family<Summary>>> summaries_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
 };
 
 }  // namespace prometheus

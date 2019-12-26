@@ -116,7 +116,7 @@ http_archive(
     urls = ["https://github.com/jupp0r/prometheus-cpp/archive/master.zip"],
 )
 
-load("@com_github_jupp0r_prometheus_cpp//:repositories.bzl", "prometheus_cpp_repositories")
+load("@com_github_jupp0r_prometheus_cpp//bazel:repositories.bzl", "prometheus_cpp_repositories")
 
 prometheus_cpp_repositories()
 ```
@@ -133,15 +133,15 @@ cc_binary(
 ```
 
 When you call `prometheus_cpp_repositories()` in your `WORKSPACE` file,
-you introduce the following dependencies, if they do not exist yet, to your project:
+you load the following dependencies, if they do not exist yet, into your project:
 
-* `load_civetweb()` to load `civetweb` rules for Civetweb
-* `load_com_google_googletest()` to load `com_google_googletest` rules for Google gtest
-* `load_com_google_googlebenchmark()` to load `com_github_google_benchmark` rules for Googlebenchmark
-* `load_com_github_curl()` to load `com_github_curl` rules for curl
-* `load_net_zlib_zlib()` to load `net_zlib_zlib` rules for zlib
+* `civetweb` for [Civetweb](https://github.com/civetweb/civetweb)
+* `com_google_googletest` for [Google Test](https://github.com/google/googletest)
+* `com_github_google_benchmark` for [Google Benchmark](https://github.com/google/benchmark)
+* `com_github_curl` for [curl](https://curl.haxx.se/)
+* `net_zlib_zlib` for [zlib](http://www.zlib.net/)
 
-The list of dependencies is also available from file `repositories.bzl`.
+The list of dependencies is also available from file [repositories.bzl](bazel/repositories.bzl).
 
 
 ## Contributing

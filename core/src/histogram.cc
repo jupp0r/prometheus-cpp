@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iterator>
 #include <numeric>
+#include <ostream>
 
 namespace prometheus {
 

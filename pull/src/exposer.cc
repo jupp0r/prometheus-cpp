@@ -30,4 +30,9 @@ void Exposer::RegisterCollectable(
     const std::weak_ptr<Collectable>& collectable) {
   collectables_.push_back(collectable);
 }
+
+std::vector<int> Exposer::GetListeningPorts() const {
+  return server_->getListeningPorts();
+}
+
 }  // namespace prometheus

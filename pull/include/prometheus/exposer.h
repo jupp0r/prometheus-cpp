@@ -26,6 +26,8 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 
+  std::vector<int> GetListeningPorts() const;
+
  private:
   std::unique_ptr<CivetServer> server_;
   std::vector<std::weak_ptr<Collectable>> collectables_;

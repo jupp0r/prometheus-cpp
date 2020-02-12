@@ -1,5 +1,5 @@
 
-add_executable(prometheus_test
+add_executable(prometheus_core_test
   builder_test.cc
   check_names_test.cc
   counter_test.cc
@@ -13,13 +13,13 @@ add_executable(prometheus_test
   utils_test.cc
 )
 
-target_link_libraries(prometheus_test
+target_link_libraries(prometheus_core_test
   PRIVATE
     ${PROJECT_NAME}::core
     GTest::gmock_main
 )
 
 add_test(
-  NAME prometheus_test
-  COMMAND prometheus_test
+  NAME prometheus_core_test
+  COMMAND prometheus_core_test
 )

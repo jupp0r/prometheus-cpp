@@ -104,3 +104,15 @@ add_feature_info("Pull" "${ENABLE_PULL}" "support for pulling metrics")
 add_feature_info("Push" "${ENABLE_PUSH}" "support for pushing metrics to a push-gateway")
 add_feature_info("Compression" "${ENABLE_COMPRESSION}" "support for zlib compression of metrics")
 feature_summary(WHAT ALL)
+
+# packaging
+
+set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
+set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+set(CPACK_PACKAGE_DESCRIPTION "C++ library for Prometheus exporters")
+set(CPACK_PACKAGE_RELOCATABLE OFF)
+
+INCLUDE(CPack)

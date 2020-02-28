@@ -143,6 +143,28 @@ you load the following dependencies, if they do not exist yet, into your project
 
 The list of dependencies is also available from file [repositories.bzl](bazel/repositories.bzl).
 
+## Packaging
+
+You can generate a Debian package (.deb) and RPM (.rpm) for the static
+or dynamic libraries so they can be easily installed on other systems
+using CMake.
+
+``` shell
+# fetch third-party dependencies
+git submodule init
+git submodule update
+
+mkdir _build
+cd _build
+
+# run cmake
+cmake .. -DBUILD_SHARED_LIBS=ON # or OFF for static libraries
+
+# build
+make -j 4 package
+```
+This will generate an appropriately named .deb and .rpm in the
+```_build``` folder.
 
 ## Contributing
 

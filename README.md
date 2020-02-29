@@ -145,26 +145,31 @@ The list of dependencies is also available from file [repositories.bzl](bazel/re
 
 ## Packaging
 
-You can generate a Debian package (.deb) and RPM (.rpm) for the static
-or dynamic libraries so they can be easily installed on other systems
-using CMake.
+By configuring CPack you can generate an installer like a
+Debian package (.deb) or RPM (.rpm) for the static or dynamic
+libraries so they can be easily installed on
+other systems.
+
+Please refer to the [CPack](https://cmake.org/cmake/help/latest/module/CPack.html)
+documentation for all available generators and their
+configuration options.
+
+To generate a Debian package you could follow these steps:
 
 ``` shell
 # fetch third-party dependencies
-git submodule init
-git submodule update
-
-mkdir _build
-cd _build
+git submodule update --init
 
 # run cmake
-cmake .. -DBUILD_SHARED_LIBS=ON # or OFF for static libraries
+cmake -B_build -DCPACK_GENERATOR=DEB -DBUILD_SHARED_LIBS=ON # or OFF for static libraries
 
-# build
-make -j 4 package
+# build and package
+cmake --build _build --target package --parallel $(nproc)
 ```
-This will generate an appropriately named .deb and .rpm in the
-```_build``` folder.
+
+This will place an appropriately named .deb in the
+`_build` folder. To build a RPM package set the `CPACK_GENERATOR`
+variable to `RPM`. 
 
 ## Contributing
 

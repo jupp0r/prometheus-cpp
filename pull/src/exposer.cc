@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "prometheus/client_metric.h"
+#include "prometheus/detail/future_std.h"
 
 #include "CivetServer.h"
 #include "handler.h"
@@ -13,9 +14,13 @@ namespace prometheus {
 
 Exposer::Exposer(const std::string& bind_address, const std::string& uri,
                  const std::size_t num_threads)
-    : server_(new CivetServer{std::vector<std::string>{
-          "listening_ports", bind_address, "num_threads",
-          std::to_string(num_threads)}}),
+    : Exposer(
+          std::vector<std::string>{"listening_ports", bind_address,
+                                   "num_threads", std::to_string(num_threads)},
+          uri) {}
+
+Exposer::Exposer(std::vector<std::string> options, const std::string& uri)
+    : server_(detail::make_unique<CivetServer>(std::move(options))),
       exposer_registry_(std::make_shared<Registry>()),
       metrics_handler_(
           new detail::MetricsHandler{collectables_, *exposer_registry_}),

@@ -23,6 +23,8 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
   explicit Exposer(const std::string& bind_address,
                    const std::string& uri = std::string("/metrics"),
                    const std::size_t num_threads = 2);
+  explicit Exposer(std::vector<std::string> options,
+                   const std::string& uri = std::string("/metrics"));
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 

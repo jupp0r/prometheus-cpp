@@ -3,33 +3,20 @@
 set -euo pipefail
 
 WORKSPACE=$(cd "$(dirname "${BASH_SOURCE[0]}")"/../.. && /bin/pwd -P)
-THIRDPARTY_PREFIX_DIR="${WORKSPACE}/_opt"
 
 # Build with internal dependencies
 
 mkdir "${WORKSPACE}/_build_internal_deps" && cd $_
-cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_WARNINGS_AS_ERRORS=ON
+cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF
 make -j$(nproc)
 ctest -V
 mkdir -p deploy
 make DESTDIR="${PWD}/deploy" install
 
-# Build dependencies
-
-mkdir "${WORKSPACE}/_build_civetweb" && cd $_
-cmake "${WORKSPACE}/3rdparty/civetweb" -DCMAKE_INSTALL_PREFIX="${THIRDPARTY_PREFIX_DIR}" -DCIVETWEB_ENABLE_CXX=ON -DCIVETWEB_ENABLE_SSL=OFF -DCIVETWEB_BUILD_TESTING=OFF
-make -j$(nproc)
-make install
-
-mkdir "${WORKSPACE}/_build_googletest" && cd $_
-cmake "${WORKSPACE}/3rdparty/googletest" -DCMAKE_INSTALL_PREFIX="${THIRDPARTY_PREFIX_DIR}"
-make -j$(nproc)
-make install
-
 # Build with external dependencies
 
-mkdir "${WORKSPACE}/_build_coverage" && cd $_
-cmake .. -DCMAKE_INSTALL_PREFIX="${THIRDPARTY_PREFIX_DIR}" -DUSE_THIRDPARTY_LIBRARIES=OFF
+mkdir "${WORKSPACE}/_build" && cd $_
+cmake .. -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
 make -j$(nproc)
 ctest -V -LE Benchmark
 mkdir -p deploy

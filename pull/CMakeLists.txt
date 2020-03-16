@@ -2,7 +2,7 @@
 if(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED)
 else()
-  find_package(civetweb REQUIRED)
+  find_package(civetweb CONFIG REQUIRED)
 endif()
 
 if(ENABLE_COMPRESSION)
@@ -23,7 +23,7 @@ target_link_libraries(pull
     ${PROJECT_NAME}::core
   PRIVATE
     Threads::Threads
-    ${CIVETWEB_LIBRARIES}
+    $<$<NOT:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>>:civetweb::civetweb-cpp>
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )

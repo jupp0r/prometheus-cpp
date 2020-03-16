@@ -10,7 +10,7 @@ pip install --user cpp-coveralls
 # Build with coverage
 
 mkdir "${WORKSPACE}/_build_coverage" && cd $_
-CFLAGS="--coverage" CXXFLAGS="--coverage" LDFLAGS="--coverage" cmake ..
+CFLAGS="--coverage" CXXFLAGS="--coverage" LDFLAGS="--coverage" cmake .. -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
 make -j$(nproc)
 ctest -V -LE Benchmark
 

@@ -16,7 +16,7 @@ case "${OS_ARG}" in
                 packages+=(bazel)
                 ;;
             cmake)
-                packages+=(libcurl4-openssl-dev python-pip python-wheel)
+                packages+=(python-pip python-wheel)
                 ;;
         esac
 
@@ -32,7 +32,7 @@ case "${OS_ARG}" in
         ;;
 
     macOS*)
-        packages=(google-benchmark prometheus telegraf)
+        packages=(prometheus telegraf)
 
         case "${BUILDSYSTEM_ARG}" in
             bazel)
@@ -43,5 +43,13 @@ case "${OS_ARG}" in
         esac
 
         brew install "${packages[@]}"
+        ;;
+esac
+
+case "${BUILDSYSTEM_ARG}" in
+    bazel)
+        ;;
+    cmake)
+        "${VCPKG_INSTALLATION_ROOT}/vcpkg" install benchmark civetweb curl gtest zlib
         ;;
 esac

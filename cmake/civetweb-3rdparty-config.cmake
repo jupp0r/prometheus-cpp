@@ -26,7 +26,6 @@ target_compile_definitions(civetweb
     NDEBUG
     NO_CGI
     NO_CACHING
-    NO_SSL
     NO_FILES
 )
 
@@ -40,6 +39,18 @@ target_include_directories(civetweb
   PRIVATE
     ${CIVETWEB_INCLUDE_DIRS}
 )
+
+if(THIRDPARTY_CIVETWEB_WITH_SSL)
+  include(CMakeFindDependencyMacro)
+  find_dependency(OpenSSL)
+  if(OPENSSL_VERSION VERSION_GREATER_EQUAL 1.1)
+    target_compile_definitions(civetweb PRIVATE OPENSSL_API_1_1)
+  endif()
+  target_compile_definitions(civetweb PRIVATE NO_SSL_DL)
+  target_link_libraries(civetweb PUBLIC OpenSSL::SSL)
+else()
+  target_compile_definitions(civetweb PRIVATE NO_SSL)
+endif()
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(civetweb PROPERTIES

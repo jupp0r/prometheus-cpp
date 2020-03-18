@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(prometheus-cpp VERSION 0.9.0)
 
@@ -15,6 +15,7 @@ option(ENABLE_PUSH "Build prometheus-cpp push library" ON)
 option(ENABLE_COMPRESSION "Enable gzip compression" ON)
 option(ENABLE_TESTING "Build tests" ON)
 option(USE_THIRDPARTY_LIBRARIES "Use 3rdParty submodules" ON)
+option(THIRDPARTY_CIVETWEB_WITH_SSL "Enable SSL support for embedded civetweb source code")
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXLFAGS are configured differently" ON)
 
 if(OVERRIDE_CXX_STANDARD_FLAGS)

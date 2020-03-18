@@ -1,4 +1,3 @@
-
 if(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED)
 else()
@@ -13,7 +12,6 @@ add_library(pull
   src/exposer.cc
   src/handler.cc
   src/handler.h
-  $<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:$<TARGET_OBJECTS:civetweb>>
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
@@ -23,7 +21,7 @@ target_link_libraries(pull
     ${PROJECT_NAME}::core
   PRIVATE
     Threads::Threads
-    $<$<NOT:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>>:civetweb::civetweb-cpp>
+    $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,civetweb,civetweb::civetweb-cpp>
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )

@@ -7,17 +7,25 @@ WORKSPACE=$(cd "$(dirname "${BASH_SOURCE[0]}")"/../.. && /bin/pwd -P)
 # Build with internal dependencies
 
 mkdir "${WORKSPACE}/_build_internal_deps" && cd $_
-cmake .. -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF
-make -j$(nproc)
+cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF "${WORKSPACE}"
+make -j$(getconf _NPROCESSORS_ONLN)
 ctest -V
 mkdir -p deploy
 make DESTDIR="${PWD}/deploy" install
 
+mkdir "${WORKSPACE}/_import_internal_deps" && cd $_
+cmake "-Dprometheus-cpp_DIR=${WORKSPACE}/_build_internal_deps/deploy/usr/local/lib/cmake/prometheus-cpp" "${WORKSPACE}/cmake/project-import"
+make -j$(getconf _NPROCESSORS_ONLN)
+
 # Build with external dependencies
 
 mkdir "${WORKSPACE}/_build" && cd $_
-cmake .. -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
-make -j$(nproc)
+cmake -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" "${WORKSPACE}"
+make -j$(getconf _NPROCESSORS_ONLN)
 ctest -V -LE Benchmark
 mkdir -p deploy
 make DESTDIR="${PWD}/deploy" install
+
+mkdir "${WORKSPACE}/_import" && cd $_
+cmake "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" "-Dprometheus-cpp_DIR=${WORKSPACE}/_build/deploy/usr/local/lib/cmake/prometheus-cpp" "${WORKSPACE}/cmake/project-import"
+make -j$(getconf _NPROCESSORS_ONLN)

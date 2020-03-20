@@ -1,5 +1,10 @@
 if(USE_THIRDPARTY_LIBRARIES)
   find_package(civetweb-3rdparty CONFIG REQUIRED)
+  add_library(${PROJECT_NAME}::civetweb ALIAS civetweb)
+  install(
+    TARGETS civetweb
+    EXPORT ${PROJECT_NAME}-targets
+  )
 else()
   find_package(civetweb CONFIG REQUIRED)
 endif()
@@ -21,7 +26,7 @@ target_link_libraries(pull
     ${PROJECT_NAME}::core
   PRIVATE
     Threads::Threads
-    $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,civetweb,civetweb::civetweb-cpp>
+    $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,${PROJECT_NAME}::civetweb,civetweb::civetweb-cpp>
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )

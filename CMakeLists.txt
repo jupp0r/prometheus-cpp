@@ -23,7 +23,9 @@ if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_EXTENSIONS Off)
 endif()
 
-# Set default directory permissions
+# Set default directory permissions until
+# https://gitlab.kitware.com/cmake/cmake/issues/15163
+# is fixed
 set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS
     OWNER_READ
     OWNER_WRITE

@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: bionic
 language: c++
 
 env:
@@ -12,6 +12,7 @@ addons:
   apt:
     packages:
     - doxygen
+    - graphviz
 
 script:
   - pushd .

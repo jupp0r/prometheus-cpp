@@ -171,6 +171,36 @@ This will place an appropriately named .deb in the
 `_build` folder. To build a RPM package set the `CPACK_GENERATOR`
 variable to `RPM`. 
 
+## Consuming the installed project
+
+### CMake
+
+Consuming prometheus-cpp via CMake is the preferred way because all the dependencies
+between the three prometheus-cpp libraries are handled correctly.
+
+The `cmake/project-import` directory contains an
+example project and minimal [CMakeLists.txt](cmake/project-import/CMakeLists.txt).
+
+### vcpkg
+
+The [vcpkg](https://github.com/microsoft/vcpkg) package manager contains a
+prometheus-cpp port which has been tested on Linux, macOS, and Windows.
+
+### Plain Makefiles
+
+When manually linking prometheus-cpp the library order matters. The needed
+libraries depend on the individual use case but the following should work for the pull metrics approach:
+
+```
+-lprometheus-cpp-pull -lprometheus-cpp-core -lz
+```
+
+For the push-workflow please try:
+
+```
+-lprometheus-cpp-push -lprometheus-cpp-core -lcurl -lz
+```
+
 ## Contributing
 
 Please adhere to the [Google C++ Style

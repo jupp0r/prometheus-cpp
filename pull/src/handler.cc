@@ -3,12 +3,12 @@
 #include "prometheus/summary.h"
 
 #include <cstring>
-#include <iterator>
 
 #ifdef HAVE_ZLIB
 #include <zlib.h>
 #endif
 
+#include "metrics_collector.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
@@ -118,7 +118,7 @@ static std::size_t WriteResponse(struct mg_connection* conn,
 bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
-  auto metrics = CollectMetrics();
+  auto metrics = CollectMetrics(collectables_);
 
   auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
 
@@ -132,23 +132,6 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   bytes_transferred_.Increment(bodySize);
   num_scrapes_.Increment();
   return true;
-}
-std::vector<MetricFamily> MetricsHandler::CollectMetrics() const {
-  auto collected_metrics = std::vector<MetricFamily>{};
-
-  for (auto&& wcollectable : collectables_) {
-    auto collectable = wcollectable.lock();
-    if (!collectable) {
-      continue;
-    }
-
-    auto&& metrics = collectable->Collect();
-    collected_metrics.insert(collected_metrics.end(),
-                             std::make_move_iterator(metrics.begin()),
-                             std::make_move_iterator(metrics.end()));
-  }
-
-  return collected_metrics;
 }
 }  // namespace detail
 }  // namespace prometheus

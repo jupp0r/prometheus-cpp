@@ -18,8 +18,6 @@ class MetricsHandler : public CivetHandler {
   bool handleGet(CivetServer* server, struct mg_connection* conn) override;
 
  private:
-  std::vector<MetricFamily> CollectMetrics() const;
-
   const std::vector<std::weak_ptr<Collectable>>& collectables_;
   Family<Counter>& bytes_transferred_family_;
   Counter& bytes_transferred_;

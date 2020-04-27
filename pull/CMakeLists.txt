@@ -17,6 +17,8 @@ add_library(pull
   src/exposer.cc
   src/handler.cc
   src/handler.h
+  src/metrics_collector.cc
+  src/metrics_collector.h
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)

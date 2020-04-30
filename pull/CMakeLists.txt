@@ -14,6 +14,7 @@ if(ENABLE_COMPRESSION)
 endif()
 
 add_library(pull
+  src/endpoint.cc
   src/exposer.cc
   src/handler.cc
   src/handler.h

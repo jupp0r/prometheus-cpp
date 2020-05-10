@@ -13,15 +13,14 @@ def prometheus_cpp_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )
 
-
     maybe(
         http_archive,
         name = "com_google_absl",
         urls = [
-            "https://github.com/abseil/abseil-cpp/archive/20200225.2.zip",
+            "https://github.com/abseil/abseil-cpp/archive/a1d6689907864974118e592ef2ac7d716c576aad.tar.gz",
         ],
-        strip_prefix = "abseil-cpp-20200225.2",
-        sha256 = "f342aac71a62861ac784cadb8127d5a42c6c61ab1cd07f00aef05f2cc4988c42",
+        strip_prefix = "abseil-cpp-a1d6689907864974118e592ef2ac7d716c576aad",
+        sha256 = "bc6bd9adc8a8e514c019a8369195b3d5c80e7edc22602b9252babdb624439dd1",
     )
 
     maybe(

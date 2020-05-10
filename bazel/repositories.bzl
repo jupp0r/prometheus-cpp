@@ -13,6 +13,17 @@ def prometheus_cpp_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )
 
+
+    maybe(
+        http_archive,
+        name = "com_google_absl",
+        urls = [
+            "https://github.com/abseil/abseil-cpp/archive/20200225.2.zip",
+        ],
+        strip_prefix = "abseil-cpp-20200225.2",
+        sha256 = "f342aac71a62861ac784cadb8127d5a42c6c61ab1cd07f00aef05f2cc4988c42",
+    )
+
     maybe(
         http_archive,
         name = "com_google_googletest",
@@ -21,6 +32,16 @@ def prometheus_cpp_repositories():
         urls = [
             "https://github.com/google/googletest/archive/release-1.10.0.tar.gz",
         ],
+    )
+
+    maybe(
+        http_archive,
+        name = "com_google_tcmalloc",
+        urls = [
+            "https://github.com/google/tcmalloc/archive/82969a21d3f99096e1c79b5e59853bdb4e358474.tar.gz",
+        ],
+        strip_prefix = "tcmalloc-82969a21d3f99096e1c79b5e59853bdb4e358474",
+        sha256 = "f2ef9e1ca43bd6a496f67e3100d728648cf8ba2336bbd5c255390d9dc2eb7692",
     )
 
     maybe(

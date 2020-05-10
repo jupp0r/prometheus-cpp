@@ -1,6 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
 config_setting(
+    name = "linux",
+    values = {"cpu": "k8"},
+)
+
+config_setting(
     name = "windows",
     values = {"cpu": "x64_windows"},
 )

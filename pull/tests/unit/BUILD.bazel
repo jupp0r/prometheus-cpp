@@ -6,6 +6,10 @@ cc_test(
     ]),
     copts = ["-Iexternal/googletest/include"],
     linkstatic = True,
+    malloc = select({
+        "//:linux": "@com_google_tcmalloc//tcmalloc",
+        "//conditions:default": "@bazel_tools//tools/cpp:malloc",
+    }),
     deps = [
         "//pull",
         "@com_google_googletest//:gtest_main",

@@ -10,11 +10,6 @@ case "${OS_ARG}" in
         packages=(locales)
 
         case "${BUILDSYSTEM_ARG}" in
-            bazel)
-                curl -sL https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
-                echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-                packages+=(bazel)
-                ;;
             cmake)
                 packages+=(python-pip python-wheel)
                 ;;
@@ -33,22 +28,11 @@ case "${OS_ARG}" in
 
     macOS*)
         packages=(prometheus telegraf)
-
-        case "${BUILDSYSTEM_ARG}" in
-            bazel)
-                packages+=(bazelbuild/tap/bazel)
-                ;;
-            cmake)
-                ;;
-        esac
-
         brew install "${packages[@]}"
         ;;
 esac
 
 case "${BUILDSYSTEM_ARG}" in
-    bazel)
-        ;;
     cmake)
         "${VCPKG_INSTALLATION_ROOT}/vcpkg" install benchmark civetweb curl gtest zlib
         ;;

@@ -15,6 +15,7 @@ endif()
 
 add_library(pull
   src/endpoint.cc
+  src/endpoint.h
   src/exposer.cc
   src/handler.cc
   src/handler.h

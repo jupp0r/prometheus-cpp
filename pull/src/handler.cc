@@ -1,8 +1,9 @@
 #include "handler.h"
-#include "prometheus/counter.h"
-#include "prometheus/summary.h"
 
 #include <cstring>
+
+#include "prometheus/counter.h"
+#include "prometheus/summary.h"
 
 #ifdef HAVE_ZLIB
 #include <zlib.h>

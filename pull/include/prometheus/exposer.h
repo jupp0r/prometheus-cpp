@@ -15,48 +15,26 @@ class CivetServer;
 namespace prometheus {
 
 namespace detail {
+class Endpoint;
 class MetricsHandler;
 }  // namespace detail
 
-class Endpoint;
-
-/**
- * Exposer capable of serving different groups of Collectables
- * on different paths.
- */
-class PROMETHEUS_CPP_PULL_EXPORT MultiExposer {
+class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  public:
-  MultiExposer(const std::string& bind_address,
-               std::vector<std::shared_ptr<Endpoint>> endpoints,
-               const std::size_t num_threads = 2);
-
-  MultiExposer(std::vector<std::string> options,
-               std::vector<std::shared_ptr<Endpoint>> endpoints);
-
-  virtual ~MultiExposer();
+  explicit Exposer(const std::string& bind_address,
+                   const std::size_t num_threads = 2);
+  explicit Exposer(std::vector<std::string> options);
+  ~Exposer();
+  void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
+                           const std::string& uri = std::string("/metrics"));
 
   std::vector<int> GetListeningPorts() const;
 
- protected:
+ private:
+  detail::Endpoint& GetEndpointForUri(const std::string& uri);
+
   std::unique_ptr<CivetServer> server_;
-  std::vector<std::shared_ptr<Endpoint>> endpoints_;
-};
-
-/**
- * Exposer serving a group of Collectables on a single path.
- *
- * Provides a simpler interface than directly using a MultiExposer with
- * a single Endpoint.
- */
-class PROMETHEUS_CPP_PULL_EXPORT Exposer : public MultiExposer {
- public:
-  explicit Exposer(const std::string& bind_address,
-                   const std::string& uri = std::string("/metrics"),
-                   const std::size_t num_threads = 2);
-  explicit Exposer(std::vector<std::string> options,
-                   const std::string& uri = std::string("/metrics"));
-
-  void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
+  std::vector<std::unique_ptr<detail::Endpoint>> endpoints_;
 };
 
 }  // namespace prometheus

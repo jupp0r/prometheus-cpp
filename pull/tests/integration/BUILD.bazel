@@ -4,6 +4,12 @@ cc_binary(
     deps = ["//pull"],
 )
 
+cc_binary(
+    name = "sample-server_multi",
+    srcs = ["sample_server_multi.cc"],
+    deps = ["//pull"],
+)
+
 sh_test(
     name = "scrape-test",
     size = "small",

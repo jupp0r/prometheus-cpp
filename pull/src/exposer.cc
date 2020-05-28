@@ -4,40 +4,45 @@
 #include <string>
 #include <thread>
 
+#include "CivetServer.h"
+#include "endpoint.h"
+#include "handler.h"
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/future_std.h"
 
-#include "CivetServer.h"
-#include "handler.h"
-
 namespace prometheus {
 
-Exposer::Exposer(const std::string& bind_address, const std::string& uri,
-                 const std::size_t num_threads)
-    : Exposer(
-          std::vector<std::string>{"listening_ports", bind_address,
-                                   "num_threads", std::to_string(num_threads)},
-          uri) {}
+Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads)
+    : Exposer(std::vector<std::string>{"listening_ports", bind_address,
+                                       "num_threads",
+                                       std::to_string(num_threads)}) {}
 
-Exposer::Exposer(std::vector<std::string> options, const std::string& uri)
-    : server_(detail::make_unique<CivetServer>(std::move(options))),
-      exposer_registry_(std::make_shared<Registry>()),
-      metrics_handler_(
-          new detail::MetricsHandler{collectables_, *exposer_registry_}),
-      uri_(uri) {
-  RegisterCollectable(exposer_registry_);
-  server_->addHandler(uri, metrics_handler_.get());
-}
+Exposer::Exposer(std::vector<std::string> options)
+    : server_(detail::make_unique<CivetServer>(std::move(options))) {}
 
-Exposer::~Exposer() { server_->removeHandler(uri_); }
+Exposer::~Exposer() = default;
 
-void Exposer::RegisterCollectable(
-    const std::weak_ptr<Collectable>& collectable) {
-  collectables_.push_back(collectable);
+void Exposer::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
+                                  const std::string& uri) {
+  auto& endpoint = GetEndpointForUri(uri);
+  endpoint.RegisterCollectable(collectable);
 }
 
 std::vector<int> Exposer::GetListeningPorts() const {
   return server_->getListeningPorts();
+}
+
+detail::Endpoint& Exposer::GetEndpointForUri(const std::string& uri) {
+  auto sameUri = [uri](const std::unique_ptr<detail::Endpoint>& endpoint) {
+    return endpoint->GetURI() == uri;
+  };
+  auto it = std::find_if(std::begin(endpoints_), std::end(endpoints_), sameUri);
+  if (it != std::end(endpoints_)) {
+    return *it->get();
+  }
+
+  endpoints_.emplace_back(detail::make_unique<detail::Endpoint>(*server_, uri));
+  return *endpoints_.back().get();
 }
 
 }  // namespace prometheus

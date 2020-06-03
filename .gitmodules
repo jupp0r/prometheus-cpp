@@ -4,3 +4,6 @@
 [submodule "civetweb"]
 	path = 3rdparty/civetweb
 	url = https://github.com/civetweb/civetweb.git
+[submodule "3rdparty/cpp-base64"]
+	path = 3rdparty/cpp-base64
+	url = https://github.com/ReneNyffenegger/cpp-base64.git

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "basic_auth.h"
 #include "prometheus/collectable.h"
 #include "prometheus/registry.h"
 
@@ -19,6 +21,9 @@ class Endpoint {
   ~Endpoint();
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
+  void RegisterAuth(
+      std::function<bool(const std::string&, const std::string&)> authCB,
+      const std::string& realm);
 
   const std::string& GetURI() const;
 
@@ -29,6 +34,7 @@ class Endpoint {
   // registry for "meta" metrics about the endpoint itself
   std::shared_ptr<Registry> endpoint_registry_;
   std::unique_ptr<MetricsHandler> metrics_handler_;
+  std::unique_ptr<BasicAuthHandler> auth_handler_;
 };
 
 }  // namespace detail

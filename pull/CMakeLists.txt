@@ -13,7 +13,11 @@ if(ENABLE_COMPRESSION)
   find_package(ZLIB REQUIRED)
 endif()
 
+find_package(cpp-base64-3rdparty CONFIG REQUIRED)
+
 add_library(pull
+  src/basic_auth.cc
+  src/basic_auth.h
   src/endpoint.cc
   src/endpoint.h
   src/exposer.cc
@@ -21,6 +25,7 @@ add_library(pull
   src/handler.h
   src/metrics_collector.cc
   src/metrics_collector.h
+  $<TARGET_OBJECTS:base64>
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
@@ -40,6 +45,7 @@ target_include_directories(pull
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   PRIVATE
+    ${BASE64_INCLUDE_DIRS}
     ${CIVETWEB_INCLUDE_DIRS}
 )
 

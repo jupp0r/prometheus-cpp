@@ -23,6 +23,7 @@ cc_library(
     deps = [
         "//core",
         "@civetweb",
+        "@com_github_tplgy_cppcodec//:cppcodec",
         "@net_zlib_zlib//:z",
     ],
 )

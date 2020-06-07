@@ -34,6 +34,6 @@ esac
 
 case "${BUILDSYSTEM_ARG}" in
     cmake)
-        "${VCPKG_INSTALLATION_ROOT}/vcpkg" install benchmark civetweb curl gtest zlib
+        "${VCPKG_INSTALLATION_ROOT}/vcpkg" install benchmark civetweb cppcodec curl gtest zlib
         ;;
 esac

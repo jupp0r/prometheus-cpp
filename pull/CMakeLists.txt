@@ -5,15 +5,20 @@ if(USE_THIRDPARTY_LIBRARIES)
     TARGETS civetweb
     EXPORT ${PROJECT_NAME}-targets
   )
+  find_package(cppcodec-3rdparty CONFIG REQUIRED)
+  add_library(${PROJECT_NAME}::cppcodec ALIAS cppcodec)
+  install(
+    TARGETS cppcodec
+    EXPORT ${PROJECT_NAME}-targets
+  )
 else()
   find_package(civetweb CONFIG REQUIRED)
+  find_package(cppcodec REQUIRED)
 endif()
 
 if(ENABLE_COMPRESSION)
   find_package(ZLIB REQUIRED)
 endif()
-
-find_package(cpp-base64-3rdparty CONFIG REQUIRED)
 
 add_library(pull
   src/basic_auth.cc
@@ -25,7 +30,6 @@ add_library(pull
   src/handler.h
   src/metrics_collector.cc
   src/metrics_collector.h
-  $<TARGET_OBJECTS:base64>
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
@@ -36,6 +40,7 @@ target_link_libraries(pull
   PRIVATE
     Threads::Threads
     $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,${PROJECT_NAME}::civetweb,civetweb::civetweb-cpp>
+    $<$<BOOL:${USE_THIRDPARTY_LIBRARIES}>:${PROJECT_NAME}::cppcodec>
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )
@@ -45,7 +50,7 @@ target_include_directories(pull
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   PRIVATE
-    ${BASE64_INCLUDE_DIRS}
+    ${CPPCODEC_INCLUDE_DIRS} # needed as long as upstream cppcodec installs no config file with imported target
     ${CIVETWEB_INCLUDE_DIRS}
 )
 

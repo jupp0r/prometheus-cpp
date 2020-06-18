@@ -227,7 +227,11 @@ ClientMetric Family<T>::CollectMetric(std::size_t hash, T* metric) {
       };
   std::for_each(constant_labels_.cbegin(), constant_labels_.cend(), add_label);
   const auto& metric_labels = labels_.at(hash);
-  std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
+  for (auto const &label : metric_labels) {
+    if (constant_labels_.find(label.first) == constant_labels_.end()) {
+      add_label(label);
+    }
+  }
   return collected;
 }
 

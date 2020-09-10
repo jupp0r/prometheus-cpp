@@ -30,7 +30,6 @@ class Endpoint {
  private:
   CivetServer& server_;
   const std::string uri_;
-  std::vector<std::weak_ptr<Collectable>> collectables_;
   // registry for "meta" metrics about the endpoint itself
   std::shared_ptr<Registry> endpoint_registry_;
   std::unique_ptr<MetricsHandler> metrics_handler_;

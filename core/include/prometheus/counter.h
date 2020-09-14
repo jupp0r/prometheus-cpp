@@ -1,10 +1,14 @@
 #pragma once
 
+#include <ctime>
+#include <atomic>
+
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/metric_base.h"
 
 namespace prometheus {
 
@@ -23,20 +27,17 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Counter {
+class PROMETHEUS_CPP_CORE_EXPORT Counter: public MetricBase {
  public:
   static const MetricType metric_type{MetricType::Counter};
 
   /// \brief Create a counter that starts at 0.
-  Counter() = default;
-
-  /// \brief Increment the counter by 1.
-  void Increment();
+  Counter(const bool alert_if_no_family = true);
 
   /// \brief Increment the counter by a given amount.
   ///
   /// The counter will not change if the given amount is negative.
-  void Increment(double);
+  void Increment(const double = 1);
 
   /// \brief Get the current value of the counter.
   double Value() const;
@@ -47,7 +48,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
   ClientMetric Collect() const;
 
  private:
-  Gauge gauge_{0.0};
+  std::atomic<double> value_{0.0};
 };
 
 /// \brief Return a builder to configure and register a Counter metric.

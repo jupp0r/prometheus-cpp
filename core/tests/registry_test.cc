@@ -12,10 +12,10 @@ namespace {
 
 TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};
-  auto& counter_family =
+  auto counter_family =
       BuildCounter().Name("test").Help("a test").Register(registry);
-  counter_family.Add({{"name", "counter1"}});
-  counter_family.Add({{"name", "counter2"}});
+  counter_family->Add({{"name", "counter1"}});
+  counter_family->Add({{"name", "counter2"}});
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1U);
   EXPECT_EQ(collected[0].name, "test");
@@ -29,11 +29,11 @@ TEST(RegistryTest, collect_single_metric_family) {
 
 TEST(RegistryTest, build_histogram_family) {
   Registry registry{};
-  auto& histogram_family =
+  auto histogram_family =
       BuildHistogram().Name("hist").Help("Test Histogram").Register(registry);
-  auto& histogram = histogram_family.Add({{"name", "test_histogram_1"}},
+  auto histogram = histogram_family->Add({{"name", "test_histogram_1"}},
                                          Histogram::BucketBoundaries{0, 1, 2});
-  histogram.Observe(1.1);
+  histogram->Observe(1.1);
   auto collected = registry.Collect();
   ASSERT_EQ(collected.size(), 1U);
 }
@@ -88,7 +88,7 @@ TEST(RegistryTest, append_same_families) {
         .Name("counter")
         .Help("Test Counter")
         .Register(registry)
-        .Add({{"name", "test_counter"}});
+        ->Add({{"name", "test_counter"}});
   }
 
   auto collected = registry.Collect();
@@ -113,7 +113,7 @@ TEST(RegistryTest, merge_same_families) {
         .Name("counter")
         .Help("Test Counter")
         .Register(registry)
-        .Add({{"name", "test_counter"}});
+        ->Add({{"name", "test_counter"}});
   }
 
   auto collected = registry.Collect();

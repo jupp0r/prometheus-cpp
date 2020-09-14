@@ -5,6 +5,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
@@ -60,7 +61,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// \brief name Create a new registry.
   ///
   /// \param insert_behavior How to handle families with the same name.
-  explicit Registry(InsertBehavior insert_behavior = InsertBehavior::Merge);
+  explicit Registry(const InsertBehavior insert_behavior = InsertBehavior::Merge);
 
   /// \brief name Destroys a registry.
   ~Registry();
@@ -73,25 +74,29 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// \return Zero or more metrics and their samples.
   std::vector<MetricFamily> Collect() override;
 
+  bool UpdateRetentionTime(const double retention_time, const std::string& re_name, const std::map<std::string, std::string>& re_labels, const std::set<MetricType>& families = {MetricType::Counter, MetricType::Gauge, MetricType::Summary, MetricType::Histogram}, const bool bump = true, const bool debug = false);
+
  private:
   template <typename T>
   friend class detail::Builder;
 
   template <typename T>
-  std::vector<std::unique_ptr<Family<T>>>& GetFamilies();
+  std::vector<std::shared_ptr<Family<T>>>& GetFamilies();
 
   template <typename T>
   bool NameExistsInOtherType(const std::string& name) const;
 
   template <typename T>
-  Family<T>& Add(const std::string& name, const std::string& help,
-                 const std::map<std::string, std::string>& labels);
+  std::shared_ptr<Family<T>> Add(
+                 const std::string& name, const std::string& help,
+                 const std::map<std::string, std::string>& labels,
+                 const RetentionBehavior retention_behavior = RetentionBehavior::Keep);
 
   const InsertBehavior insert_behavior_;
-  std::vector<std::unique_ptr<Family<Counter>>> counters_;
-  std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
-  std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
-  std::vector<std::unique_ptr<Family<Summary>>> summaries_;
+  std::vector<std::shared_ptr<Family<Counter>>> counters_;
+  std::vector<std::shared_ptr<Family<Gauge>>> gauges_;
+  std::vector<std::shared_ptr<Family<Histogram>>> histograms_;
+  std::vector<std::shared_ptr<Family<Summary>>> summaries_;
   std::mutex mutex_;
 };
 

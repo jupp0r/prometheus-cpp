@@ -12,14 +12,19 @@ add_library(core
   src/registry.cc
   src/serializer.cc
   src/summary.cc
+  src/metric_base.cc
   src/text_serializer.cc
 )
 
 add_library(${PROJECT_NAME}::core ALIAS core)
 
+find_package(Boost REQUIRED COMPONENTS regex)
+include_directories(${Boost_INCLUDE_DIRS})
+
 target_link_libraries(core
   PRIVATE
     Threads::Threads
+    ${Boost_LIBRARIES}
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 

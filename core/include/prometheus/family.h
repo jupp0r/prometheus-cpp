@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <ctime>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -21,6 +22,12 @@
 #include "prometheus/metric_family.h"
 
 namespace prometheus {
+
+// Retention Behaviour:
+//  - Keep: Publish for all time
+//  - Remove: Remove after the metric sees no updates for retention_time_
+enum class RetentionBehavior {Keep, Remove};
+
 
 /// \brief A metric of type T with a set of labeled dimensions.
 ///
@@ -61,6 +68,7 @@ namespace prometheus {
 template <typename T>
 class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
  public:
+
   /// \brief Create a new metric.
   ///
   /// Every metric is uniquely identified by its name and a set of key-value
@@ -86,10 +94,14 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \param name Set the metric name.
   /// \param help Set an additional description.
   /// \param constant_labels Assign a set of key-value pairs (= labels) to the
-  /// metric. All these labels are propagated to each time series within the
-  /// metric.
+  ///        metric. All these labels are propagated to each time series within
+  ///        the metric.
+  /// \param retention_behavior Allows metrics to expire (removed from publish list).
+  ///          - Keep: Publish for all time
+  ///          - Remove: Remove after the metric sees no updates for retention_time_
   Family(const std::string& name, const std::string& help,
-         const std::map<std::string, std::string>& constant_labels);
+         const std::map<std::string, std::string>& constant_labels,
+         const RetentionBehavior retention_behavior = RetentionBehavior::Keep);
 
   /// \brief Add a new dimensional data.
   ///
@@ -108,15 +120,15 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \return Return the newly created dimensional data or - if a same set of
   /// labels already exists - the already existing dimensional data.
   template <typename... Args>
-  T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
-    return Add(labels, detail::make_unique<T>(args...));
+  std::shared_ptr<T> Add(const std::map<std::string, std::string>& labels, Args&&... args) {
+    return Add(labels, std::make_shared<T>(std::forward<Args>(args)...));
   }
 
   /// \brief Remove the given dimensional data.
   ///
   /// \param metric Dimensional data to be removed. The function does nothing,
   /// if the given metric was not returned by Add().
-  void Remove(T* metric);
+  void Remove(std::shared_ptr<T> metric);
 
   /// \brief Returns the name for this family.
   ///
@@ -135,19 +147,32 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \return Zero or more samples for each dimensional data.
   std::vector<MetricFamily> Collect() override;
 
+  /// \brief Updates the retention time of one or more metrics.
+  ///
+  /// \param retention_time The timestamp used to mimic the last update to the metric.
+  /// \param re_name The regular expression used to match the metric's name.
+  /// \param re_labels The set of regular expressions used to match the metric's labels (all expressions must match).
+  /// \param bump Will update the timestamp with the current time and ignore the retention_time parameter.
+  /// \param debug Print some debug statements.
+  ///
+  /// \return true if at least one metric was found and updated.
+  bool UpdateRetentionTime(const double retention_time, const std::string& re_name, 
+                           const std::map<std::string, std::string>& re_labels, 
+                           const bool bump = true, const bool debug = false);
+
  private:
-  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
+  std::unordered_map<std::size_t, std::shared_ptr<T>> metrics_;
   std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
-  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+  std::unordered_map<std::shared_ptr<T>, std::size_t> labels_reverse_lookup_;
 
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
+  RetentionBehavior retention_behavior_;
   std::mutex mutex_;
 
-  ClientMetric CollectMetric(std::size_t hash, T* metric);
-  T& Add(const std::map<std::string, std::string>& labels,
-         std::unique_ptr<T> object);
+  ClientMetric CollectMetric(std::size_t hash, std::shared_ptr<T> metric);
+  std::shared_ptr<T> Add(const std::map<std::string, std::string>& labels, std::shared_ptr<T> object);
 };
 
 }  // namespace prometheus

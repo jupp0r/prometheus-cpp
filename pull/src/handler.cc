@@ -24,18 +24,18 @@ MetricsHandler::MetricsHandler(
               .Name("exposer_transferred_bytes_total")
               .Help("Transferred bytes to metrics services")
               .Register(registry)),
-      bytes_transferred_(bytes_transferred_family_.Add({})),
+      bytes_transferred_(bytes_transferred_family_->Add({})),
       num_scrapes_family_(BuildCounter()
                               .Name("exposer_scrapes_total")
                               .Help("Number of times metrics were scraped")
                               .Register(registry)),
-      num_scrapes_(num_scrapes_family_.Add({})),
+      num_scrapes_(num_scrapes_family_->Add({})),
       request_latencies_family_(
           BuildSummary()
               .Name("exposer_request_latencies")
               .Help("Latencies of serving scrape requests, in microseconds")
               .Register(registry)),
-      request_latencies_(request_latencies_family_.Add(
+      request_latencies_(request_latencies_family_->Add(
           {}, Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}})) {}
 
 #ifdef HAVE_ZLIB
@@ -127,10 +127,10 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
       stop_time_of_request - start_time_of_request);
-  request_latencies_.Observe(duration.count());
+  request_latencies_->Observe(duration.count());
 
-  bytes_transferred_.Increment(bodySize);
-  num_scrapes_.Increment();
+  bytes_transferred_->Increment(bodySize);
+  num_scrapes_->Increment();
   return true;
 }
 std::vector<MetricFamily> MetricsHandler::CollectMetrics() const {

@@ -2,6 +2,8 @@
 
 #include <chrono>
 #include <cstdint>
+#include <ctime>
+#include <atomic>
 #include <mutex>
 #include <vector>
 
@@ -11,6 +13,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/time_window_quantiles.h"
 #include "prometheus/metric_type.h"
+#include "prometheus/metric_base.h"
 
 namespace prometheus {
 
@@ -38,7 +41,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Summary {
+class PROMETHEUS_CPP_CORE_EXPORT Summary: public MetricBase {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
 
@@ -72,8 +75,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// effectively results in a complete reset of the summary each time max_age
   /// has passed. The default value is 5.
   Summary(const Quantiles& quantiles,
-          std::chrono::milliseconds max_age = std::chrono::seconds{60},
-          int age_buckets = 5);
+          const std::chrono::milliseconds max_age = std::chrono::seconds{60},
+          const int age_buckets = 5, const bool alert_if_no_family = true);
 
   /// \brief Observe the given amount.
   void Observe(double value);

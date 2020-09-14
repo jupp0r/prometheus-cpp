@@ -20,14 +20,14 @@ int main() {
 
   // add a new counter family to the registry (families combine values with the
   // same name, but distinct label dimensions)
-  auto& counter_family = BuildCounter()
+  auto counter_family = BuildCounter()
                              .Name("time_running_seconds_total")
                              .Help("How many seconds is this server running?")
                              .Labels({{"label", "value"}})
                              .Register(*registry);
 
   // add a counter to the metric family
-  auto& second_counter = counter_family.Add(
+  auto second_counter = counter_family->Add(
       {{"another_label", "value"}, {"yet_another_label", "value"}});
 
   // ask the exposer to scrape the registry on incoming scrapes
@@ -36,7 +36,7 @@ int main() {
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // increment the counter by one (second)
-    second_counter.Increment();
+    second_counter->Increment();
   }
   return 0;
 }

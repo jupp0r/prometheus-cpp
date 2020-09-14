@@ -9,7 +9,7 @@ namespace prometheus {
 namespace {
 
 TEST(SummaryTest, initialize_with_zero) {
-  Summary summary{Summary::Quantiles{}};
+  Summary summary{Summary::Quantiles{}, std::chrono::seconds{60}, 5, false};
   auto metric = summary.Collect();
   auto s = metric.summary;
   EXPECT_EQ(s.sample_count, 0U);
@@ -17,7 +17,7 @@ TEST(SummaryTest, initialize_with_zero) {
 }
 
 TEST(SummaryTest, sample_count) {
-  Summary summary{Summary::Quantiles{{0.5, 0.05}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}}, std::chrono::seconds{60}, 5, false};
   summary.Observe(0);
   summary.Observe(200);
   auto metric = summary.Collect();
@@ -26,7 +26,7 @@ TEST(SummaryTest, sample_count) {
 }
 
 TEST(SummaryTest, sample_sum) {
-  Summary summary{Summary::Quantiles{{0.5, 0.05}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}}, std::chrono::seconds{60}, 5, false};
   summary.Observe(0);
   summary.Observe(1);
   summary.Observe(101);
@@ -36,14 +36,14 @@ TEST(SummaryTest, sample_sum) {
 }
 
 TEST(SummaryTest, quantile_size) {
-  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}}, std::chrono::seconds{60}, 5, false};
   auto metric = summary.Collect();
   auto s = metric.summary;
   EXPECT_EQ(s.quantile.size(), 2U);
 }
 
 TEST(SummaryTest, quantile_bounds) {
-  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.90, 0.01}, {0.99, 0.001}}, std::chrono::seconds{60}, 5, false};
   auto metric = summary.Collect();
   auto s = metric.summary;
   ASSERT_EQ(s.quantile.size(), 3U);
@@ -55,7 +55,7 @@ TEST(SummaryTest, quantile_bounds) {
 TEST(SummaryTest, quantile_values) {
   static const int SAMPLES = 1000000;
 
-  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}}};
+  Summary summary{Summary::Quantiles{{0.5, 0.05}, {0.9, 0.01}, {0.99, 0.001}}, std::chrono::seconds{60}, 5, false};
   for (int i = 1; i <= SAMPLES; ++i) summary.Observe(i);
 
   auto metric = summary.Collect();
@@ -69,7 +69,7 @@ TEST(SummaryTest, quantile_values) {
 
 TEST(SummaryTest, max_age) {
   Summary summary{Summary::Quantiles{{0.99, 0.001}}, std::chrono::seconds(1),
-                  2};
+                  2, false};
   summary.Observe(8.0);
 
   static const auto test_value = [&summary](double ref) {

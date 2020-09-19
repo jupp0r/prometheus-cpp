@@ -6,14 +6,13 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <mutex>
 
 #include "prometheus/detail/push_export.h"
 #include "prometheus/registry.h"
 
-#include <curl/curl.h>
-
 namespace prometheus {
+
+class CurlWrapper;
 
 class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
@@ -49,8 +48,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string jobUri_;
   std::string labels_;
   std::string auth_;
-  CURL *curl_;
-  std::mutex curlMutex_;
+  std::unique_ptr<CurlWrapper> curlWrapper_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;

@@ -3,15 +3,43 @@
 
 #include <memory>
 #include <sstream>
+#include <mutex>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
+#include <curl/curl.h>
+
 namespace prometheus {
 
 static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
+
+class CurlWrapper {
+public:
+  CurlWrapper() {
+    curl_ = nullptr;
+  }
+  ~CurlWrapper() {
+    std::lock_guard<std::mutex> l(mutex_);
+    if (curl_) {
+      curl_easy_cleanup(curl_);
+    }
+  }
+
+  CURL *curl() {
+    std::lock_guard<std::mutex> l(mutex_);
+    if (!curl_) {
+      curl_ = curl_easy_init();
+    }
+    return curl_;
+  }
+
+private:
+  CURL *curl_;
+  std::mutex mutex_;
+};
 
 Gateway::Gateway(const std::string host, const std::string port,
                  const std::string jobname, const Labels& labels,
@@ -32,16 +60,10 @@ Gateway::Gateway(const std::string host, const std::string port,
     labelStream << "/" << label.first << "/" << label.second;
   }
   labels_ = labelStream.str();
-  curl_ = nullptr;
+  curlWrapper_ = std::move(std::unique_ptr<CurlWrapper>(new CurlWrapper()));
 }
 
-Gateway::~Gateway() { 
-  std::lock_guard<std::mutex> l(curlMutex_);
-  if (curl_) {
-    curl_easy_cleanup(curl_);
-  }
-  curl_global_cleanup(); 
-}
+Gateway::~Gateway() { curl_global_cleanup(); }
 
 const Gateway::Labels Gateway::GetInstanceLabel(std::string hostname) {
   if (hostname.empty()) {
@@ -65,53 +87,52 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
 int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
                                 const std::string& body) {
-  std::lock_guard<std::mutex> l(curlMutex_);
-  if (!curl_) {
-    curl_ = curl_easy_init();
-    if (!curl_) {
-      return -CURLE_FAILED_INIT;
-    }
+
+  auto curl = curlWrapper_->curl();
+  if (!curl) {
+    return -CURLE_FAILED_INIT;
   }
-  curl_easy_reset(curl_);
-  curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
+
+  curl_easy_reset(curl);
+  curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
 
   curl_slist* header_chunk = nullptr;
 
   if (!body.empty()) {
     header_chunk = curl_slist_append(nullptr, CONTENT_TYPE);
-    curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, header_chunk);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
 
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.data());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
   }
 
   if (!auth_.empty()) {
-    curl_easy_setopt(curl_, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_easy_setopt(curl_, CURLOPT_USERPWD, auth_.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERPWD, auth_.c_str());
   }
 
   switch (method) {
     case HttpMethod::Post:
-      curl_easy_setopt(curl_, CURLOPT_HTTPGET, 0L);
-      curl_easy_setopt(curl_, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
       break;
 
     case HttpMethod::Put:
-      curl_easy_setopt(curl_, CURLOPT_NOBODY, 0L);
-      curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
       break;
 
     case HttpMethod::Delete:
-      curl_easy_setopt(curl_, CURLOPT_HTTPGET, 0L);
-      curl_easy_setopt(curl_, CURLOPT_NOBODY, 0L);
-      curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
       break;
   }
 
-  auto curl_error = curl_easy_perform(curl_);
+  auto curl_error = curl_easy_perform(curl);
 
   long response_code;
-  curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
 
   curl_slist_free_all(header_chunk);
 

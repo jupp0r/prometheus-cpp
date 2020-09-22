@@ -20,7 +20,7 @@ jobs:
       - name: Prepare
         run: .github/scripts/run-prepare ${{ matrix.buildsystem }} ${{ matrix.os }}
       - name: Test
-        if: ${{ github.repository == "jupp0r/prometheus-cpp" }}
+        if: github.repository == 'jupp0r/prometheus-cpp'
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_GIT_BRANCH: "${{ github.ref }}"

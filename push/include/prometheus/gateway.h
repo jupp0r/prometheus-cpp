@@ -49,6 +49,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string labels_;
   std::string auth_;
   std::unique_ptr<CurlWrapper> curlWrapper_;
+  std::mutex mutex_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;

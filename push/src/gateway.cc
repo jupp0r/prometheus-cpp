@@ -22,14 +22,12 @@ public:
     curl_ = nullptr;
   }
   ~CurlWrapper() {
-    std::lock_guard<std::mutex> l(mutex_);
     if (curl_) {
       curl_easy_cleanup(curl_);
     }
   }
 
   CURL *curl() {
-    std::lock_guard<std::mutex> l(mutex_);
     if (!curl_) {
       curl_ = curl_easy_init();
     }
@@ -38,7 +36,6 @@ public:
 
 private:
   CURL *curl_;
-  std::mutex mutex_;
 };
 
 Gateway::Gateway(const std::string host, const std::string port,
@@ -87,7 +84,8 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
 int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
                                 const std::string& body) {
-
+  std::lock_guard<std::mutex> l(mutex_);
+  
   auto curl = curlWrapper_->curl();
   if (!curl) {
     return -CURLE_FAILED_INIT;

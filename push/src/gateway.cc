@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "prometheus/client_metric.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
 
@@ -18,12 +19,7 @@ static const char CONTENT_TYPE[] =
 
 class CurlWrapper {
  public:
-  CurlWrapper() { curl_ = nullptr; }
-  ~CurlWrapper() {
-    if (curl_) {
-      curl_easy_cleanup(curl_);
-    }
-  }
+  ~CurlWrapper() { curl_easy_cleanup(curl_); }
 
   CURL* curl() {
     if (!curl_) {
@@ -33,7 +29,7 @@ class CurlWrapper {
   }
 
  private:
-  CURL* curl_;
+  CURL* curl_ = nullptr;
 };
 
 Gateway::Gateway(const std::string host, const std::string port,
@@ -41,6 +37,7 @@ Gateway::Gateway(const std::string host, const std::string port,
                  const std::string username, const std::string password) {
   /* In windows, this will init the winsock stuff */
   curl_global_init(CURL_GLOBAL_ALL);
+  curlWrapper_ = detail::make_unique<CurlWrapper>();
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics/job/" << jobname;
@@ -55,7 +52,6 @@ Gateway::Gateway(const std::string host, const std::string port,
     labelStream << "/" << label.first << "/" << label.second;
   }
   labels_ = labelStream.str();
-  curlWrapper_ = std::move(std::unique_ptr<CurlWrapper>(new CurlWrapper()));
 }
 
 Gateway::~Gateway() { curl_global_cleanup(); }
@@ -95,7 +91,7 @@ int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_slist* header_chunk = nullptr;
 
   if (!body.empty()) {
-    header_chunk = curl_slist_append(nullptr, CONTENT_TYPE);
+    header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());

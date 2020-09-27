@@ -1,15 +1,15 @@
 
 #include "prometheus/gateway.h"
 
+#include <curl/curl.h>
+
 #include <memory>
-#include <sstream>
 #include <mutex>
+#include <sstream>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
 #include "prometheus/text_serializer.h"
-
-#include <curl/curl.h>
 
 namespace prometheus {
 
@@ -17,25 +17,23 @@ static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
 
 class CurlWrapper {
-public:
-  CurlWrapper() {
-    curl_ = nullptr;
-  }
+ public:
+  CurlWrapper() { curl_ = nullptr; }
   ~CurlWrapper() {
     if (curl_) {
       curl_easy_cleanup(curl_);
     }
   }
 
-  CURL *curl() {
+  CURL* curl() {
     if (!curl_) {
       curl_ = curl_easy_init();
     }
     return curl_;
   }
 
-private:
-  CURL *curl_;
+ private:
+  CURL* curl_;
 };
 
 Gateway::Gateway(const std::string host, const std::string port,
@@ -85,7 +83,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
                                 const std::string& body) {
   std::lock_guard<std::mutex> l(mutex_);
-  
+
   auto curl = curlWrapper_->curl();
   if (!curl) {
     return -CURLE_FAILED_INIT;

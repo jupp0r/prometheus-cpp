@@ -23,6 +23,12 @@ target_link_libraries(core
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 
+if(HAVE_CXX_LIBATOMIC)
+  # the exported library config must use libatomic unconditionally
+  # (the HAVE_CXX_LIBATOMIC variable should not leak into the target config)
+  target_link_libraries(core PUBLIC atomic)
+endif()
+
 target_include_directories(core
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

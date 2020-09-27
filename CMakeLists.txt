@@ -50,6 +50,10 @@ endif()
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
+# check for required libatomic
+
+include(CheckAtomic)
+
 if(ENABLE_TESTING)
   if(USE_THIRDPARTY_LIBRARIES)
     find_package(googlemock-3rdparty CONFIG REQUIRED)

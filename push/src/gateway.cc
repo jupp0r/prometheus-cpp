@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <sstream>
+#include <mutex>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/serializer.h"
@@ -14,6 +15,28 @@ namespace prometheus {
 
 static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
+
+class CurlWrapper {
+public:
+  CurlWrapper() {
+    curl_ = nullptr;
+  }
+  ~CurlWrapper() {
+    if (curl_) {
+      curl_easy_cleanup(curl_);
+    }
+  }
+
+  CURL *curl() {
+    if (!curl_) {
+      curl_ = curl_easy_init();
+    }
+    return curl_;
+  }
+
+private:
+  CURL *curl_;
+};
 
 Gateway::Gateway(const std::string host, const std::string port,
                  const std::string jobname, const Labels& labels,
@@ -34,6 +57,7 @@ Gateway::Gateway(const std::string host, const std::string port,
     labelStream << "/" << label.first << "/" << label.second;
   }
   labels_ = labelStream.str();
+  curlWrapper_ = std::move(std::unique_ptr<CurlWrapper>(new CurlWrapper()));
 }
 
 Gateway::~Gateway() { curl_global_cleanup(); }
@@ -59,12 +83,15 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 }
 
 int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
-                                const std::string& body) const {
-  auto curl = curl_easy_init();
+                                const std::string& body) {
+  std::lock_guard<std::mutex> l(mutex_);
+  
+  auto curl = curlWrapper_->curl();
   if (!curl) {
     return -CURLE_FAILED_INIT;
   }
 
+  curl_easy_reset(curl);
   curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
 
   curl_slist* header_chunk = nullptr;
@@ -105,7 +132,6 @@ int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
   long response_code;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
 
-  curl_easy_cleanup(curl);
   curl_slist_free_all(header_chunk);
 
   if (curl_error != CURLE_OK) {

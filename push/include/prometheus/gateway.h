@@ -12,6 +12,8 @@
 
 namespace prometheus {
 
+class CurlWrapper;
+
 class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
   using Labels = std::map<std::string, std::string>;
@@ -46,6 +48,8 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string jobUri_;
   std::string labels_;
   std::string auth_;
+  std::unique_ptr<CurlWrapper> curlWrapper_;
+  std::mutex mutex_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;
@@ -59,7 +63,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   };
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
-                         const std::string& body) const;
+                         const std::string& body);
 
   int push(HttpMethod method);
 

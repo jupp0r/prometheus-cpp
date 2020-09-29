@@ -7,6 +7,12 @@ namespace prometheus {
 
 Gauge::Gauge(const double value, const bool alert_if_no_family) : MetricBase(alert_if_no_family), value_(value) {}
 
+void Gauge::Reset(const double value) {
+  value_ = value;
+  last_update_ = std::time(nullptr);
+  AlertIfNoFamily();
+}
+
 void Gauge::Increment(const double value) {
   if (value < 0.0) return;
   value_ = value_ + value;

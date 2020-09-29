@@ -5,6 +5,11 @@ namespace prometheus {
 
 Counter::Counter(const bool alert_if_no_family) : MetricBase(alert_if_no_family) {};
 
+void Counter::Reset() {
+  value_ = 0;
+  last_update_ = std::time(nullptr);
+  AlertIfNoFamily();
+}
 
 void Counter::Increment(const double value) {
   if (value < 0.0) return;

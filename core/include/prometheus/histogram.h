@@ -47,6 +47,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram: public MetricBase {
   /// The bucket boundaries cannot be changed once the histogram is created.
   Histogram(const BucketBoundaries& buckets, const bool alert_if_no_family = true);
 
+  /// \brief Reset the histogram.
+  void Reset();
+
   /// \brief Observe the given amount.
   ///
   /// The given amount selects the 'observed' bucket. The observed bucket is

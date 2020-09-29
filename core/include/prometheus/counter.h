@@ -34,6 +34,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter: public MetricBase {
   /// \brief Create a counter that starts at 0.
   Counter(const bool alert_if_no_family = true);
 
+  /// \brief Resets the counter.
+  void Reset();
+
   /// \brief Increment the counter by a given amount.
   ///
   /// The counter will not change if the given amount is negative.

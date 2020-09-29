@@ -14,7 +14,7 @@ namespace prometheus {
 class PROMETHEUS_CPP_CORE_EXPORT MetricBase {
  public:
   MetricBase(const bool alert_if_no_family = true);
-  
+
   /// \brief    Prints a message to stderr if the metric doesn't have a family
   bool HasFamily();
 

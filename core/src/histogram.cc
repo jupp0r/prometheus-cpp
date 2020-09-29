@@ -13,6 +13,15 @@ Histogram::Histogram(const BucketBoundaries& buckets, const bool alert_if_no_fam
                         std::end(bucket_boundaries_)));
 }
 
+void Histogram::Reset() {
+  for (unsigned int bucket_index = 0; bucket_index < bucket_counts_.size(); ++bucket_index) {
+    bucket_counts_[bucket_index] = 0;
+  }  
+  sum_ = 0;
+  last_update_ = std::time(nullptr);
+  AlertIfNoFamily();
+}
+
 void Histogram::Observe(const double value) {
   // TODO: determine bucket list size at which binary search would be faster
   const auto bucket_index = static_cast<std::size_t>(std::distance(

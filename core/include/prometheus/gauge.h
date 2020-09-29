@@ -30,6 +30,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge: public MetricBase {
   /// \brief Create a gauge that starts at the given amount.
   Gauge(const double value = 0, const bool alert_if_no_family = true);
 
+  /// \brief Reset the gauge.
+  void Reset(const double value = 0);
+
   /// \brief Increment the gauge by the given amount.
   void Increment(const double value = 1);
 

@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(prometheus-cpp VERSION 0.9.0)
+project(prometheus-cpp VERSION 0.10.0)
 
 include(GenerateExportHeader)
 include(GNUInstallDirs)

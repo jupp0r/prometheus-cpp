@@ -23,6 +23,7 @@ cc_library(
     name = "libcivetweb",
     srcs = [
         "src/civetweb.c",
+        "src/response.inl",
     ],
     hdrs = [
         "include/civetweb.h",

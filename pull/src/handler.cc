@@ -16,11 +16,8 @@
 namespace prometheus {
 namespace detail {
 
-MetricsHandler::MetricsHandler(
-    const std::vector<std::weak_ptr<Collectable>>& collectables,
-    Registry& registry)
-    : collectables_(collectables),
-      bytes_transferred_family_(
+MetricsHandler::MetricsHandler(Registry& registry)
+    : bytes_transferred_family_(
           BuildCounter()
               .Name("exposer_transferred_bytes_total")
               .Help("Transferred bytes to metrics services")
@@ -116,10 +113,21 @@ static std::size_t WriteResponse(struct mg_connection* conn,
   return body.size();
 }
 
+void MetricsHandler::RegisterCollectable(
+    const std::weak_ptr<Collectable>& collectable) {
+  std::lock_guard<std::mutex> lock{collectables_mutex_};
+  collectables_.push_back(collectable);
+}
+
 bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
-  auto metrics = CollectMetrics(collectables_);
+  std::vector<MetricFamily> metrics;
+
+  {
+    std::lock_guard<std::mutex> lock{collectables_mutex_};
+    metrics = CollectMetrics(collectables_);
+  }
 
   auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
 

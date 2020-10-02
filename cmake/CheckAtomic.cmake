@@ -13,7 +13,7 @@ function(check_working_cxx_atomics varname)
 std::atomic<std::uint64_t> x(0);
 int main() {
   std::uint64_t i = x.load(std::memory_order_relaxed);
-  return 0;
+  return static_cast<int>(i);
 }
 " ${varname})
 endfunction()

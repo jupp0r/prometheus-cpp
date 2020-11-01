@@ -108,5 +108,13 @@ TEST(HistogramTest, observe_multiple_test_length_error) {
   ASSERT_THROW(histogram.ObserveMultiple({5, 9}, 20), std::length_error);
 }
 
+TEST(HistogramTest, sum_can_go_down) {
+  Histogram histogram{{1}};
+  auto metric1 = histogram.Collect();
+  histogram.Observe(-10);
+  auto metric2 = histogram.Collect();
+  EXPECT_LT(metric2.histogram.sample_sum, metric1.histogram.sample_sum);
+}
+
 }  // namespace
 }  // namespace prometheus

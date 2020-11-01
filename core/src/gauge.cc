@@ -9,18 +9,12 @@ Gauge::Gauge(const double value) : value_{value} {}
 void Gauge::Increment() { Increment(1.0); }
 
 void Gauge::Increment(const double value) {
-  if (value < 0.0) {
-    return;
-  }
   Change(value);
 }
 
 void Gauge::Decrement() { Decrement(1.0); }
 
 void Gauge::Decrement(const double value) {
-  if (value < 0.0) {
-    return;
-  }
   Change(-1.0 * value);
 }
 

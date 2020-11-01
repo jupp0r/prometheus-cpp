@@ -6,6 +6,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
+#include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -19,7 +20,7 @@ namespace prometheus {
 /// values, allowing to calculate the average of the observed values.
 ///
 /// At its core a histogram has a counter per bucket. The sum of observations
-/// also behaves like a counter.
+/// also behaves like a counter as long as there are no negative observations.
 ///
 /// See https://prometheus.io/docs/practices/histograms/ for detailed
 /// explanations of histogram usage and differences to summaries.
@@ -68,7 +69,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
  private:
   const BucketBoundaries bucket_boundaries_;
   std::vector<Counter> bucket_counts_;
-  Counter sum_;
+  Gauge sum_;
 };
 
 /// \brief Return a builder to configure and register a Histogram metric.

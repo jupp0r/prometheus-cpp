@@ -32,9 +32,8 @@ TEST(GaugeTest, inc_multiple) {
 
 TEST(GaugeTest, inc_negative_value) {
   Gauge gauge;
-  gauge.Increment(5.0);
-  gauge.Increment(-5.0);
-  EXPECT_EQ(gauge.Value(), 5.0);
+  gauge.Increment(-1.0);
+  EXPECT_EQ(gauge.Value(), -1.0);
 }
 
 TEST(GaugeTest, dec) {
@@ -46,9 +45,8 @@ TEST(GaugeTest, dec) {
 
 TEST(GaugeTest, dec_negative_value) {
   Gauge gauge;
-  gauge.Set(5.0);
   gauge.Decrement(-1.0);
-  EXPECT_EQ(gauge.Value(), 5.0);
+  EXPECT_EQ(gauge.Value(), 1.0);
 }
 
 TEST(GaugeTest, dec_number) {

@@ -21,7 +21,7 @@ void WriteValue(std::ostream& out, double value) {
     oldState.copyfmt(out);
 
     out.setf(std::ios::fixed, std::ios::floatfield);
-    out << std::setprecision(17);
+    out << std::setprecision(std::numeric_limits<double>::max_digits10);
     out << value;
 
     out.copyfmt(oldState);

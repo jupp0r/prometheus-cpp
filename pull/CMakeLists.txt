@@ -14,6 +14,12 @@ if(USE_THIRDPARTY_LIBRARIES)
 else()
   find_package(civetweb CONFIG REQUIRED)
   find_package(cppcodec REQUIRED)
+
+  # work-around https://github.com/civetweb/civetweb/pull/918
+  if(WIN32 AND NOT TARGET WINSOCK::WINSOCK)
+    add_library(WINSOCK::WINSOCK INTERFACE IMPORTED)
+    target_link_libraries(WINSOCK::WINSOCK INTERFACE ws2_32)
+  endif()
 endif()
 
 if(ENABLE_COMPRESSION)

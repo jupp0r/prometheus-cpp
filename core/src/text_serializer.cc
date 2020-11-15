@@ -1,6 +1,7 @@
 #include "prometheus/text_serializer.h"
 
 #include <cmath>
+#include <iomanip>
 #include <limits>
 #include <locale>
 #include <ostream>
@@ -16,9 +17,14 @@ void WriteValue(std::ostream& out, double value) {
   } else if (std::isinf(value)) {
     out << (value < 0 ? "-Inf" : "+Inf");
   } else {
-    auto saved_flags = out.setf(std::ios::fixed, std::ios::floatfield);
+    std::ios oldState{nullptr};
+    oldState.copyfmt(out);
+
+    out.setf(std::ios::fixed, std::ios::floatfield);
+    out << std::setprecision(std::numeric_limits<double>::max_digits10);
     out << value;
-    out.setf(saved_flags, std::ios::floatfield);
+
+    out.copyfmt(oldState);
   }
 }
 

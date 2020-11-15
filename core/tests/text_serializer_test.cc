@@ -69,7 +69,7 @@ TEST_F(TextSerializerTest, shouldSerializeUntyped) {
   metric.untyped.value = 64.0;
 
   const auto serialized = Serialize(MetricType::Untyped);
-  EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.000000"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.00000000000000000"));
 }
 
 TEST_F(TextSerializerTest, shouldSerializeTimestamp) {
@@ -77,7 +77,7 @@ TEST_F(TextSerializerTest, shouldSerializeTimestamp) {
   metric.timestamp_ms = 1234;
 
   const auto serialized = Serialize(MetricType::Counter);
-  EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.000000 1234"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + " 64.00000000000000000 1234"));
 }
 
 TEST_F(TextSerializerTest, shouldSerializeHistogramWithNoBuckets) {
@@ -86,7 +86,7 @@ TEST_F(TextSerializerTest, shouldSerializeHistogramWithNoBuckets) {
 
   const auto serialized = Serialize(MetricType::Histogram);
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_count 2"));
-  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 32.00000"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 32.000000000000000"));
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_bucket{le=\"+Inf\"} 2"));
 }
 
@@ -98,9 +98,9 @@ TEST_F(TextSerializerTest, shouldSerializeHistogram) {
 
   const auto serialized = Serialize(MetricType::Histogram);
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_count 2"));
-  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 200.00000"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 200.00000000000000"));
   EXPECT_THAT(serialized,
-              testing::HasSubstr(name + "_bucket{le=\"1.000000\"} 1"));
+              testing::HasSubstr(name + "_bucket{le=\"1.00000000000000000\"} 1"));
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_bucket{le=\"+Inf\"} 2"));
 }
 
@@ -112,9 +112,9 @@ TEST_F(TextSerializerTest, shouldSerializeSummary) {
 
   const auto serialized = Serialize(MetricType::Summary);
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_count 2"));
-  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 200.00000"));
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_sum 200.00000000000000"));
   EXPECT_THAT(serialized,
-              testing::HasSubstr(name + "{quantile=\"0.500000\"} 0.000000"));
+              testing::HasSubstr(name + "{quantile=\"0.50000000000000000\"} 0.0000000000000000"));
 }
 
 }  // namespace

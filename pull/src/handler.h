@@ -16,8 +16,13 @@ class MetricsHandler : public CivetHandler {
   explicit MetricsHandler(Registry& registry);
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
+  void RemoveCollectable(const std::weak_ptr<Collectable>& collectable);
 
   bool handleGet(CivetServer* server, struct mg_connection* conn) override;
+
+#ifdef TESTING
+  std::vector<prometheus::MetricFamily> getTestMetrics() { return detail::CollectMetrics(collectables_); }
+#endif
 
  private:
   std::mutex collectables_mutex_;

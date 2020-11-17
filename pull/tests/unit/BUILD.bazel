@@ -4,7 +4,7 @@ cc_test(
         "*.cc",
         "*.h",
     ]),
-    copts = ["-Iexternal/googletest/include"],
+    copts = ["-Iexternal/googletest/include", "-Ipull/src"],
     linkstatic = True,
     deps = [
         "//pull",

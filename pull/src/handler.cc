@@ -119,6 +119,21 @@ void MetricsHandler::RegisterCollectable(
   collectables_.push_back(collectable);
 }
 
+void MetricsHandler::RemoveCollectable(
+    const std::weak_ptr<Collectable>& collectable) {
+
+  std::lock_guard<std::mutex> lock{collectables_mutex_};
+  std::shared_ptr<Collectable> pcoll = collectable.lock();
+
+  collectables_.erase(
+      std::remove_if(std::begin(collectables_), std::end(collectables_),
+                    [&pcoll](const std::weak_ptr<Collectable>& candidate) {
+                      return pcoll == candidate.lock();
+                    }
+                   ),
+      std::end(collectables_));
+}
+
 bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 

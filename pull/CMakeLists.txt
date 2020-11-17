@@ -87,6 +87,5 @@ install(
 )
 
 if(ENABLE_TESTING)
-  file(GLOB TEST_SRC_FILES src/*.cc)
   add_subdirectory(tests)
 endif()

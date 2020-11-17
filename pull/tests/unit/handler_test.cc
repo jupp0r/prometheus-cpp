@@ -6,31 +6,6 @@
 
 #include <gmock/gmock.h>
 
-#ifdef MOCK_MG
-/*
- * These symbols are hidden with cmake, but not bazel. Just dummy them up for the test.
- */
-const char * mg_get_header(const struct mg_connection *conn, const char *name)
-{
-  (void) conn;
-  (void) name;
-  return nullptr;
-}
-int mg_printf(struct mg_connection *conn, const char *fmt, ...)
-{
-  (void) conn;
-  (void) fmt;
-  return 0;
-}
-int mg_write(struct mg_connection *conn, const void *buf, size_t len)
-{
-  (void) conn;
-  (void) buf;
-  (void) len;
-  return 0;
-}
-#endif
-
 TEST(HandlerTest, removeCollectable) {
 
   std::shared_ptr<prometheus::Registry>  registry(std::make_shared<prometheus::Registry>());;

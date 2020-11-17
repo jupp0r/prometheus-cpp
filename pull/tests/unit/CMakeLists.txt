@@ -5,6 +5,8 @@ add_executable(prometheus_pull_test
   ${TEST_SRC_FILES}
 )
 
+add_compile_definitions(MOCK_MG)
+
 target_link_libraries(prometheus_pull_test
   PRIVATE
     ${PROJECT_NAME}::pull

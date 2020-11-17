@@ -10,12 +10,14 @@
 /*
  * Dummies to resolve some callbacks that couldn't be mocked
  */
+#ifdef MOCK_MG
 CIVETWEB_API const char *mg_get_header(const struct mg_connection *,
                                        const char *name) {return nullptr;}
 CIVETWEB_API int mg_printf(struct mg_connection *,
                            PRINTF_FORMAT_STRING(const char *fmt),
                            ...) {return 0;}
 CIVETWEB_API int mg_write(struct mg_connection *, const void *buf, size_t len) {return 0;}
+#endif
 
 /*
  * Mock the stuff not being used
@@ -46,6 +48,8 @@ TEST(HandlerTest, removeCollectable) {
                              .Help("How many seconds is this server running?")
                              .Labels({{"label", "value"}})
                              .Register(*collectable);
+  (void)counter_family;
+
   handler.RegisterCollectable(collectable);
 
   std::vector<prometheus::MetricFamily> metrics;

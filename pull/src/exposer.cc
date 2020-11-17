@@ -35,6 +35,12 @@ void Exposer::RegisterAuth(
   endpoint.RegisterAuth(std::move(authCB), realm);
 }
 
+void Exposer::RemoveCollectable(const std::weak_ptr<Collectable>& collectable,
+                                const std::string& uri) {
+  auto& endpoint = GetEndpointForUri(uri);
+  endpoint.RemoveCollectable(collectable);
+}
+
 std::vector<int> Exposer::GetListeningPorts() const {
   return server_->getListeningPorts();
 }

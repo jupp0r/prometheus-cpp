@@ -41,6 +41,11 @@ void Endpoint::RegisterAuth(
   auth_handler_ = std::move(new_handler);
 }
 
+void Endpoint::RemoveCollectable(
+    const std::weak_ptr<Collectable>& collectable) {
+  metrics_handler_->RemoveCollectable(collectable);
+}
+
 const std::string& Endpoint::GetURI() const { return uri_; }
 
 }  // namespace detail

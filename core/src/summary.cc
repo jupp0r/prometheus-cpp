@@ -9,7 +9,7 @@ Summary::Summary(const Quantiles& quantiles,
       sum_{0},
       quantile_values_{quantiles_, max_age, age_buckets} {}
 
-void Summary::Observe(const double value) {
+void Summary::Observe(const detail::value_type value) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   count_ += 1;

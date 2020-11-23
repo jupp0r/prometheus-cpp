@@ -29,7 +29,7 @@ namespace prometheus {
 /// a data race.
 class PROMETHEUS_CPP_CORE_EXPORT Histogram {
  public:
-  using BucketBoundaries = std::vector<double>;
+  using BucketBoundaries = std::vector<detail::value_type>;
 
   static const MetricType metric_type{MetricType::Histogram};
 
@@ -51,15 +51,15 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// chosen for which the given amount falls into the half-open interval [b_n,
   /// b_n+1). The counter of the observed bucket is incremented. Also the total
   /// sum of all observations is incremented.
-  void Observe(double value);
+  void Observe(detail::value_type value);
 
   /// \brief Observe multiple data points.
   ///
   /// Increments counters given a count for each bucket. (i.e. the caller of
   /// this function must have already sorted the values into buckets).
   /// Also increments the total sum of all observations by the given value.
-  void ObserveMultiple(const std::vector<double>& bucket_increments,
-                       const double sum_of_values);
+  void ObserveMultiple(const std::vector<detail::value_type>& bucket_increments,
+                       const detail::value_type sum_of_values);
 
   /// \brief Get the current value of the counter.
   ///

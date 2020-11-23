@@ -36,10 +36,10 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
   /// \brief Increment the counter by a given amount.
   ///
   /// The counter will not change if the given amount is negative.
-  void Increment(double);
+  void Increment(detail::value_type);
 
   /// \brief Get the current value of the counter.
-  double Value() const;
+  detail::value_type Value() const;
 
   /// \brief Get the current value of the counter.
   ///
@@ -47,7 +47,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
   ClientMetric Collect() const;
 
  private:
-  Gauge gauge_{0.0};
+  Gauge gauge_{};
 };
 
 /// \brief Return a builder to configure and register a Counter metric.

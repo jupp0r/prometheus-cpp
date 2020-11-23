@@ -76,7 +76,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
           int age_buckets = 5);
 
   /// \brief Observe the given amount.
-  void Observe(double value);
+  void Observe(detail::value_type value);
 
   /// \brief Get the current value of the summary.
   ///
@@ -87,7 +87,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   const Quantiles quantiles_;
   mutable std::mutex mutex_;
   std::uint64_t count_;
-  double sum_;
+  detail::value_type sum_;
   detail::TimeWindowQuantiles quantile_values_;
 };
 

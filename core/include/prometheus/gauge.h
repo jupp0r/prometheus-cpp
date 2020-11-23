@@ -5,6 +5,7 @@
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/builder.h"
 #include "prometheus/detail/core_export.h"
+#include "prometheus/detail/value_type.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -29,28 +30,28 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   Gauge() = default;
 
   /// \brief Create a gauge that starts at the given amount.
-  Gauge(double);
+  Gauge(detail::value_type);
 
   /// \brief Increment the gauge by 1.
   void Increment();
 
   /// \brief Increment the gauge by the given amount.
-  void Increment(double);
+  void Increment(detail::value_type);
 
   /// \brief Decrement the gauge by 1.
   void Decrement();
 
   /// \brief Decrement the gauge by the given amount.
-  void Decrement(double);
+  void Decrement(detail::value_type);
 
   /// \brief Set the gauge to the given value.
-  void Set(double);
+  void Set(detail::value_type);
 
   /// \brief Set the gauge to the current unixtime in seconds.
   void SetToCurrentTime();
 
   /// \brief Get the current value of the gauge.
-  double Value() const;
+  detail::value_type Value() const;
 
   /// \brief Get the current value of the gauge.
   ///
@@ -58,8 +59,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   ClientMetric Collect() const;
 
  private:
-  void Change(double);
-  std::atomic<double> value_{0.0};
+  void Change(detail::value_type);
+  std::atomic<detail::value_type> value_{};
 };
 
 /// \brief Return a builder to configure and register a Gauge metric.

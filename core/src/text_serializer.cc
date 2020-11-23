@@ -10,8 +10,9 @@ namespace prometheus {
 
 namespace {
 
-// Write a double as a string, with proper formatting for infinity and NaN
-void WriteValue(std::ostream& out, double value) {
+// Write a detail::value_type as a string, with proper formatting for infinity
+// and NaN
+void WriteValue(std::ostream& out, detail::value_type value) {
   if (std::isnan(value)) {
     out << "Nan";
   } else if (std::isinf(value)) {
@@ -21,7 +22,8 @@ void WriteValue(std::ostream& out, double value) {
     oldState.copyfmt(out);
 
     out.setf(std::ios::fixed, std::ios::floatfield);
-    out << std::setprecision(std::numeric_limits<double>::max_digits10);
+    out << std::setprecision(
+        std::numeric_limits<detail::value_type>::max_digits10);
     out << value;
 
     out.copyfmt(oldState);
@@ -135,7 +137,7 @@ void SerializeHistogram(std::ostream& out, const MetricFamily& family,
   WriteValue(out, hist.sample_sum);
   WriteTail(out, metric);
 
-  double last = -std::numeric_limits<double>::infinity();
+  auto last = -std::numeric_limits<detail::value_type>::infinity();
   for (auto& b : hist.bucket) {
     WriteHead(out, family, metric, "_bucket", "le", b.upper_bound);
     last = b.upper_bound;
@@ -143,7 +145,7 @@ void SerializeHistogram(std::ostream& out, const MetricFamily& family,
     WriteTail(out, metric);
   }
 
-  if (last != std::numeric_limits<double>::infinity()) {
+  if (last != std::numeric_limits<detail::value_type>::infinity()) {
     WriteHead(out, family, metric, "_bucket", "le", "+Inf");
     out << hist.sample_count;
     WriteTail(out, metric);

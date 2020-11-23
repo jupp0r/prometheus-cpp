@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "prometheus/detail/core_export.h"
+#include "prometheus/detail/value_type.h"
 
 namespace prometheus {
 
@@ -29,27 +30,27 @@ struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
   // Counter
 
   struct Counter {
-    double value = 0.0;
+    detail::value_type value = 0.0;
   };
   Counter counter;
 
   // Gauge
 
   struct Gauge {
-    double value = 0.0;
+    detail::value_type value = 0.0;
   };
   Gauge gauge;
 
   // Summary
 
   struct Quantile {
-    double quantile = 0.0;
-    double value = 0.0;
+    detail::value_type quantile = 0.0;
+    detail::value_type value = 0.0;
   };
 
   struct Summary {
     std::uint64_t sample_count = 0;
-    double sample_sum = 0.0;
+    detail::value_type sample_sum = 0.0;
     std::vector<Quantile> quantile;
   };
   Summary summary;
@@ -58,12 +59,12 @@ struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
 
   struct Bucket {
     std::uint64_t cumulative_count = 0;
-    double upper_bound = 0.0;
+    detail::value_type upper_bound = 0.0;
   };
 
   struct Histogram {
     std::uint64_t sample_count = 0;
-    double sample_sum = 0.0;
+    detail::value_type sample_sum = 0.0;
     std::vector<Bucket> bucket;
   };
   Histogram histogram;
@@ -71,7 +72,7 @@ struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
   // Untyped
 
   struct Untyped {
-    double value = 0;
+    detail::value_type value = 0;
   };
   Untyped untyped;
 

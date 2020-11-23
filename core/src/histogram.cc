@@ -14,19 +14,21 @@ Histogram::Histogram(const BucketBoundaries& buckets)
                         std::end(bucket_boundaries_)));
 }
 
-void Histogram::Observe(const double value) {
+void Histogram::Observe(const detail::value_type value) {
   // TODO: determine bucket list size at which binary search would be faster
   const auto bucket_index = static_cast<std::size_t>(std::distance(
       bucket_boundaries_.begin(),
-      std::find_if(
-          std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
-          [value](const double boundary) { return boundary >= value; })));
+      std::find_if(std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
+                   [value](const detail::value_type boundary) {
+                     return boundary >= value;
+                   })));
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
 }
 
-void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
-                                const double sum_of_values) {
+void Histogram::ObserveMultiple(
+    const std::vector<detail::value_type>& bucket_increments,
+    const detail::value_type sum_of_values) {
   if (bucket_increments.size() != bucket_counts_.size()) {
     throw std::length_error(
         "The size of bucket_increments was not equal to"
@@ -50,9 +52,10 @@ ClientMetric Histogram::Collect() const {
     cumulative_count += bucket_counts_[i].Value();
     auto bucket = ClientMetric::Bucket{};
     bucket.cumulative_count = cumulative_count;
-    bucket.upper_bound = (i == bucket_boundaries_.size()
-                              ? std::numeric_limits<double>::infinity()
-                              : bucket_boundaries_[i]);
+    bucket.upper_bound =
+        (i == bucket_boundaries_.size()
+             ? std::numeric_limits<detail::value_type>::infinity()
+             : bucket_boundaries_[i]);
     metric.histogram.bucket.push_back(std::move(bucket));
   }
   metric.histogram.sample_count = cumulative_count;

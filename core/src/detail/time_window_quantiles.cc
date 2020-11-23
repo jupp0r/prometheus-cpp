@@ -12,12 +12,12 @@ TimeWindowQuantiles::TimeWindowQuantiles(
       last_rotation_(Clock::now()),
       rotation_interval_(max_age / age_buckets) {}
 
-double TimeWindowQuantiles::get(double q) const {
+detail::value_type TimeWindowQuantiles::get(detail::value_type q) const {
   CKMSQuantiles& current_bucket = rotate();
   return current_bucket.get(q);
 }
 
-void TimeWindowQuantiles::insert(double value) {
+void TimeWindowQuantiles::insert(detail::value_type value) {
   rotate();
   for (auto& bucket : ckms_quantiles_) {
     bucket.insert(value);

@@ -4,22 +4,25 @@
 #include <cmath>
 #include <limits>
 
+#include "prometheus/detail/value_type.h"
+
 namespace prometheus {
 namespace detail {
 
-CKMSQuantiles::Quantile::Quantile(double quantile, double error)
+CKMSQuantiles::Quantile::Quantile(detail::value_type quantile,
+                                  detail::value_type error)
     : quantile(quantile),
       error(error),
       u(2.0 * error / (1.0 - quantile)),
       v(2.0 * error / quantile) {}
 
-CKMSQuantiles::Item::Item(double value, int lower_delta, int delta)
+CKMSQuantiles::Item::Item(detail::value_type value, int lower_delta, int delta)
     : value(value), g(lower_delta), delta(delta) {}
 
 CKMSQuantiles::CKMSQuantiles(const std::vector<Quantile>& quantiles)
     : quantiles_(quantiles), count_(0), buffer_{}, buffer_count_(0) {}
 
-void CKMSQuantiles::insert(double value) {
+void CKMSQuantiles::insert(detail::value_type value) {
   buffer_[buffer_count_] = value;
   ++buffer_count_;
 
@@ -29,12 +32,12 @@ void CKMSQuantiles::insert(double value) {
   }
 }
 
-double CKMSQuantiles::get(double q) {
+detail::value_type CKMSQuantiles::get(detail::value_type q) {
   insertBatch();
   compress();
 
   if (sample_.empty()) {
-    return std::numeric_limits<double>::quiet_NaN();
+    return std::numeric_limits<detail::value_type>::quiet_NaN();
   }
 
   int rankMin = 0;
@@ -65,12 +68,12 @@ void CKMSQuantiles::reset() {
   buffer_count_ = 0;
 }
 
-double CKMSQuantiles::allowableError(int rank) {
+detail::value_type CKMSQuantiles::allowableError(int rank) {
   auto size = sample_.size();
-  double minError = size + 1;
+  detail::value_type minError = size + 1;
 
   for (const auto& q : quantiles_.get()) {
-    double error;
+    detail::value_type error;
     if (rank <= q.quantile * size) {
       error = q.u * (size - rank);
     } else {
@@ -102,7 +105,7 @@ bool CKMSQuantiles::insertBatch() {
   std::size_t item = idx++;
 
   for (std::size_t i = start; i < buffer_count_; ++i) {
-    double v = buffer_[i];
+    auto v = buffer_[i];
     while (idx < sample_.size() && sample_[item].value < v) {
       item = idx++;
     }

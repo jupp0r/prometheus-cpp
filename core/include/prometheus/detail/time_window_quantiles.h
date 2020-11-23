@@ -17,8 +17,8 @@ class PROMETHEUS_CPP_CORE_EXPORT TimeWindowQuantiles {
   TimeWindowQuantiles(const std::vector<CKMSQuantiles::Quantile>& quantiles,
                       Clock::duration max_age_seconds, int age_buckets);
 
-  double get(double q) const;
-  void insert(double value);
+  detail::value_type get(detail::value_type q) const;
+  void insert(detail::value_type value);
 
  private:
   CKMSQuantiles& rotate() const;

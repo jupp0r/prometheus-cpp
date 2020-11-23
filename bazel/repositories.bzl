@@ -47,17 +47,6 @@ def prometheus_cpp_repositories():
 
     maybe(
         http_archive,
-        name = "com_github_tplgy_cppcodec",
-        sha256 = "0edaea2a9d9709d456aa99a1c3e17812ed130f9ef2b5c2d152c230a5cbc5c482",
-        strip_prefix = "cppcodec-0.2",
-        urls = [
-            "https://github.com/tplgy/cppcodec/archive/v0.2.tar.gz",
-        ],
-        build_file = "@com_github_jupp0r_prometheus_cpp//bazel:cppcodec.BUILD",
-    )
-
-    maybe(
-        http_archive,
         name = "net_zlib_zlib",
         sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1",
         strip_prefix = "zlib-1.2.11",

@@ -1,13 +1,10 @@
 #include "basic_auth.h"
 
-#include <cppcodec/base64_rfc4648.hpp>
-
 #include "CivetServer.h"
+#include "detail/base64.h"
 #include "prometheus/detail/future_std.h"
 
 namespace prometheus {
-
-using base64 = cppcodec::base64_rfc4648;
 
 BasicAuthHandler::BasicAuthHandler(AuthFunc callback, std::string realm)
     : callback_(std::move(callback)), realm_(std::move(realm)) {}
@@ -42,7 +39,7 @@ bool BasicAuthHandler::AuthorizeInner(CivetServer*, mg_connection* conn) {
 
   std::string decoded;
   try {
-    decoded = base64::decode<std::string>(b64Auth.data(), b64Auth.size());
+    decoded = detail::base64_decode(b64Auth);
   } catch (...) {
     return false;
   }

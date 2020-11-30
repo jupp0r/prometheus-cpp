@@ -111,7 +111,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \throw std::runtime_exception on invalid label names.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
-    return Add(labels, detail::make_unique<T>(args...));
+    metrics_iterator iter = FindMetric(labels);
+    if (iter->second) return *(iter->second);
+    return Add(iter, detail::make_unique<T>(args...));
   }
 
   /// \brief Remove the given dimensional data.
@@ -147,9 +149,11 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const std::map<std::string, std::string> constant_labels_;
   mutable std::mutex mutex_;
 
+  using metrics_iterator = typename std::unordered_map<std::size_t, std::unique_ptr<T>>::iterator;
+
   ClientMetric CollectMetric(std::size_t hash, T* metric) const;
-  T& Add(const std::map<std::string, std::string>& labels,
-         std::unique_ptr<T> object);
+  T& Add(metrics_iterator hint, std::unique_ptr<T> object);
+  metrics_iterator FindMetric(const std::map<std::string, std::string>& labels);
 };
 
 }  // namespace prometheus

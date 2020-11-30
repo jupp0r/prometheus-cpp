@@ -15,6 +15,25 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
+T* Family<T>::GetMetric(const std::map<std::string, std::string>& labels) const {
+  auto hash = detail::hash_labels(labels);
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto metrics_iter = metrics_.find(hash);
+
+  if (metrics_iter == metrics_.end())
+    return nullptr;
+
+#ifndef NDEBUG
+    auto labels_iter = labels_.find(hash);
+    assert(labels_iter != labels_.end());
+    const auto& old_labels = labels_iter->second;
+    assert(labels == old_labels);
+#endif
+
+  return metrics_iter->second.get();
+}
+
+template <typename T>
 T& Family<T>::Add(const std::map<std::string, std::string>& labels,
                   std::unique_ptr<T> object) {
   auto hash = detail::hash_labels(labels);

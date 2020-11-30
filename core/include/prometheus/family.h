@@ -109,6 +109,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// labels already exists - the already existing dimensional data.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
+    T* metric = GetMetric(labels);
+    if (metric) return *metric;
     return Add(labels, detail::make_unique<T>(args...));
   }
 
@@ -148,6 +150,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   ClientMetric CollectMetric(std::size_t hash, T* metric) const;
   T& Add(const std::map<std::string, std::string>& labels,
          std::unique_ptr<T> object);
+  T* GetMetric(const std::map<std::string, std::string>& labels) const;
 };
 
 }  // namespace prometheus

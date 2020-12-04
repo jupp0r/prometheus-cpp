@@ -24,10 +24,10 @@ T* Family<T>::GetMetric(const std::map<std::string, std::string>& labels) const 
     return nullptr;
 
 #ifndef NDEBUG
-    auto labels_iter = labels_.find(hash);
-    assert(labels_iter != labels_.end());
-    const auto& old_labels = labels_iter->second;
-    assert(labels == old_labels);
+  auto labels_iter = labels_.find(hash);
+  assert(labels_iter != labels_.end());
+  const auto& old_labels = labels_iter->second;
+  assert(labels == old_labels);
 #endif
 
   return metrics_iter->second.get();

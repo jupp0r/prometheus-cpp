@@ -9,7 +9,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/registry.h"
 
-class CivetServer;
+extern "C" struct mg_context;
 
 namespace prometheus {
 namespace detail {
@@ -17,7 +17,7 @@ class MetricsHandler;
 
 class Endpoint {
  public:
-  explicit Endpoint(CivetServer& server, std::string uri);
+  Endpoint(mg_context* server, std::string uri);
   ~Endpoint();
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
@@ -28,7 +28,7 @@ class Endpoint {
   const std::string& GetURI() const;
 
  private:
-  CivetServer& server_;
+  mg_context* server_;
   const std::string uri_;
   // registry for "meta" metrics about the endpoint itself
   std::shared_ptr<Registry> endpoint_registry_;

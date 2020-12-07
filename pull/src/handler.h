@@ -4,22 +4,24 @@
 #include <mutex>
 #include <vector>
 
-#include "CivetServer.h"
+#include "civetweb.h"
 #include "prometheus/counter.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
 namespace detail {
-class MetricsHandler : public CivetHandler {
+class MetricsHandler {
  public:
   explicit MetricsHandler(Registry& registry);
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
 
-  bool handleGet(CivetServer* server, struct mg_connection* conn) override;
+  static int requestHandler(struct mg_connection* conn, void* cbdata);
 
  private:
+  bool handleGet(struct mg_connection* conn);
+
   std::mutex collectables_mutex_;
   std::vector<std::weak_ptr<Collectable>> collectables_;
   Family<Counter>& bytes_transferred_family_;

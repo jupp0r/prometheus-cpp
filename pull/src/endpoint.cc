@@ -7,19 +7,20 @@
 namespace prometheus {
 namespace detail {
 
-Endpoint::Endpoint(CivetServer& server, std::string uri)
+Endpoint::Endpoint(mg_context* server, std::string uri)
     : server_(server),
       uri_(std::move(uri)),
       endpoint_registry_(std::make_shared<Registry>()),
       metrics_handler_(
           detail::make_unique<MetricsHandler>(*endpoint_registry_)) {
   RegisterCollectable(endpoint_registry_);
-  server_.addHandler(uri_, metrics_handler_.get());
+  mg_set_request_handler(server_, uri_.c_str(), MetricsHandler::requestHandler,
+                         metrics_handler_.get());
 }
 
 Endpoint::~Endpoint() {
-  server_.removeHandler(uri_);
-  server_.removeAuthHandler(uri_);
+  mg_set_request_handler(server_, uri_.c_str(), nullptr, nullptr);
+  mg_set_auth_handler(server_, uri_.c_str(), nullptr, nullptr);
 }
 
 void Endpoint::RegisterCollectable(
@@ -32,7 +33,8 @@ void Endpoint::RegisterAuth(
     const std::string& realm) {
   auth_handler_ =
       detail::make_unique<BasicAuthHandler>(std::move(authCB), realm);
-  server_.addAuthHandler(uri_, auth_handler_.get());
+  mg_set_auth_handler(server_, uri_.c_str(), BasicAuthHandler::authHandler,
+                      auth_handler_.get());
 }
 
 const std::string& Endpoint::GetURI() const { return uri_; }

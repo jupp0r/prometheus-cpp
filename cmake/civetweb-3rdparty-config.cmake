@@ -11,9 +11,7 @@ set_and_check(CIVETWEB_INCLUDE_DIR ${_IMPORT_PREFIX}/include)
 set(CIVETWEB_INCLUDE_DIRS "${CIVETWEB_INCLUDE_DIR}")
 
 add_library(civetweb OBJECT
-  ${_IMPORT_PREFIX}/include/CivetServer.h
   ${_IMPORT_PREFIX}/include/civetweb.h
-  ${_IMPORT_PREFIX}/src/CivetServer.cpp
   ${_IMPORT_PREFIX}/src/civetweb.c
   ${_IMPORT_PREFIX}/src/handle_form.inl
   ${_IMPORT_PREFIX}/src/md5.inl

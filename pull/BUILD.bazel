@@ -22,7 +22,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//core",
-        "@civetweb",
+        "@civetweb//:libcivetweb",
         "@net_zlib_zlib//:z",
     ],
 )

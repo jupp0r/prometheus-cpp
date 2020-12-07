@@ -10,7 +10,7 @@
 #include "prometheus/detail/pull_export.h"
 #include "prometheus/registry.h"
 
-class CivetServer;
+extern "C" struct mg_context;
 
 namespace prometheus {
 
@@ -38,7 +38,7 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  private:
   detail::Endpoint& GetEndpointForUri(const std::string& uri);
 
-  std::unique_ptr<CivetServer> server_;
+  std::shared_ptr<mg_context> server_;
   std::vector<std::unique_ptr<detail::Endpoint>> endpoints_;
 };
 

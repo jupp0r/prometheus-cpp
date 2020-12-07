@@ -119,7 +119,20 @@ void MetricsHandler::RegisterCollectable(
   collectables_.push_back(collectable);
 }
 
-bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
+int MetricsHandler::requestHandler(struct mg_connection* conn, void* cbdata) {
+  auto* handler = reinterpret_cast<MetricsHandler*>(cbdata);
+  auto* request_info = mg_get_request_info(conn);
+
+  if (handler && request_info) {
+    if (std::strcmp(request_info->request_method, "GET") == 0) {
+      return handler->handleGet(conn) ? 1 : 0;
+    }
+  }
+
+  return 0;  // No handler found
+}
+
+bool MetricsHandler::handleGet(struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
   std::vector<MetricFamily> metrics;

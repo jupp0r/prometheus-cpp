@@ -1,6 +1,6 @@
 #include "basic_auth.h"
 
-#include "CivetServer.h"
+#include "civetweb.h"
 #include "detail/base64.h"
 #include "prometheus/detail/future_std.h"
 
@@ -9,15 +9,24 @@ namespace prometheus {
 BasicAuthHandler::BasicAuthHandler(AuthFunc callback, std::string realm)
     : callback_(std::move(callback)), realm_(std::move(realm)) {}
 
-bool BasicAuthHandler::authorize(CivetServer* server, mg_connection* conn) {
-  if (!AuthorizeInner(server, conn)) {
+int BasicAuthHandler::authHandler(struct mg_connection* conn, void* cbdata) {
+  auto* handler = reinterpret_cast<BasicAuthHandler*>(cbdata);
+  if (!handler) {
+    return 0;  // No handler found
+  }
+
+  return handler->Authorize(conn) ? 1 : 0;
+}
+
+bool BasicAuthHandler::Authorize(mg_connection* conn) {
+  if (!AuthorizeInner(conn)) {
     WriteUnauthorizedResponse(conn);
     return false;
   }
   return true;
 }
 
-bool BasicAuthHandler::AuthorizeInner(CivetServer*, mg_connection* conn) {
+bool BasicAuthHandler::AuthorizeInner(mg_connection* conn) {
   const char* authHeader = mg_get_header(conn, "Authorization");
 
   if (authHeader == nullptr) {

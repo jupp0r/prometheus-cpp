@@ -15,27 +15,8 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
-T* Family<T>::GetMetric(const std::map<std::string, std::string>& labels) const {
-  auto hash = detail::hash_labels(labels);
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto metrics_iter = metrics_.find(hash);
-
-  if (metrics_iter == metrics_.end())
-    return nullptr;
-
-#ifndef NDEBUG
-  auto labels_iter = labels_.find(hash);
-  assert(labels_iter != labels_.end());
-  const auto& old_labels = labels_iter->second;
-  assert(labels == old_labels);
-#endif
-
-  return metrics_iter->second.get();
-}
-
-template <typename T>
-T& Family<T>::Add(const std::map<std::string, std::string>& labels,
-                  std::unique_ptr<T> object) {
+typename Family<T>::metrics_iterator
+Family<T>::FindMetric(const std::map<std::string, std::string>& labels) {
   auto hash = detail::hash_labels(labels);
   std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
@@ -47,7 +28,7 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     const auto& old_labels = labels_iter->second;
     assert(labels == old_labels);
 #endif
-    return *metrics_iter->second;
+    return metrics_iter;
   } else {
 #ifndef NDEBUG
     for (auto& label_pair : labels) {
@@ -56,12 +37,23 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     }
 #endif
 
-    auto metric = metrics_.insert(std::make_pair(hash, std::move(object)));
+    auto metric = metrics_.insert(std::make_pair(hash, nullptr));
     assert(metric.second);
     labels_.insert({hash, labels});
-    labels_reverse_lookup_.insert({metric.first->second.get(), hash});
-    return *(metric.first->second);
+    return metric.first;
   }
+}
+
+template <typename T>
+T& Family<T>::Add(metrics_iterator hint, std::unique_ptr<T> object) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto hash = hint->first;
+  assert(metrics_.find(hash) == hint);
+  if (! hint->second) {
+    labels_reverse_lookup_.insert({object.get(), hash});
+    hint->second.swap(object);
+  }
+  return *(hint->second);
 }
 
 template <typename T>

@@ -12,7 +12,7 @@ namespace prometheus {
 /**
  * Handler for HTTP Basic authentication for Endpoints.
  */
-class PROMETHEUS_CPP_PULL_EXPORT BasicAuthHandler : public CivetAuthHandler {
+class BasicAuthHandler : public CivetAuthHandler {
  public:
   using AuthFunc = std::function<bool(const std::string&, const std::string&)>;
   explicit BasicAuthHandler(AuthFunc callback, std::string realm);

@@ -69,22 +69,28 @@ TEST(FamilyTest, add_twice) {
   ASSERT_EQ(&counter, &counter1);
 }
 
-TEST(FamilyTest, should_assert_on_invalid_metric_name) {
+TEST(FamilyTest, throw_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
     return detail::make_unique<Family<Counter>>(
         "", "empty name", std::map<std::string, std::string>{});
   };
-  EXPECT_DEBUG_DEATH(create_family_with_invalid_name(),
-                     ".*Assertion .*CheckMetricName.*");
+  EXPECT_ANY_THROW(create_family_with_invalid_name());
 }
 
-TEST(FamilyTest, should_assert_on_invalid_labels) {
+TEST(FamilyTest, throw_on_invalid_constant_label_name) {
+  auto create_family_with_invalid_labels = []() {
+    return detail::make_unique<Family<Counter>>(
+        "total_requests", "Counts all requests", std::map<std::string, std::string>{{"__inavlid", "counter1"}});
+  };
+  EXPECT_ANY_THROW(create_family_with_invalid_labels());
+}
+
+TEST(FamilyTest, should_throw_on_invalid_labels) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto add_metric_with_invalid_label_name = [&family]() {
     family.Add({{"__invalid", "counter1"}});
   };
-  EXPECT_DEBUG_DEATH(add_metric_with_invalid_label_name(),
-                     ".*Assertion .*CheckLabelName.*");
+  EXPECT_ANY_THROW(add_metric_with_invalid_label_name());
 }
 
 }  // namespace

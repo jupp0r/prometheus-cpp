@@ -5,13 +5,23 @@
 #include "prometheus/histogram.h"
 #include "prometheus/summary.h"
 
+#include <stdexcept>
+
 namespace prometheus {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
                   const std::map<std::string, std::string>& constant_labels)
     : name_(name), help_(help), constant_labels_(constant_labels) {
-  assert(CheckMetricName(name_));
+  if (!CheckMetricName(name_)) {
+    throw std::invalid_argument("Invalid metric name");
+  }
+  for (auto& label_pair : constant_labels_) {
+    auto& label_name = label_pair.first;
+    if (!CheckLabelName(label_name)) {
+      throw std::invalid_argument("Invalid label name");
+    }
+  }
 }
 
 template <typename T>
@@ -29,20 +39,20 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     assert(labels == old_labels);
 #endif
     return *metrics_iter->second;
-  } else {
-#ifndef NDEBUG
-    for (auto& label_pair : labels) {
-      auto& label_name = label_pair.first;
-      assert(CheckLabelName(label_name));
-    }
-#endif
-
-    auto metric = metrics_.insert(std::make_pair(hash, std::move(object)));
-    assert(metric.second);
-    labels_.insert({hash, labels});
-    labels_reverse_lookup_.insert({metric.first->second.get(), hash});
-    return *(metric.first->second);
   }
+
+  for (auto& label_pair : labels) {
+    auto& label_name = label_pair.first;
+    if (!CheckLabelName(label_name)) {
+      throw std::invalid_argument("Invalid label name");
+    }
+  }
+
+  auto metric = metrics_.insert(std::make_pair(hash, std::move(object)));
+  assert(metric.second);
+  labels_.insert({hash, labels});
+  labels_reverse_lookup_.insert({metric.first->second.get(), hash});
+  return *(metric.first->second);
 }
 
 template <typename T>

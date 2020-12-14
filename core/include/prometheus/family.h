@@ -88,6 +88,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \param constant_labels Assign a set of key-value pairs (= labels) to the
   /// metric. All these labels are propagated to each time series within the
   /// metric.
+  /// \throw std::runtime_exception on invalid metric or label names.
   Family(const std::string& name, const std::string& help,
          const std::map<std::string, std::string>& constant_labels);
 
@@ -107,6 +108,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// Counter, Gauge, Histogram or Summary for required constructor arguments.
   /// \return Return the newly created dimensional data or - if a same set of
   /// labels already exists - the already existing dimensional data.
+  /// \throw std::runtime_exception on invalid label names.
   template <typename... Args>
   T& Add(const std::map<std::string, std::string>& labels, Args&&... args) {
     return Add(labels, detail::make_unique<T>(args...));

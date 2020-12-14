@@ -1,9 +1,9 @@
 #include "prometheus/summary.h"
 
+#include <gmock/gmock.h>
+
 #include <cmath>
 #include <thread>
-
-#include <gmock/gmock.h>
 
 namespace prometheus {
 namespace {

@@ -1,8 +1,8 @@
 #include "prometheus/family.h"
 
-#include <memory>
-
 #include <gmock/gmock.h>
+
+#include <memory>
 
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/future_std.h"
@@ -80,7 +80,8 @@ TEST(FamilyTest, throw_on_invalid_metric_name) {
 TEST(FamilyTest, throw_on_invalid_constant_label_name) {
   auto create_family_with_invalid_labels = []() {
     return detail::make_unique<Family<Counter>>(
-        "total_requests", "Counts all requests", std::map<std::string, std::string>{{"__inavlid", "counter1"}});
+        "total_requests", "Counts all requests",
+        std::map<std::string, std::string>{{"__inavlid", "counter1"}});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_labels());
 }

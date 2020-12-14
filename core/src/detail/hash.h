@@ -29,7 +29,7 @@ inline void hash_combine(std::size_t *seed, const T &value) {
 /// \param args The objects that will be combined with the given hash value.
 template <typename T, typename... Types>
 inline void hash_combine(std::size_t *seed, const T &value,
-                         const Types &... args) {
+                         const Types &...args) {
   hash_combine(seed, value);
   hash_combine(seed, args...);
 }
@@ -39,7 +39,7 @@ inline void hash_combine(std::size_t *seed, const T &value,
 /// \param args The arguments that will be computed hash value.
 /// \return The hash value of the given args.
 template <typename... Types>
-inline std::size_t hash_value(const Types &... args) {
+inline std::size_t hash_value(const Types &...args) {
   std::size_t seed = 0;
   hash_combine(&seed, args...);
   return seed;

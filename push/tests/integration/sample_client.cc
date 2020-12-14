@@ -1,13 +1,13 @@
+#include <prometheus/counter.h>
+#include <prometheus/gateway.h>
+#include <prometheus/registry.h>
+
 #include <chrono>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 #include <thread>
-
-#include <prometheus/counter.h>
-#include <prometheus/gateway.h>
-#include <prometheus/registry.h>
 
 #ifdef _WIN32
 #include <Winsock2.h>

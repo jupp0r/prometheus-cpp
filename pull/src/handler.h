@@ -20,6 +20,9 @@ class MetricsHandler : public CivetHandler {
   bool handleGet(CivetServer* server, struct mg_connection* conn) override;
 
  private:
+  static void CleanupStalePointers(
+      std::vector<std::weak_ptr<Collectable>>& collectables);
+
   std::mutex collectables_mutex_;
   std::vector<std::weak_ptr<Collectable>> collectables_;
   Family<Counter>& bytes_transferred_family_;

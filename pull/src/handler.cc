@@ -1,5 +1,6 @@
 #include "handler.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "prometheus/counter.h"
@@ -116,6 +117,7 @@ static std::size_t WriteResponse(struct mg_connection* conn,
 void MetricsHandler::RegisterCollectable(
     const std::weak_ptr<Collectable>& collectable) {
   std::lock_guard<std::mutex> lock{collectables_mutex_};
+  CleanupStalePointers(collectables_);
   collectables_.push_back(collectable);
 }
 
@@ -141,6 +143,16 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   bytes_transferred_.Increment(bodySize);
   num_scrapes_.Increment();
   return true;
+}
+
+void MetricsHandler::CleanupStalePointers(
+    std::vector<std::weak_ptr<Collectable>>& collectables) {  
+  collectables.erase(
+      std::remove_if(std::begin(collectables), std::end(collectables),
+                     [](const std::weak_ptr<Collectable>& candidate) {
+                       return candidate.expired();
+                     }),
+      std::end(collectables));
 }
 }  // namespace detail
 }  // namespace prometheus

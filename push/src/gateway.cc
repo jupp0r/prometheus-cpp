@@ -73,6 +73,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
     }
   }
 
+  CleanupStalePointers(collectables_);
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
 
@@ -214,6 +215,16 @@ int Gateway::Delete() {
 
 std::future<int> Gateway::AsyncDelete() {
   return std::async(std::launch::async, [&] { return Delete(); });
+}
+
+void Gateway::CleanupStalePointers(
+    std::vector<CollectableEntry>& collectables) {
+  collectables.erase(
+      std::remove_if(std::begin(collectables), std::end(collectables),
+                     [](const CollectableEntry& candidate) {
+                       return candidate.first.expired();
+                     }),
+      std::end(collectables));
 }
 
 }  // namespace prometheus

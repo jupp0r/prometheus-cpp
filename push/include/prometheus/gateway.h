@@ -68,6 +68,8 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   int push(HttpMethod method);
 
   std::future<int> async_push(HttpMethod method);
+
+  static void CleanupStalePointers(std::vector<CollectableEntry>& collectables);
 };
 
 }  // namespace prometheus

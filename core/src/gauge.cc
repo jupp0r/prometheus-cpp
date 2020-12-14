@@ -8,15 +8,11 @@ Gauge::Gauge(const double value) : value_{value} {}
 
 void Gauge::Increment() { Increment(1.0); }
 
-void Gauge::Increment(const double value) {
-  Change(value);
-}
+void Gauge::Increment(const double value) { Change(value); }
 
 void Gauge::Decrement() { Decrement(1.0); }
 
-void Gauge::Decrement(const double value) {
-  Change(-1.0 * value);
-}
+void Gauge::Decrement(const double value) { Change(-1.0 * value); }
 
 void Gauge::Set(const double value) { value_.store(value); }
 

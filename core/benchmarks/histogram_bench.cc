@@ -1,9 +1,9 @@
-#include <chrono>
-#include <random>
-
 #include <benchmark/benchmark.h>
 #include <prometheus/histogram.h>
 #include <prometheus/registry.h>
+
+#include <chrono>
+#include <random>
 
 using prometheus::Histogram;
 

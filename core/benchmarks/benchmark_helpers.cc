@@ -1,7 +1,7 @@
+#include "benchmark_helpers.h"
+
 #include <algorithm>
 #include <cstdlib>
-
-#include "benchmark_helpers.h"
 
 std::string GenerateRandomString(size_t length) {
   auto randchar = []() -> char {

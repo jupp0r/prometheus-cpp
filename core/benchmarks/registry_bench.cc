@@ -1,8 +1,8 @@
-#include <chrono>
-
 #include <benchmark/benchmark.h>
 #include <prometheus/counter.h>
 #include <prometheus/registry.h>
+
+#include <chrono>
 
 #include "benchmark_helpers.h"
 

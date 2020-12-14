@@ -1,11 +1,12 @@
 #include "prometheus/registry.h"
-#include "prometheus/counter.h"
-#include "prometheus/histogram.h"
-#include "prometheus/summary.h"
+
+#include <gmock/gmock.h>
 
 #include <vector>
 
-#include <gmock/gmock.h>
+#include "prometheus/counter.h"
+#include "prometheus/histogram.h"
+#include "prometheus/summary.h"
 
 namespace prometheus {
 namespace {

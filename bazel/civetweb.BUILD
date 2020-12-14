@@ -2,7 +2,8 @@ licenses(["notice"])  # MIT license
 
 config_setting(
     name = "darwin",
-    values = {"cpu": "darwin"},)
+    values = {"cpu": "darwin"},
+)
 
 config_setting(
     name = "darwin_x86_64",
@@ -11,7 +12,7 @@ config_setting(
 
 config_setting(
     name = "windows",
-    values = { "cpu": "x64_windows" },
+    values = {"cpu": "x64_windows"},
 )
 
 config_setting(
@@ -66,9 +67,6 @@ cc_library(
     hdrs = [
         "include/CivetServer.h",
     ],
-    deps = [
-        ":libcivetweb",
-    ],
     copts = [
         "-DUSE_IPV6",
         "-DNDEBUG",
@@ -92,4 +90,7 @@ cc_library(
         "//conditions:default": ["-lrt"],
     }),
     visibility = ["//visibility:public"],
+    deps = [
+        ":libcivetweb",
+    ],
 )

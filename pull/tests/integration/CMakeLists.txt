@@ -25,3 +25,23 @@ target_link_libraries(sample_server_auth
   PRIVATE
      ${PROJECT_NAME}::pull
 )
+
+find_package(CURL)
+
+if(CURL_FOUND)
+  add_executable(prometheus_pull_integration_test
+    integration_test.cc
+  )
+
+  target_link_libraries(prometheus_pull_integration_test
+    PRIVATE
+      ${PROJECT_NAME}::pull
+      CURL::libcurl
+      GTest::gmock_main
+  )
+
+  add_test(
+    NAME prometheus_pull_integration_test
+    COMMAND prometheus_pull_integration_test
+  )
+endif()

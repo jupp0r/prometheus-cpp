@@ -19,7 +19,10 @@ Endpoint::Endpoint(CivetServer& server, std::string uri)
 
 Endpoint::~Endpoint() {
   server_.removeHandler(uri_);
-  server_.removeAuthHandler(uri_);
+  if (auth_handler_) {
+    // work-around https://github.com/civetweb/civetweb/issues/941
+    server_.removeAuthHandler(uri_);
+  }
 }
 
 void Endpoint::RegisterCollectable(
@@ -30,9 +33,12 @@ void Endpoint::RegisterCollectable(
 void Endpoint::RegisterAuth(
     std::function<bool(const std::string&, const std::string&)> authCB,
     const std::string& realm) {
-  auth_handler_ =
+  // split creating, assigning, and storing to avoid a race-condition when
+  // being called the second time and the handler is replaced
+  auto new_handler =
       detail::make_unique<BasicAuthHandler>(std::move(authCB), realm);
-  server_.addAuthHandler(uri_, auth_handler_.get());
+  server_.addAuthHandler(uri_, new_handler.get());
+  auth_handler_ = std::move(new_handler);
 }
 
 const std::string& Endpoint::GetURI() const { return uri_; }

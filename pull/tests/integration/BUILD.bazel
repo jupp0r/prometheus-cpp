@@ -36,3 +36,15 @@ sh_test(
     ],
     tags = ["manual"],
 )
+
+cc_test(
+    name = "integration_test",
+    srcs = ["integration_test.cc"],
+    copts = ["-Iexternal/googletest/include"],
+    linkstatic = True,
+    deps = [
+        "//pull",
+        "@com_github_curl//:curl",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

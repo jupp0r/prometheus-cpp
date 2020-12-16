@@ -146,7 +146,7 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
 }
 
 void MetricsHandler::CleanupStalePointers(
-    std::vector<std::weak_ptr<Collectable>>& collectables) {  
+    std::vector<std::weak_ptr<Collectable>>& collectables) {
   collectables.erase(
       std::remove_if(std::begin(collectables), std::end(collectables),
                      [](const std::weak_ptr<Collectable>& candidate) {

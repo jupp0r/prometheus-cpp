@@ -24,6 +24,7 @@ class Endpoint {
   void RegisterAuth(
       std::function<bool(const std::string&, const std::string&)> authCB,
       const std::string& realm);
+  void RemoveCollectable(const std::weak_ptr<Collectable>& collectable);
 
   const std::string& GetURI() const;
 

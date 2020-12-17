@@ -33,6 +33,9 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
       const std::string& realm = "Prometheus-cpp Exporter",
       const std::string& uri = std::string("/metrics"));
 
+  void RemoveCollectable(const std::weak_ptr<Collectable>& collectable,
+                         const std::string& uri = std::string("/metrics"));
+
   std::vector<int> GetListeningPorts() const;
 
  private:

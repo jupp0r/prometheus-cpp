@@ -122,5 +122,17 @@ TEST_F(IntegrationTest, exposesCountersOnDifferentUrls) {
   EXPECT_THAT(second_metrics.body, Not(HasSubstr(first_counter_name)));
 }
 
+TEST_F(IntegrationTest, unexposeRegistry) {
+  const std::string counter_name = "some_counter_total";
+  const auto registry =
+      RegisterSomeCounter(counter_name, default_metrics_path_);
+
+  exposer_->RemoveCollectable(registry, default_metrics_path_);
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 200);
+  EXPECT_THAT(metrics.body, Not(HasSubstr(counter_name)));
+}
+
 }  // namespace
 }  // namespace prometheus

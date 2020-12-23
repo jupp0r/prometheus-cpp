@@ -15,20 +15,10 @@ case "${OS_ARG}" in
                 ;;
         esac
 
-        curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
-        source /etc/lsb-release
-        echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
-        packages+=(telegraf)
-
         sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
         sudo apt-get update
         sudo apt-get install -y "${packages[@]}"
         sudo locale-gen de_DE.UTF-8 # used by SerializerTest
-        ;;
-
-    macOS*)
-        packages=(prometheus telegraf)
-        brew install "${packages[@]}"
         ;;
 esac
 

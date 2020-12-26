@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <gmock/gmock.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -27,6 +28,8 @@ class IntegrationTest : public testing::Test {
     std::string body;
   };
 
+  std::function<void(CURL*)> fetchPrePerform_;
+
   Resonse FetchMetrics(std::string metrics_path) {
     auto curl = std::shared_ptr<CURL>(curl_easy_init(), curl_easy_cleanup);
     if (!curl) {
@@ -39,6 +42,10 @@ class IntegrationTest : public testing::Test {
     curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response.body);
     curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
+
+    if (fetchPrePerform_) {
+      fetchPrePerform_(curl.get());
+    }
 
     CURLcode curl_error = curl_easy_perform(curl.get());
     if (curl_error != CURLE_OK) {
@@ -133,6 +140,61 @@ TEST_F(IntegrationTest, unexposeRegistry) {
   ASSERT_EQ(metrics.code, 200);
   EXPECT_THAT(metrics.body, Not(HasSubstr(counter_name)));
 }
+
+TEST_F(IntegrationTest, acceptOptionalCompression) {
+  const std::string counter_name = "example_total";
+  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
+
+  fetchPrePerform_ = [](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  };
+  const auto metrics = FetchMetrics(default_metrics_path_);
+
+  ASSERT_EQ(metrics.code, 200);
+  EXPECT_THAT(metrics.body, HasSubstr(counter_name));
+}
+
+TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
+  const std::string counter_name = "example_total";
+  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
+
+  exposer_->RegisterAuth(
+      [](const std::string& user, const std::string& password) {
+        return user == "test_user" && password == "test_password";
+      },
+      "Some Auth Realm", default_metrics_path_);
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+
+  ASSERT_EQ(metrics.code, 401);
+  EXPECT_THAT(metrics.body, HasSubstr(counter_name));
+}
+
+TEST_F(IntegrationTest, shouldPerformProperAuthentication) {
+  const std::string counter_name = "example_total";
+  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
+
+  const auto my_username = "test_user";
+  const auto my_password = "test_password";
+
+  fetchPrePerform_ = [my_username, my_password](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERNAME, my_username);
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, my_password);
+  };
+
+  exposer_->RegisterAuth(
+      [my_username, my_password](const std::string& user, const std::string& password) {
+        return user == my_username && password == my_password;
+      },
+      "Some Auth Realm", default_metrics_path_);
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+
+  ASSERT_EQ(metrics.code, 200);
+  EXPECT_THAT(metrics.body, HasSubstr(counter_name));
+}
+
 
 }  // namespace
 }  // namespace prometheus

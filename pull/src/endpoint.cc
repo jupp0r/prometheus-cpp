@@ -7,6 +7,14 @@
 namespace prometheus {
 namespace detail {
 
+namespace {
+class AlwaysAllowAccessHandler : public CivetAuthHandler {
+  bool authorize(CivetServer*, struct mg_connection*) override { return true; }
+};
+
+AlwaysAllowAccessHandler alwaysAllowAccessHandler;
+}  // namespace
+
 Endpoint::Endpoint(CivetServer& server, std::string uri)
     : server_(server),
       uri_(std::move(uri)),
@@ -21,7 +29,8 @@ Endpoint::~Endpoint() {
   server_.removeHandler(uri_);
   if (auth_handler_) {
     // work-around https://github.com/civetweb/civetweb/issues/941
-    server_.removeAuthHandler(uri_);
+    // server_.removeAuthHandler(uri_);
+    server_.addAuthHandler(uri_, alwaysAllowAccessHandler);
   }
 }
 

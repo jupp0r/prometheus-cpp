@@ -167,7 +167,6 @@ TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
   const auto metrics = FetchMetrics(default_metrics_path_);
 
   ASSERT_EQ(metrics.code, 401);
-  EXPECT_THAT(metrics.body, HasSubstr(counter_name));
 }
 
 TEST_F(IntegrationTest, shouldPerformProperAuthentication) {

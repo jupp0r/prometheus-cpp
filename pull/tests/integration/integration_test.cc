@@ -154,6 +154,7 @@ TEST_F(IntegrationTest, acceptOptionalCompression) {
   EXPECT_THAT(metrics.body, HasSubstr(counter_name));
 }
 
+#if 0 // https://github.com/civetweb/civetweb/issues/954
 TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
   const std::string counter_name = "example_total";
   auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
@@ -168,6 +169,7 @@ TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
 
   ASSERT_EQ(metrics.code, 401);
 }
+#endif
 
 TEST_F(IntegrationTest, shouldPerformProperAuthentication) {
   const std::string counter_name = "example_total";

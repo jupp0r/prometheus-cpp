@@ -3,25 +3,59 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Coverage ${{ matrix.buildsystem }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        buildsystem: [cmake]
-        os: [ubuntu-16.04]
+    name: Code Coverage
+    runs-on: ubuntu-16.04
     steps:
-      - uses: actions/checkout@master
-      - name: Checkout submodules
-        shell: bash
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Mount vcpkg cache
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/vcpkg/archives"
+          key: vcpkg-${{ matrix.os }}
+
+      - name: Install vcpkg dependencies
+        run: vcpkg install benchmark civetweb curl[core] gtest zlib
+
+      - name: Generate German locale on Ubuntu
+        if: runner.os == 'Linux'
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      - name: Prepare
-        run: .github/scripts/run-prepare ${{ matrix.buildsystem }} ${{ matrix.os }}
+          sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen de_DE.UTF-8 # used by SerializerTest
+
+      - name: Install ninja on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y ninja-build
+
+      - name: Install coveralls
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y python-pip python-wheel
+          pip install --user cpp-coveralls
+
+      - name: "CMake Configure for Unix with vcpkg dependencies"
+        env:
+          CFLAGS: "--coverage"
+          CXXFLAGS: "--coverage"
+          LDFLAGS: "--coverage"
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -GNinja -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/_build
+
       - name: Test
+        run: ctest -V -LE Benchmark
+        working-directory: "${{ github.workspace }}/_build"
+
+      - name: Upload Coverage
         if: github.repository == 'jupp0r/prometheus-cpp'
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_GIT_BRANCH: "${{ github.ref }}"
-        run: .github/scripts/run-cmake-coverage
+          TRAVIS_BRANCH: "${{ github.ref }}"
+        working-directory: "${{ github.workspace }}/_build"
+        run: ~/.local/bin/coveralls --root .. --build-root . --gcov-options '\-lp' -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*" -E "./CMake.*CompilerId.c" -E ".*/cmake/.*"

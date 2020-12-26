@@ -11,7 +11,7 @@ jobs:
         os: [macOS-latest, ubuntu-18.04, windows-2016]
         dependencies: [submodule, vcpkg]
     steps:
-      - name: Checkout source 
+      - name: Checkout source
         uses: actions/checkout@v2
 
       - name: Checkout submodules
@@ -27,9 +27,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "~/.cache/vcpkg/archives"
-          key: vcpkg-${{ runner.os }}
+          key: vcpkg-${{ matrix.os }}
 
-      - name: install vcpkg dependencies
+      - name: Install vcpkg dependencies
         if: matrix.dependencies == 'vcpkg'
         run: vcpkg install benchmark civetweb curl[core] gtest zlib
 
@@ -41,12 +41,12 @@ jobs:
           sudo apt-get install -y locales
           sudo locale-gen de_DE.UTF-8 # used by SerializerTest
 
-      - name: install ninja on Ubuntu
+      - name: Install ninja on Ubuntu
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y ninja-build
 
-      - name: install ninja on macOS
+      - name: Install ninja on macOS
         if: runner.os == 'macOS'
         run: brew install ninja
 

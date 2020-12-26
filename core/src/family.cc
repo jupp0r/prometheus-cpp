@@ -28,7 +28,6 @@ template <typename T>
 typename Family<T>::metrics_iterator Family<T>::FindMetric(
     const std::map<std::string, std::string>& labels) {
   auto hash = detail::hash_labels(labels);
-  std::lock_guard<std::mutex> lock{mutex_};
   auto metrics_iter = metrics_.find(hash);
 
   if (metrics_iter != metrics_.end()) {
@@ -56,12 +55,11 @@ typename Family<T>::metrics_iterator Family<T>::FindMetric(
 
 template <typename T>
 T& Family<T>::Add(metrics_iterator hint, std::unique_ptr<T> object) {
-  std::lock_guard<std::mutex> lock{mutex_};
   auto hash = hint->first;
   assert(metrics_.find(hash) == hint);
   if (!hint->second) {
     labels_reverse_lookup_.insert({object.get(), hash});
-    hint->second.swap(object);
+    hint->second = std::move(object);
   }
   return *(hint->second);
 }

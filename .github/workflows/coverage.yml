@@ -34,7 +34,7 @@ jobs:
       - name: Install clang
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y clang
+          sudo apt-get install -y clang-11
 
       - name: Install lcov
         if: runner.os == 'Linux'
@@ -43,11 +43,11 @@ jobs:
 
       - name: "CMake Configure for Unix with vcpkg dependencies"
         env:
-          CC: "clang"
-          CXX: "clang++"
-          CFLAGS: "--coverage"
-          CXXFLAGS: "--coverage"
-          LDFLAGS: "--coverage"
+          CC: "clang-11"
+          CXX: "clang++-11"
+          CFLAGS: "--coverage -Xclang -coverage-version='900*'"
+          CXXFLAGS: "--coverage -Xclang -coverage-version='900*'"
+          LDFLAGS: "--coverage -Xclang -coverage-version='900*'"
         run: cmake -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -GNinja -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
 
       - name: Build

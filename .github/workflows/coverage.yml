@@ -31,13 +31,15 @@ jobs:
         run: |
           sudo apt-get install -y ninja-build
 
-      - name: Install lcov
+      - name: Install lcov and GCC 10
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y lcov
+          sudo apt-get install -y gcc-10 lcov
 
       - name: "CMake Configure for Unix with vcpkg dependencies"
         env:
+          CC: "gcc-10"
+          CXX: "g++-10"
           CFLAGS: "--coverage"
           CXXFLAGS: "--coverage"
           LDFLAGS: "--coverage"

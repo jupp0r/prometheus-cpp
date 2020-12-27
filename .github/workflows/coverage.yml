@@ -15,6 +15,14 @@ jobs:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ runner.os }}
 
+      - name: Install Clang 11
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 6084F3CF814B57C1CF12EFD515CF4D18AF4F7421
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main"
+          sudo apt-get update
+          sudo apt-get install -y clang-11
+
       - name: Install vcpkg dependencies
         run: vcpkg install benchmark civetweb curl[core] gtest zlib
 
@@ -30,11 +38,6 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y ninja-build
-
-      - name: Install clang
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y clang-11
 
       - name: Install lcov
         if: runner.os == 'Linux'

@@ -196,6 +196,28 @@ TEST_F(IntegrationTest, shouldPerformProperAuthentication) {
   EXPECT_THAT(metrics.body, HasSubstr(counter_name));
 }
 
+TEST_F(IntegrationTest, shouldDealWithExpiredCollectables) {
+  const std::string first_counter_name = "first_total";
+  const std::string second_counter_name = "second_total";
+
+  const auto registry =
+      RegisterSomeCounter(first_counter_name, default_metrics_path_);
+  auto disappearing_registry =
+      RegisterSomeCounter(second_counter_name, default_metrics_path_);
+
+  disappearing_registry.reset();
+
+  // all set-up
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+
+  // check results
+
+  ASSERT_EQ(metrics.code, 200);
+
+  EXPECT_THAT(metrics.body, HasSubstr(first_counter_name));
+  EXPECT_THAT(metrics.body, Not(HasSubstr(second_counter_name)));
+}
 
 }  // namespace
 }  // namespace prometheus

@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   build:
     name: Code Coverage
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
@@ -13,7 +13,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "~/.cache/vcpkg/archives"
-          key: vcpkg-${{ matrix.os }}
+          key: vcpkg-${{ runner.os }}
 
       - name: Install vcpkg dependencies
         run: vcpkg install benchmark civetweb curl[core] gtest zlib
@@ -31,11 +31,10 @@ jobs:
         run: |
           sudo apt-get install -y ninja-build
 
-      - name: Install coveralls
+      - name: Install lcov
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y python-pip python-wheel
-          pip install --user cpp-coveralls
+          sudo apt-get install -y lcov
 
       - name: "CMake Configure for Unix with vcpkg dependencies"
         env:
@@ -51,11 +50,11 @@ jobs:
         run: ctest -V -LE Benchmark
         working-directory: "${{ github.workspace }}/_build"
 
-      - name: Upload Coverage
-        if: github.repository == 'jupp0r/prometheus-cpp'
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_GIT_BRANCH: "${{ github.ref }}"
-          TRAVIS_BRANCH: "${{ github.ref }}"
-        working-directory: "${{ github.workspace }}/_build"
-        run: ~/.local/bin/coveralls --root .. --build-root . --gcov-options '\-lp' -E ".*/3rdparty/.*" -E ".*/_.*" -E ".*/tests/.*" -E ".*/benchmarks/.*" -E "./CMake.*CompilerId.c" -E ".*/cmake/.*"
+      - name: Run lcov
+        run: lcov --capture --directory "${{ github.workspace }}/_build" --output-file coverage.info --no-external --directory "${{ github.workspace }}" --exclude '*/tests/*'
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.info

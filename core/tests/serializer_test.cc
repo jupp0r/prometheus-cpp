@@ -43,7 +43,7 @@ TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
   }
 
   const auto serialized = textSerializer.Serialize(collected);
-  EXPECT_THAT(serialized, testing::HasSubstr("1.0"));
+  EXPECT_THAT(serialized, testing::HasSubstr(" 1\n"));
 }
 #endif
 

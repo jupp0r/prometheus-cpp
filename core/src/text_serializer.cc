@@ -8,6 +8,8 @@
 
 #if __cpp_lib_to_chars >= 201611L
 #include <charconv>
+#include <stdexcept>
+#include <system_error>
 #else
 #include <cstdio>
 #include <limits>
@@ -30,7 +32,8 @@ void WriteValue(std::ostream& out, double value) {
     auto [ptr, ec] =
         std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
     if (ec != std::errc()) {
-      throw std::runtime_error("Could not convert double to string: " + ec);
+      throw std::runtime_error("Could not convert double to string: " +
+                               std::make_error_code(ec).message());
     }
     out.write(buffer.data(), ptr - buffer.data());
 #else

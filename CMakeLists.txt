@@ -4,7 +4,7 @@ if(POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW) # recognize CMAKE_MSVC_RUNTIME_LIBRARY
 endif()
 
-project(prometheus-cpp VERSION 0.12.0)
+project(prometheus-cpp VERSION 0.12.1)
 
 include(GenerateExportHeader)
 include(GNUInstallDirs)

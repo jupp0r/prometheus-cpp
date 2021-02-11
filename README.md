@@ -214,6 +214,11 @@ example project and minimal [CMakeLists.txt](cmake/project-import/CMakeLists.txt
 The [vcpkg](https://github.com/microsoft/vcpkg) package manager contains a
 prometheus-cpp port which has been tested on Linux, macOS, and Windows.
 
+### Conan
+
+[Conan](https://conan.io/) package manager contains prometheus-cpp package as well
+in [ConanCenter](https://conan.io/center/prometheus-cpp) repository
+
 ### Plain Makefiles
 
 When manually linking prometheus-cpp the library order matters. The needed

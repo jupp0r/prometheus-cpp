@@ -1,6 +1,7 @@
 #include "prometheus/detail/builder.h"
 
 #include "prometheus/counter.h"
+#include "prometheus/detail/core_export.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/registry.h"

@@ -1,8 +1,9 @@
 #include "basic_auth.h"
 
+#include <utility>
+
 #include "CivetServer.h"
 #include "detail/base64.h"
-#include "prometheus/detail/future_std.h"
 
 namespace prometheus {
 

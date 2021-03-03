@@ -5,7 +5,9 @@
 #include <vector>
 
 #include "CivetServer.h"
+#include "prometheus/collectable.h"
 #include "prometheus/counter.h"
+#include "prometheus/family.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 

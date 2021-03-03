@@ -2,10 +2,9 @@
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 
 #include "CivetServer.h"
-#include "prometheus/detail/pull_export.h"
+#include "civetweb.h"
 
 namespace prometheus {
 

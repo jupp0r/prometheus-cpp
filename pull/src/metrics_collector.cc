@@ -1,5 +1,7 @@
 #include "metrics_collector.h"
 
+#include <iterator>
+
 #include "prometheus/collectable.h"
 
 namespace prometheus {

@@ -1,9 +1,13 @@
 #include <benchmark/benchmark.h>
-#include <prometheus/histogram.h>
-#include <prometheus/registry.h>
 
 #include <chrono>
 #include <random>
+#include <string>
+#include <vector>
+
+#include "prometheus/family.h"
+#include "prometheus/histogram.h"
+#include "prometheus/registry.h"
 
 using prometheus::Histogram;
 

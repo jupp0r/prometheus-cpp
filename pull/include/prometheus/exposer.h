@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
@@ -8,7 +8,6 @@
 
 #include "prometheus/collectable.h"
 #include "prometheus/detail/pull_export.h"
-#include "prometheus/registry.h"
 
 class CivetServer;
 
@@ -16,7 +15,6 @@ namespace prometheus {
 
 namespace detail {
 class Endpoint;
-class MetricsHandler;
 }  // namespace detail
 
 class PROMETHEUS_CPP_PULL_EXPORT Exposer {

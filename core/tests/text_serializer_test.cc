@@ -1,13 +1,16 @@
 #include "prometheus/text_serializer.h"
 
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <cmath>
 #include <limits>
+#include <string>
 
-#include "prometheus/family.h"
-#include "prometheus/gauge.h"
+#include "prometheus/client_metric.h"
 #include "prometheus/histogram.h"
+#include "prometheus/metric_family.h"
+#include "prometheus/metric_type.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {

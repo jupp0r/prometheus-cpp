@@ -1,8 +1,17 @@
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <algorithm>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
+#include "prometheus/family.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/registry.h"

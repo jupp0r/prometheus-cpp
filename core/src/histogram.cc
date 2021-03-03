@@ -4,8 +4,10 @@
 #include <cassert>
 #include <iterator>
 #include <limits>
-#include <numeric>
+#include <memory>
 #include <ostream>
+#include <stdexcept>
+#include <utility>
 
 namespace prometheus {
 

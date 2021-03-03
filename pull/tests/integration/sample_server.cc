@@ -1,13 +1,15 @@
-#include <prometheus/counter.h>
-#include <prometheus/exposer.h>
-#include <prometheus/registry.h>
-
 #include <array>
 #include <chrono>
 #include <cstdlib>
 #include <memory>
 #include <string>
 #include <thread>
+
+#include "prometheus/client_metric.h"
+#include "prometheus/counter.h"
+#include "prometheus/exposer.h"
+#include "prometheus/family.h"
+#include "prometheus/registry.h"
 
 int main() {
   using namespace prometheus;

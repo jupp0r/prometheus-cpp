@@ -60,3 +60,8 @@ if(BUILD_SHARED_LIBS)
     VISIBILITY_INLINES_HIDDEN ON
   )
 endif()
+
+set_target_properties(civetweb PROPERTIES
+  C_INCLUDE_WHAT_YOU_USE ""
+  CXX_INCLUDE_WHAT_YOU_USE ""
+)

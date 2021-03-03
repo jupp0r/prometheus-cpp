@@ -1,24 +1,23 @@
 #pragma once
 
-#include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <map>
 #include <memory>
 #include <mutex>
-#include <numeric>
 #include <string>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
-#include "prometheus/check_names.h"
 #include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/future_std.h"
-#include "prometheus/detail/utils.h"
 #include "prometheus/metric_family.h"
+
+// IWYU pragma: no_include "prometheus/counter.h"
+// IWYU pragma: no_include "prometheus/gauge.h"
+// IWYU pragma: no_include "prometheus/histogram.h"
+// IWYU pragma: no_include "prometheus/summary.h"
 
 namespace prometheus {
 

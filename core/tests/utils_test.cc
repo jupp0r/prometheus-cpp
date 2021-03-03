@@ -1,8 +1,9 @@
 #include "prometheus/detail/utils.h"
 
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <map>
+#include <utility>
 
 namespace prometheus {
 

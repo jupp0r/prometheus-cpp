@@ -1,13 +1,18 @@
 #include <curl/curl.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
+#include <cstddef>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "prometheus/counter.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/exposer.h"
+#include "prometheus/family.h"
 #include "prometheus/registry.h"
 
 namespace prometheus {
@@ -154,7 +159,7 @@ TEST_F(IntegrationTest, acceptOptionalCompression) {
   EXPECT_THAT(metrics.body, HasSubstr(counter_name));
 }
 
-#if 0 // https://github.com/civetweb/civetweb/issues/954
+#if 0  // https://github.com/civetweb/civetweb/issues/954
 TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
   const std::string counter_name = "example_total";
   auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
@@ -185,7 +190,8 @@ TEST_F(IntegrationTest, shouldPerformProperAuthentication) {
   };
 
   exposer_->RegisterAuth(
-      [my_username, my_password](const std::string& user, const std::string& password) {
+      [my_username, my_password](const std::string& user,
+                                 const std::string& password) {
         return user == my_username && password == my_password;
       },
       "Some Auth Realm", default_metrics_path_);

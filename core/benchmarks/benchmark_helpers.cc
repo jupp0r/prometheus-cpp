@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <cstdlib>
 
-std::string GenerateRandomString(size_t length) {
+std::string GenerateRandomString(std::size_t length) {
   auto randchar = []() -> char {
     const char charset[] = "abcdefghijklmnopqrstuvwxyz";
-    const size_t max_index = (sizeof(charset) - 1);
+    const std::size_t max_index = (sizeof(charset) - 1);
     return charset[rand() % max_index];
   };
   std::string str(length, 0);

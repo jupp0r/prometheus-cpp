@@ -8,7 +8,7 @@ add_library(gmock_main STATIC EXCLUDE_FROM_ALL
   ${_IMPORT_PREFIX}/googlemock/src/gmock_main.cc
 )
 
-target_include_directories(gmock_main
+target_include_directories(gmock_main SYSTEM
   PUBLIC
     ${_IMPORT_PREFIX}/googletest/include
     ${_IMPORT_PREFIX}/googlemock/include
@@ -22,3 +22,8 @@ target_link_libraries(gmock_main
     Threads::Threads
 )
 add_library(GTest::gmock_main ALIAS gmock_main)
+
+set_target_properties(gmock_main PROPERTIES
+  C_INCLUDE_WHAT_YOU_USE ""
+  CXX_INCLUDE_WHAT_YOU_USE ""
+)

@@ -1,8 +1,10 @@
 #include "prometheus/summary.h"
 
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <cmath>
+#include <limits>
+#include <memory>
 #include <thread>
 
 namespace prometheus {

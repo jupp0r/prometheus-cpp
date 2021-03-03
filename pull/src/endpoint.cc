@@ -1,5 +1,7 @@
 #include "endpoint.h"
 
+#include <utility>
+
 #include "basic_auth.h"
 #include "handler.h"
 #include "prometheus/detail/future_std.h"

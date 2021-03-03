@@ -1,6 +1,10 @@
 #include <benchmark/benchmark.h>
-#include <prometheus/gauge.h>
-#include <prometheus/registry.h>
+
+#include <string>
+
+#include "prometheus/family.h"
+#include "prometheus/gauge.h"
+#include "prometheus/registry.h"
 
 static void BM_Gauge_Increment(benchmark::State& state) {
   using prometheus::BuildGauge;

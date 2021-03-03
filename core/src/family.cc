@@ -1,8 +1,14 @@
 #include "prometheus/family.h"
 
+#include <algorithm>
+#include <cassert>
 #include <stdexcept>
+#include <type_traits>
+#include <utility>
 
+#include "prometheus/check_names.h"
 #include "prometheus/counter.h"
+#include "prometheus/detail/utils.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/summary.h"

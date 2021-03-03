@@ -5,6 +5,7 @@
 #include <locale>
 #include <ostream>
 #include <stdexcept>
+#include <string>
 
 #if __cpp_lib_to_chars >= 201611L
 #include <charconv>
@@ -14,6 +15,10 @@
 #include <cstdio>
 #include <limits>
 #endif
+
+#include "prometheus/client_metric.h"
+#include "prometheus/metric_family.h"
+#include "prometheus/metric_type.h"
 
 namespace prometheus {
 

@@ -4,8 +4,10 @@
 #include <cstddef>
 #include <vector>
 
-#include "prometheus/detail/ckms_quantiles.h"
+#include "prometheus/detail/ckms_quantiles.h"  // IWYU pragma: export
 #include "prometheus/detail/core_export.h"
+
+// IWYU pragma: private, include "prometheus/summary.h"
 
 namespace prometheus {
 namespace detail {

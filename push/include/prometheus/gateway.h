@@ -1,14 +1,15 @@
 #pragma once
 
 #include <future>
-#include <iosfwd>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "prometheus/collectable.h"
 #include "prometheus/detail/push_export.h"
-#include "prometheus/registry.h"
 
 namespace prometheus {
 

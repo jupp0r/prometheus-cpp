@@ -8,7 +8,6 @@
 
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
-#include "prometheus/detail/future_std.h"
 #include "prometheus/family.h"
 #include "prometheus/metric_family.h"
 
@@ -22,7 +21,7 @@ class Summary;
 namespace detail {
 
 template <typename T>
-class Builder;
+class Builder;  // IWYU pragma: keep
 
 }
 /// \brief Manages the collection of a number of metrics.

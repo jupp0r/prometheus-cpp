@@ -1,8 +1,9 @@
-#include "prometheus/detail/ckms_quantiles.h"
+#include "prometheus/detail/ckms_quantiles.h"  // IWYU pragma: export
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <memory>
 
 namespace prometheus {
 namespace detail {

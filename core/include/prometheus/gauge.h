@@ -3,7 +3,7 @@
 #include <atomic>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/detail/builder.h"
+#include "prometheus/detail/builder.h"  // IWYU pragma: export
 #include "prometheus/detail/core_export.h"
 #include "prometheus/metric_type.h"
 

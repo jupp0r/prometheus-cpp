@@ -1,6 +1,6 @@
 #include "prometheus/detail/utils.h"
 
-#include <numeric>
+#include <utility>
 
 #include "hash.h"
 

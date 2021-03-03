@@ -1,10 +1,12 @@
 #include "prometheus/family.h"
 
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <memory>
 
 #include "prometheus/client_metric.h"
+#include "prometheus/counter.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/histogram.h"
 

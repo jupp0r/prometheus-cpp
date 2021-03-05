@@ -1,0 +1,14 @@
+FROM ubuntu:xenial
+
+RUN apt-get update
+RUN apt-get install -y apt-transport-https ca-certificates gnupg software-properties-common wget
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main'
+RUN apt-get update
+
+RUN apt-get install -y cmake ninja-build zlib1g-dev libcurl4-openssl-dev gcc-4.7 g++-4.7
+
+RUN apt-get install -y vim git
+
+RUN apt-get install -y locales
+RUN locale-gen de_DE.UTF-8 # used by SerializerTest

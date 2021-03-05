@@ -17,6 +17,8 @@ target_include_directories(gmock_main SYSTEM
     ${_IMPORT_PREFIX}/googlemock
 )
 
+target_compile_definitions(gmock_main PUBLIC GTEST_LANG_CXX11=0)
+
 target_link_libraries(gmock_main
   PRIVATE
     Threads::Threads

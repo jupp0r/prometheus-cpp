@@ -44,7 +44,9 @@ TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
     localeWithCommaDecimalSeparator =
         detail::make_unique<RAIILocale>("de_DE.UTF-8");
   } catch (std::runtime_error&) {
+#ifdef GTEST_SKIP
     GTEST_SKIP();
+#endif
   }
 
   const auto serialized = textSerializer.Serialize(collected);

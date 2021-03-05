@@ -105,6 +105,8 @@ if(ENABLE_WARNINGS_AS_ERRORS AND NOT MSVC)
   )
 endif()
 
+add_definitions(-D_GLIBCXX_USE_NANOSLEEP)
+
 # prometheus-cpp
 
 add_subdirectory(core)

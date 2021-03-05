@@ -86,24 +86,44 @@ jobs:
       - name: "Install Release"
         run: cmake --install ${{ github.workspace }}/_build --config Release
 
-      - name: "Configure import for Unix with internal dependencies"
+      - name: "Configure CMake import for Unix with internal dependencies"
         if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
-        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }}/cmake/project-import -B ${{ github.workspace }}/_import
+        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }}/cmake/project-import-cmake -B ${{ github.workspace }}/_import_cmake
 
-      - name: "Configure import for Windows with internal dependencies"
+      - name: "Configure CMake import for Windows with internal dependencies"
         if: matrix.dependencies == 'submodule' && runner.os == 'Windows'
-        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp -S ${{ github.workspace }}/cmake/project-import -B ${{ github.workspace }}/_import
+        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp -S ${{ github.workspace }}/cmake/project-import-cmake -B ${{ github.workspace }}/_import_cmake
 
-      - name: "Configure import for Unix with vcpkg dependencies"
+      - name: "Configure CMake import for Unix with vcpkg dependencies"
         if: matrix.dependencies == 'vcpkg' && runner.os != 'Windows'
-        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }}/cmake/project-import -B ${{ github.workspace }}/_import
+        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }}/cmake/project-import-cmake -B ${{ github.workspace }}/_import_cmake
 
-      - name: "Configure import for Windows with vcpkg dependencies"
+      - name: "Configure CMake import for Windows with vcpkg dependencies"
         if: matrix.dependencies == 'vcpkg' && runner.os == 'Windows'
-        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp "-DCMAKE_TOOLCHAIN_FILE=${Env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake" -S ${{ github.workspace }}/cmake/project-import -B ${{ github.workspace }}/_import
+        run: cmake -Dprometheus-cpp_DIR=${{ github.workspace }}/_install/lib/cmake/prometheus-cpp "-DCMAKE_TOOLCHAIN_FILE=${Env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake" -S ${{ github.workspace }}/cmake/project-import-cmake -B ${{ github.workspace }}/_import_cmake
 
-      - name: "Build import Debug"
-        run: cmake --build ${{ github.workspace }}/_import --config Debug
+      - name: "Build CMake import Debug"
+        run: cmake --build ${{ github.workspace }}/_import_cmake --config Debug
 
-      - name: "Build import Release"
-        run: cmake --build ${{ github.workspace }}/_import --config Release
+      - name: "Build CMake import Release"
+        run: cmake --build ${{ github.workspace }}/_import_cmake --config Release
+
+      - name: "Configure for Unix Shared Libs with internal dependencies"
+        if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/_install_shared -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_DEBUG_POSTFIX=_d  -GNinja -S ${{ github.workspace }} -B ${{ github.workspace }}/_build_shared
+
+      - name: "Build for Unix Shared Libs"
+        if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
+        run: cmake --build ${{ github.workspace }}/_build_shared
+
+      - name: "Install for Unix Shared Libs"
+        if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
+        run: cmake --install ${{ github.workspace }}/_build_shared
+
+      - name: "Configure pkg-config import for Unix"
+        if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
+        run: cmake -DCMAKE_PREFIX_PATH=${{ github.workspace }}/_install_shared -GNinja -S ${{ github.workspace }}/cmake/project-import-pkgconfig -B ${{ github.workspace }}/_import_pkgconfig
+
+      - name: "Build pkg-config import for Unix"
+        if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
+        run: cmake --build ${{ github.workspace }}/_import_pkgconfig

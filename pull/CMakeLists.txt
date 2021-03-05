@@ -85,6 +85,30 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+if(GENERATE_PKGCONFIG)
+  set(PKGCONFIG_LIBS)
+  set(PKGCONFIG_REQUIRES)
+
+  if(NOT USE_THIRDPARTY_LIBRARIES)
+    string(APPEND PKGCONFIG_LIBS " -lcivetweb-cpp -lcivetweb")
+  endif()
+
+  if(ENABLE_COMPRESSION)
+    string(APPEND PKGCONFIG_REQUIRES " zlib")
+  endif()
+
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/cmake/prometheus-cpp-pull.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-pull.pc
+    @ONLY
+  )
+
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-pull.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endif()
+
 if(ENABLE_TESTING)
   add_library(pull_internal_headers INTERFACE)
   add_library(${PROJECT_NAME}::pull_internal_headers ALIAS pull_internal_headers)

@@ -1,39 +1,79 @@
 
 #include "prometheus/check_names.h"
 
-#include <iosfwd>
-#include <regex>
-#include <vector>
-
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= 20150623
-#define STD_REGEX_IS_BROKEN
-#endif
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#define STD_REGEX_IS_BROKEN
-#endif
+#include <algorithm>
+#include <iterator>
 
 namespace prometheus {
-bool CheckMetricName(const std::string& name) {
-  // see https://prometheus.io/docs/concepts/data_model/
-  auto reserved_for_internal_purposes = name.compare(0, 2, "__") == 0;
-  if (reserved_for_internal_purposes) return false;
-#ifdef STD_REGEX_IS_BROKEN
-  return !name.empty();
-#else
-  static const std::regex metric_name_regex("[a-zA-Z_:][a-zA-Z0-9_:]*");
-  return std::regex_match(name, metric_name_regex);
-#endif
+
+namespace {
+bool isLocaleIndependentAlphaNumeric(char c) {
+  return ('0' <= c && c <= '9') || ('a' <= c && c <= 'z') ||
+         ('A' <= c && c <= 'Z');
 }
 
-bool CheckLabelName(const std::string& name) {
-  // see https://prometheus.io/docs/concepts/data_model/
+bool isLocaleIndependentDigit(char c) { return '0' <= c && c <= '9'; }
+
+bool nameStartsValid(const std::string& name) {
+  // must not be empty
+  if (name.empty()) {
+    return false;
+  }
+
+  // must not start with a digit
+  if (isLocaleIndependentDigit(name.front())) {
+    return false;
+  }
+
+  // must not start with "__"
   auto reserved_for_internal_purposes = name.compare(0, 2, "__") == 0;
   if (reserved_for_internal_purposes) return false;
-#ifdef STD_REGEX_IS_BROKEN
-  return !name.empty();
-#else
-  static const std::regex label_name_regex("[a-zA-Z_][a-zA-Z0-9_]*");
-  return std::regex_match(name, label_name_regex);
-#endif
+
+  return true;
+}
+}  // anonymous namespace
+
+/// \brief Check if the metric name is valid
+///
+/// The metric name regex is "[a-zA-Z_:][a-zA-Z0-9_:]*"
+///
+/// \see https://prometheus.io/docs/concepts/data_model/
+///
+/// \param name metric name
+/// \return true is valid, false otherwise
+bool CheckMetricName(const std::string& name) {
+  if (!nameStartsValid(name)) {
+    return false;
+  }
+
+  auto validMetricCharacters = [](char c) {
+    return isLocaleIndependentAlphaNumeric(c) || c == '_' || c == ':';
+  };
+
+  auto mismatch =
+      std::find_if_not(std::begin(name), std::end(name), validMetricCharacters);
+  return mismatch == std::end(name);
+}
+
+/// \brief Check if the label name is valid
+///
+/// The label name regex is "[a-zA-Z_][a-zA-Z0-9_]*"
+///
+/// \see https://prometheus.io/docs/concepts/data_model/
+///
+/// \param name label name
+/// \return true is valid, false otherwise
+bool CheckLabelName(const std::string& name) {
+  if (!nameStartsValid(name)) {
+    return false;
+  }
+
+  auto validLabelCharacters = [](char c) {
+    return isLocaleIndependentAlphaNumeric(c) || c == '_';
+  };
+
+  auto mismatch =
+      std::find_if_not(std::begin(name), std::end(name), validLabelCharacters);
+  return mismatch == std::end(name);
 }
 }  // namespace prometheus

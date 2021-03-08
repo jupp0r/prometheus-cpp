@@ -2,7 +2,7 @@ name: Linting
 on: [push, pull_request]
 
 jobs:
-  build:
+  iwyu:
     name: Include What You Use
     runs-on: ubuntu-20.04
     steps:
@@ -38,3 +38,21 @@ jobs:
       #- name: "Run IWYU"
       #  run: iwyu_tool -p ${{ github.workspace }}/_build core push pull -- -Xiwyu --mapping_file=${{ github.workspace }}/cmake/googletest.imp -Xiwyu --no_fwd_decls 2>&1 | tee ${{ github.workspace }}/output.txt
 
+  format:
+    name: Clang Format
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
+          sudo apt-get update
+          sudo apt-get install -y clang-format-11
+
+      - name: Run clang-format
+        run: find . -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.o' -o -name '*.h' -o -name '*.hpp' -o -name '*.hxx' \) -exec clang-format-11 -style=file -i {} \;
+
+      - name: Check for changes
+        run: git diff --exit-code

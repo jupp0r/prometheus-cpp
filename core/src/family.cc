@@ -52,6 +52,9 @@ T& Family<T>::Add(const std::map<std::string, std::string>& labels,
     if (!CheckLabelName(label_name)) {
       throw std::invalid_argument("Invalid label name");
     }
+    if (constant_labels_.count(label_name)) {
+      throw std::invalid_argument("Duplicate label name");
+    }
   }
 
   auto metric = metrics_.insert(std::make_pair(hash, std::move(object)));

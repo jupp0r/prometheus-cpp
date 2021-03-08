@@ -28,6 +28,13 @@ TEST(FamilyTest, labels) {
               ::testing::ElementsAre(const_label, dynamic_label));
 }
 
+TEST(FamilyTest, reject_same_label_keys) {
+  auto labels = std::map<std::string, std::string>{{"component", "test"}};
+
+  Family<Counter> family{"total_requests", "Counts all requests", labels};
+  EXPECT_ANY_THROW(family.Add(labels));
+}
+
 TEST(FamilyTest, counter_value) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto& counter = family.Add({});

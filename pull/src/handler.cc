@@ -96,7 +96,7 @@ static std::size_t WriteResponse(struct mg_connection* conn,
                                  const std::string& body) {
   mg_printf(conn,
             "HTTP/1.1 200 OK\r\n"
-            "Content-Type: text/plain\r\n");
+            "Content-Type: text/plain; charset=utf-8\r\n");
 
 #ifdef HAVE_ZLIB
   auto acceptsGzip = IsEncodingAccepted(conn, "gzip");

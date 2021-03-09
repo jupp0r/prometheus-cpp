@@ -31,6 +31,7 @@ class IntegrationTest : public testing::Test {
   struct Resonse {
     long code = 0;
     std::string body;
+    std::string contentType;
   };
 
   std::function<void(CURL*)> fetchPrePerform_;
@@ -58,6 +59,12 @@ class IntegrationTest : public testing::Test {
     }
 
     curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &response.code);
+
+    char* ct = nullptr;
+    curl_easy_getinfo(curl.get(), CURLINFO_CONTENT_TYPE, &ct);
+    if (ct) {
+      response.contentType = ct;
+    }
 
     return response;
   }
@@ -223,6 +230,18 @@ TEST_F(IntegrationTest, shouldDealWithExpiredCollectables) {
 
   EXPECT_THAT(metrics.body, HasSubstr(first_counter_name));
   EXPECT_THAT(metrics.body, Not(HasSubstr(second_counter_name)));
+}
+
+TEST_F(IntegrationTest, shouldSendBodyAsUtf8) {
+  const std::string counter_name = "example_total";
+  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+
+  // check content type
+
+  ASSERT_EQ(metrics.code, 200);
+  EXPECT_THAT(metrics.contentType, HasSubstr("utf-8"));
 }
 
 }  // namespace

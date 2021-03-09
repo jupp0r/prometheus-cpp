@@ -103,5 +103,11 @@ TEST(FamilyTest, should_throw_on_invalid_labels) {
   EXPECT_ANY_THROW(add_metric_with_invalid_label_name());
 }
 
+TEST(FamilyTest, should_not_collect_empty_metrics) {
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
+  auto collected = family.Collect();
+  EXPECT_TRUE(collected.empty());
+}
+
 }  // namespace
 }  // namespace prometheus

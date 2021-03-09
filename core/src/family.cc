@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 
 #include "prometheus/check_names.h"
@@ -90,6 +89,11 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() const {
   std::lock_guard<std::mutex> lock{mutex_};
+
+  if (metrics_.empty()) {
+    return {};
+  }
+
   auto family = MetricFamily{};
   family.name = name_;
   family.help = help_;

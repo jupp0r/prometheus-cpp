@@ -92,6 +92,7 @@ int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
 
   curl_easy_reset(curl);
   curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
+  curl_easy_setopt(curl, CURLOPT_POST, 1);
 
   curl_slist* header_chunk = nullptr;
 

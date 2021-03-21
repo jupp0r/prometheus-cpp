@@ -94,11 +94,10 @@ int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
 
   curl_slist* header_chunk = nullptr;
+  header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
 
   if (!body.empty()) {
-    header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_chunk);
-
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
   }
@@ -110,8 +109,7 @@ int Gateway::performHttpRequest(HttpMethod method, const std::string& uri,
 
   switch (method) {
     case HttpMethod::Post:
-      curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-      curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+      curl_easy_setopt(curl, CURLOPT_POST, 1L);
       break;
 
     case HttpMethod::Put:

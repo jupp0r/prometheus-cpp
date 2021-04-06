@@ -1,4 +1,5 @@
 #include "prometheus/histogram.h"
+#include "prometheus/registry.h"
 
 #include <algorithm>
 #include <cassert>
@@ -10,6 +11,20 @@
 #include <utility>
 
 namespace prometheus {
+
+std::vector<double> Histogram::ExponentialBuckets(double start,
+        double factor, int count) {
+  assert(count >= 1);
+  assert(start > 0);
+  assert(factor > 1);
+
+  std::vector<double> buckets;
+  for (int i=0; i < count; i++) {
+    buckets.push_back(start);
+    start *= factor;
+  }
+  return buckets;
+}
 
 Histogram::Histogram(const BucketBoundaries& buckets)
     : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {

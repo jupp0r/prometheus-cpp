@@ -1,4 +1,5 @@
 #include "prometheus/summary.h"
+#include "prometheus/registry.h"
 
 #include <utility>
 

@@ -10,6 +10,7 @@
 #include "prometheus/detail/pull_export.h"
 
 class CivetServer;
+struct CivetCallbacks;
 
 namespace prometheus {
 
@@ -20,8 +21,9 @@ class Endpoint;
 class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  public:
   explicit Exposer(const std::string& bind_address,
-                   const std::size_t num_threads = 2);
-  explicit Exposer(std::vector<std::string> options);
+                   const std::size_t num_threads = 2, 
+                   const CivetCallbacks *callbacks = nullptr);
+  explicit Exposer(std::vector<std::string> options, const CivetCallbacks *callbacks = nullptr);
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                            const std::string& uri = std::string("/metrics"));

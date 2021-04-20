@@ -11,13 +11,18 @@
 
 namespace prometheus {
 
-Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads)
+Exposer::Exposer(const std::string& bind_address, 
+                 const std::size_t num_threads, 
+                 const CivetCallbacks *callbacks)
     : Exposer(std::vector<std::string>{"listening_ports", bind_address,
                                        "num_threads",
-                                       std::to_string(num_threads)}) {}
+                                       std::to_string(num_threads)},
+              callbacks) {}
 
-Exposer::Exposer(std::vector<std::string> options)
-    : server_(detail::make_unique<CivetServer>(std::move(options))) {}
+Exposer::Exposer(std::vector<std::string> options, 
+                 const CivetCallbacks *callbacks)
+    : server_(detail::make_unique<CivetServer>(std::move(options),
+                                               callbacks)) {}
 
 Exposer::~Exposer() = default;
 

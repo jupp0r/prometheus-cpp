@@ -109,5 +109,12 @@ TEST(FamilyTest, should_not_collect_empty_metrics) {
   EXPECT_TRUE(collected.empty());
 }
 
+TEST(FamilyTest, query_family_if_metric_already_exists) {
+  Family<Counter> family{"total_rquests", "Counts all requests", {}};
+  family.Add({{"name", "counter1"}});
+  EXPECT_TRUE(family.Has({{"name", "counter1"}}));
+  EXPECT_FALSE(family.Has({{"name", "couner2"}}));
+}
+
 }  // namespace
 }  // namespace prometheus

@@ -151,7 +151,7 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
     metrics = CollectMetrics(collectables_);
   }
 
-  auto serializer = std::unique_ptr<Serializer>{new TextSerializer()};
+  auto serializer = detail::make_unique<TextSerializer>();
 
   auto bodySize = WriteResponse(conn, serializer->Serialize(metrics));
 

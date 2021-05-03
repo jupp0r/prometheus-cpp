@@ -77,6 +77,13 @@ void Family<T>::Remove(T* metric) {
 }
 
 template <typename T>
+bool Family<T>::Has(const std::map<std::string, std::string>& labels) const {
+  auto hash = detail::hash_labels(labels);
+  std::lock_guard<std::mutex> lock{mutex_};
+  return metrics_.find(hash) != metrics_.end();
+}
+
+template <typename T>
 const std::string& Family<T>::GetName() const {
   return name_;
 }

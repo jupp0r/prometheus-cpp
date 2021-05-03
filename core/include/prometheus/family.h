@@ -119,6 +119,11 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// if the given metric was not returned by Add().
   void Remove(T* metric);
 
+  /// \brief Returns true if the dimensional data with the given labels exist
+  ///
+  /// \param labels A set of key-value pairs (= labels) of the dimensional data.
+  bool Has(const std::map<std::string, std::string>& labels) const;
+
   /// \brief Returns the name for this family.
   ///
   /// \return The family name.

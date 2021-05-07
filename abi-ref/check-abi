@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+import sys
+
+def parse_command_line():
+    """Parse the command line arguments.
+
+       check-abi expects the path to the new binary and a path to the
+       baseline ABI to compare against.  It can also optionaly take
+       the path to the abidiff program to use.
+    """
+
+    parser = argparse.ArgumentParser(description="Compare the ABI of a binary "
+                                                 "against a baseline")
+    parser.add_argument("baseline_abi",
+                        help = "the path to a baseline ABI to compare against")
+    parser.add_argument("new_abi",
+                        help = "the path to the ABI to compare "
+                               "against the baseline")
+    parser.add_argument("-a",
+                        "--abidiff",
+                        required = False,
+                        default="/usr/bin/abidiff")
+
+    return parser.parse_args()
+
+
+def main():
+    # Get the configuration of this program from the command line
+    # arguments. The configuration ends up being a variable named
+    # config, which has three properties:
+    #
+    #   config.abidiff: this is the path to the abidiff program
+    #
+    #   config.baseline_abi: this is the path to the baseline
+    #                        ABI. It's the reference ABI that was
+    #                        previously stored and that we need to
+    #                        compare the ABI of the new binary
+    #                        against.
+    #
+    #   config.new_abi: this is the path to the new binary which ABI
+    #                   is to be compared against the baseline
+    #                   referred to by config.baseline_abi.
+    #
+    config = parse_command_line()
+
+    # Execute the abidiff program to compare the new ABI against the
+    # baseline.
+    completed_process = subprocess.run([config.abidiff,
+                                        "--no-added-syms",
+                                        config.baseline_abi,
+                                        config.new_abi],
+                                       universal_newlines = True,
+                                       stdout = subprocess.PIPE,
+                                       stderr = subprocess.STDOUT)
+
+    if completed_process.returncode != 0:
+        # Let's define the values of the bits of the "return code"
+        # returned by abidiff.  Depending on which bit is set, we know
+        # what happened in terms of ABI verification.  These bits are
+        # documented at
+        # https://sourceware.org/libabigail/manual/abidiff.html#return-values.
+        ABIDIFF_ERROR_BIT = 1
+        ABI_CHANGE_BIT = 4
+        ABI_INCOMPATIBLE_CHANGE_BIT = 8
+
+        if completed_process.returncode & ABIDIFF_ERROR_BIT:
+            print("An unexpected error happened while running abidiff:n")
+            return 0
+        elif completed_process.returncode & ABI_INCOMPATIBLE_CHANGE_BIT:
+            # If this bit is set, it means we detected an ABI change
+            # that breaks backwards ABI compatibility, for sure.
+            print("An incompatible ABI change was detected:n")
+        elif completed_process.returncode & ABI_CHANGE_BIT:
+            # If this bit is set, (and ABI_INCOMPATIBLE_CHANGE_BIT is
+            # not set) then it means there was an ABI change that
+            # COULD potentially break ABI backward compatibility.  To
+            # be sure if this change is problematic or not, a human
+            # review is necessary
+            print("An ABI change that needs human review was detected:n")
+
+        print("%s" % completed_process.stdout)
+        return completed_process.returncode
+
+    return 0;
+
+if __name__ == "__main__":
+    sys.exit(main())

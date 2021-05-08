@@ -151,9 +151,9 @@ bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
     metrics = CollectMetrics(collectables_);
   }
 
-  auto serializer = detail::make_unique<TextSerializer>();
+  const TextSerializer serializer;
 
-  auto bodySize = WriteResponse(conn, serializer->Serialize(metrics));
+  auto bodySize = WriteResponse(conn, serializer.Serialize(metrics));
 
   auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(

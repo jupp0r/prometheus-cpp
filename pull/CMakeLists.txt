@@ -4,6 +4,8 @@ if(USE_THIRDPARTY_LIBRARIES)
   install(
     TARGETS civetweb
     EXPORT ${PROJECT_NAME}-targets
+    # keep embedded civetweb headers scoped to prometheus(-cpp)
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
   )
 else()
   find_package(civetweb CONFIG REQUIRED)

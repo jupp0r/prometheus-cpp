@@ -19,6 +19,11 @@ add_library(civetweb OBJECT
   ${_IMPORT_PREFIX}/src/md5.inl
 )
 
+set_property(TARGET civetweb PROPERTY PUBLIC_HEADER
+  ${_IMPORT_PREFIX}/include/CivetServer.h
+  ${_IMPORT_PREFIX}/include/civetweb.h
+)
+
 target_compile_definitions(civetweb
   PRIVATE
     CIVETWEB_API=

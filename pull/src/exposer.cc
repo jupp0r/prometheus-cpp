@@ -11,6 +11,12 @@
 
 namespace prometheus {
 
+Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads)
+    : Exposer(bind_address, num_threads, nullptr) {}
+
+Exposer::Exposer(std::vector<std::string> options)
+    : Exposer(options, nullptr) {}
+
 Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads,
                  const CivetCallbacks* callbacks)
     : Exposer(

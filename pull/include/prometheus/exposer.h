@@ -20,11 +20,19 @@ class Endpoint;
 
 class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  public:
+  /// @note This ctor will be merged with the "callback" variant once
+  /// prometheus-cpp 0.13 performs an ABI-break
   explicit Exposer(const std::string& bind_address,
-                   const std::size_t num_threads = 2,
-                   const CivetCallbacks* callbacks = nullptr);
+                   const std::size_t num_threads = 2);
+  /// @note This ctor will be merged with the "callback" variant once
+  /// prometheus-cpp 0.13 performs an ABI-break
+  explicit Exposer(std::vector<std::string> options);
+
+  explicit Exposer(const std::string& bind_address,
+                   const std::size_t num_threads,
+                   const CivetCallbacks* callbacks);
   explicit Exposer(std::vector<std::string> options,
-                   const CivetCallbacks* callbacks = nullptr);
+                   const CivetCallbacks* callbacks);
   ~Exposer();
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                            const std::string& uri = std::string("/metrics"));

@@ -26,11 +26,11 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_github_curl",
-        sha256 = "3b4378156ba09e224008e81dcce854b7ce4d182b1f9cfb97fe5ed9e9c18c6bd3",
-        strip_prefix = "curl-7.76.0",
+        sha256 = "5f85c4d891ccb14d6c3c701da3010c91c6570c3419391d485d95235253d837d7",
+        strip_prefix = "curl-7.76.1",
         urls = [
-            "https://github.com/curl/curl/releases/download/curl-7_76_0/curl-7.76.0.tar.gz",
-            "https://curl.haxx.se/download/curl-7.76.0.tar.gz",
+            "https://github.com/curl/curl/releases/download/curl-7_76_1/curl-7.76.1.tar.gz",
+            "https://curl.haxx.se/download/curl-7.76.1.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )
@@ -39,7 +39,7 @@ def prometheus_cpp_repositories():
         http_archive,
         name = "com_github_google_benchmark",
         sha256 = "dccbdab796baa1043f04982147e67bb6e118fe610da2c65f88912d73987e700c",
-        strip_prefix = "benchmark-1.5.2",
+        strip_prefix = "benchmark-1.5.3",
         urls = [
             "https://github.com/google/benchmark/archive/v1.5.2.tar.gz",
         ],

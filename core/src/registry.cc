@@ -96,6 +96,7 @@ bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
 
 template <typename T>
 Family<T>& Registry::Add(const std::string& name, const std::string& help,
+                         const std::vector<std::string>& variable_labels,
                          const std::map<std::string, std::string>& labels) {
   std::lock_guard<std::mutex> lock{mutex_};
 
@@ -131,7 +132,7 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto family = detail::make_unique<Family<T>>(name, help, variable_labels, labels);
   auto& ref = *family;
   families.push_back(std::move(family));
   return ref;
@@ -139,18 +140,22 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
 
 template Family<Counter>& Registry::Add(
     const std::string& name, const std::string& help,
+    const std::vector<std::string>& variable_labels,
     const std::map<std::string, std::string>& labels);
 
 template Family<Gauge>& Registry::Add(
     const std::string& name, const std::string& help,
+    const std::vector<std::string>& variable_labels,
     const std::map<std::string, std::string>& labels);
 
 template Family<Summary>& Registry::Add(
     const std::string& name, const std::string& help,
+    const std::vector<std::string>& variable_labels,
     const std::map<std::string, std::string>& labels);
 
 template Family<Histogram>& Registry::Add(
     const std::string& name, const std::string& help,
+    const std::vector<std::string>& variable_labels,
     const std::map<std::string, std::string>& labels);
 
 }  // namespace prometheus

@@ -29,6 +29,8 @@ int main() {
   auto& packet_counter = BuildCounter()
                              .Name("observed_packets_total")
                              .Help("Number of observed packets")
+                             .Labels({{"label", "value"}})
+                             .LabelNamesVec({"label", "value"})
                              .Register(*registry);
 
   // add and remember dimensional data, incrementing those is very cheap
@@ -66,6 +68,7 @@ int main() {
     // dynamically calling Family<T>.Add() works but is slow and should be
     // avoided
     http_requests_counter.Add({{"method", method}}).Increment();
+    packet_counter.WithLabelValues({"v1", "v2"}).Increment();
   }
   return 0;
 }

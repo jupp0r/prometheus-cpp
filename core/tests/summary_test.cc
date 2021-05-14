@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -90,6 +91,14 @@ TEST(SummaryTest, max_age) {
   test_value(8.0);
   std::this_thread::sleep_for(std::chrono::milliseconds(600));
   test_value(std::numeric_limits<double>::quiet_NaN());
+}
+
+TEST(SummaryTest, construction_with_dynamic_quantile_vector) {
+  auto quantiles = Summary::Quantiles{{0.99, 0.001}};
+  quantiles.push_back({0.5, 0.05});
+
+  Summary summary{quantiles, std::chrono::seconds(1), 2};
+  summary.Observe(8.0);
 }
 
 }  // namespace

@@ -15,21 +15,21 @@ namespace detail {
 class PROMETHEUS_CPP_CORE_EXPORT CKMSQuantiles {
  public:
   struct PROMETHEUS_CPP_CORE_EXPORT Quantile {
-    const double quantile;
-    const double error;
-    const double u;
-    const double v;
-
     Quantile(double quantile, double error);
+
+    double quantile;
+    double error;
+    double u;
+    double v;
   };
 
  private:
   struct Item {
-    /*const*/ double value;
+    double value;
     int g;
-    /*const*/ int delta;
+    int delta;
 
-    explicit Item(double value, int lower_delta, int delta);
+    Item(double value, int lower_delta, int delta);
   };
 
  public:

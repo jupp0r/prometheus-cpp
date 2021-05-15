@@ -24,6 +24,7 @@ ClientMetric Summary::Collect() const {
 
   std::lock_guard<std::mutex> lock(mutex_);
 
+  metric.summary.quantile.reserve(quantiles_.size());
   for (const auto& quantile : quantiles_) {
     auto metricQuantile = ClientMetric::Quantile{};
     metricQuantile.quantile = quantile.quantile;

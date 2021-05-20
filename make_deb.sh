@@ -22,7 +22,8 @@ mkdir -p build/$PACKAGE
 # build
 pushd build
 #cmake .. -DINSTALL_DIR=$PACKAGE/opt/$DEBPACKAGE
-cmake .. -DBUILD_SHARED_LIBS=ON
+#cmake .. -DBUILD_SHARED_LIBS=ON
+cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
 make 
 mkdir -p $PACKAGE
 make DESTDIR=`pwd`/$PACKAGE install

@@ -35,7 +35,7 @@ mkdir -p DEBIAN
 cat << EOF > DEBIAN/control
 Package: $DEBPACKAGE
 Architecture: all
-Version: $DEBVERSION-$DEVREVISION
+Version: $DEBVERSION-$DEBREVISION
 Maintainer: Frank Imerson <frank.imerson@avidbots.com>
 Homepage: https://github.com/avidbots/prometheus-cpp
 Description: This library aims to enable Metrics-Driven Development for C++ services

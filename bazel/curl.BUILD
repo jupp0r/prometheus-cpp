@@ -22,13 +22,17 @@ package(features = ["no_copts_tokenization"])
 
 config_setting(
     name = "windows",
-    values = {"cpu": "x64_windows"},
+    constraint_values = [
+        "@bazel_tools//platforms:windows",
+    ],
     visibility = ["//visibility:private"],
 )
 
 config_setting(
     name = "osx",
-    values = {"cpu": "darwin"},
+    constraint_values = [
+        "@bazel_tools//platforms:osx",
+    ],
     visibility = ["//visibility:private"],
 )
 
@@ -55,6 +59,10 @@ cc_library(
             "-DEFAULTLIB:advapi32.lib",
             "-DEFAULTLIB:crypt32.lib",
             "-DEFAULTLIB:Normaliz.lib",
+        ],
+        "//:osx": [
+            "-framework SystemConfiguration",
+            "-lpthread",
         ],
         "//conditions:default": [
             "-lpthread",

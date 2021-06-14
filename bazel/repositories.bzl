@@ -16,21 +16,21 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_google_googletest",
-        sha256 = "9dc9157a9a1551ec7a7e43daea9a694a0bb5fb8bec81235d8a1e6ef64c716dcb",
-        strip_prefix = "googletest-release-1.10.0",
+        sha256 = "b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5",
+        strip_prefix = "googletest-release-1.11.0",
         urls = [
-            "https://github.com/google/googletest/archive/release-1.10.0.tar.gz",
+            "https://github.com/google/googletest/archive/release-1.11.0.tar.gz",
         ],
     )
 
     maybe(
         http_archive,
         name = "com_github_curl",
-        sha256 = "5f85c4d891ccb14d6c3c701da3010c91c6570c3419391d485d95235253d837d7",
-        strip_prefix = "curl-7.76.1",
+        sha256 = "b0a3428acb60fa59044c4d0baae4e4fc09ae9af1d8a3aa84b2e3fbcd99841f77",
+        strip_prefix = "curl-7.77.0",
         urls = [
-            "https://github.com/curl/curl/releases/download/curl-7_76_1/curl-7.76.1.tar.gz",
-            "https://curl.haxx.se/download/curl-7.76.1.tar.gz",
+            "https://github.com/curl/curl/releases/download/curl-7_77_0/curl-7.77.0.tar.gz",
+            "https://curl.haxx.se/download/curl-7.77.0.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )

@@ -1,23 +1,17 @@
 licenses(["notice"])  # MIT license
 
 config_setting(
-    name = "darwin",
-    values = {"cpu": "darwin"},
-)
-
-config_setting(
-    name = "darwin_x86_64",
-    values = {"cpu": "darwin_x86_64"},
+    name = "osx",
+    constraint_values = [
+        "@bazel_tools//platforms:osx",
+    ],
 )
 
 config_setting(
     name = "windows",
-    values = {"cpu": "x64_windows"},
-)
-
-config_setting(
-    name = "windows_msvc",
-    values = {"cpu": "x64_windows_msvc"},
+    constraint_values = [
+        "@bazel_tools//platforms:windows",
+    ],
 )
 
 cc_library(
@@ -43,13 +37,10 @@ cc_library(
     ],
     linkopts = select({
         ":windows": [],
-        ":windows_msvc": [],
         "//conditions:default": ["-lpthread"],
     }) + select({
-        ":darwin": [],
-        ":darwin_x86_64": [],
+        ":osx": [],
         ":windows": [],
-        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
     textual_hdrs = [
@@ -80,13 +71,10 @@ cc_library(
     ],
     linkopts = select({
         ":windows": [],
-        ":windows_msvc": [],
         "//conditions:default": ["-lpthread"],
     }) + select({
-        ":darwin": [],
-        ":darwin_x86_64": [],
+        ":osx": [],
         ":windows": [],
-        ":windows_msvc": [],
         "//conditions:default": ["-lrt"],
     }),
     visibility = ["//visibility:public"],

@@ -21,7 +21,7 @@ void Summary::Observe(const double value) {
   AlertIfNoFamily();
 }
 
-ClientMetric Summary::Collect() {
+ClientMetric Summary::Collect() const {
   auto metric = ClientMetric{};
 
   std::lock_guard<std::mutex> lock(mutex_);

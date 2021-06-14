@@ -169,7 +169,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
   RetentionBehavior retention_behavior_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
 
   ClientMetric CollectMetric(std::size_t hash, std::shared_ptr<T> metric);
   std::shared_ptr<T> Add(const std::map<std::string, std::string>& labels, std::shared_ptr<T> object);

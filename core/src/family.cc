@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 #include "prometheus/check_names.h"

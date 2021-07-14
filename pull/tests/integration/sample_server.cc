@@ -49,6 +49,17 @@ int main() {
                                     .Help("Number of HTTP requests")
                                     .Register(*registry);
 
+  auto& gauge_requests_counter = BuildGauge()
+                                     .Name("gauge_requests_total")
+                                     .Help("Number of gauge requests")
+                                     .Register(*registry);
+
+  auto& guage_tx_counter =
+      gauge_requests_counter.Add({{"type", "guage"}, {"direction", "tx"}});
+
+  auto& guage_rx_counter =
+      gauge_requests_counter.Add({{"type", "guage"}, {"direction", "rx"}});
+
   // ask the exposer to scrape the registry on incoming HTTP requests
   exposer.RegisterCollectable(registry);
 
@@ -66,6 +77,10 @@ int main() {
     // dynamically calling Family<T>.Add() works but is slow and should be
     // avoided
     http_requests_counter.Add({{"method", method}}).Increment();
+
+    guage_tx_counter.SetToCurrentTime();
+    guage_rx_counter.Increment();
+
   }
   return 0;
 }

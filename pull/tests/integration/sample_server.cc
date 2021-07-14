@@ -1,3 +1,4 @@
+#include <iostream>
 #include <array>
 #include <chrono>
 #include <cstdlib>
@@ -7,6 +8,8 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
+#include "prometheus/gauge.h"
+#include "prometheus/histogram.h"
 #include "prometheus/exposer.h"
 #include "prometheus/family.h"
 #include "prometheus/registry.h"
@@ -60,12 +63,28 @@ int main() {
   auto& guage_rx_counter =
       gauge_requests_counter.Add({{"type", "guage"}, {"direction", "rx"}});
 
+
+  auto& histogram_family = BuildHistogram()
+                              .Name("name_histogram")
+                              .Help("help histogram")
+                              .Register(*registry);
+
+  const int number_of_buckets = 10;
+  auto bucket_boundaries = Histogram::BucketBoundaries{};
+  for (auto i = 0; i < number_of_buckets; i += 1) {
+    bucket_boundaries.push_back(i);
+  }
+
+  auto& histogram = histogram_family.Add({}, bucket_boundaries);
+
   // ask the exposer to scrape the registry on incoming HTTP requests
   exposer.RegisterCollectable(registry);
 
   for (;;) {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     const auto random_value = std::rand();
+    std::cout << "random_value: " << random_value << ", random_value%10: "
+    << random_value%10 << std::endl;
 
     if (random_value & 1) tcp_rx_counter.Increment();
     if (random_value & 2) tcp_tx_counter.Increment();
@@ -81,6 +100,7 @@ int main() {
     guage_tx_counter.SetToCurrentTime();
     guage_rx_counter.Increment();
 
+    histogram.Observe(random_value % 10);
   }
   return 0;
 }

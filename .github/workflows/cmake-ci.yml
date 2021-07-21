@@ -27,13 +27,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            %LocalAppData%\vcpkg\archives
+            %LOCALAPPDATA%\vcpkg\archives
             ~/.cache/vcpkg/archives
           key: vcpkg-${{ matrix.os }}
 
       - name: Install vcpkg dependencies
         if: matrix.dependencies == 'vcpkg'
         run: vcpkg install benchmark civetweb curl[core] gtest zlib
+
+      - name: "localappdata"
+        if: matrix.dependencies == 'vcpkg' && runner.os == 'Windows'
+        run: dir -r ${Env:LOCALAPPDATA}\vcpkg\archives
 
       - name: Generate German locale on Ubuntu
         if: runner.os == 'Linux'

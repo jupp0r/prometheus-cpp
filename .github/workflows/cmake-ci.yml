@@ -26,7 +26,9 @@ jobs:
         if: matrix.dependencies == 'vcpkg'
         uses: actions/cache@v2
         with:
-          path: "~/.cache/vcpkg/archives"
+          path: |
+            %LocalAppData%\vcpkg\archives
+            ~/.cache/vcpkg/archives
           key: vcpkg-${{ matrix.os }}
 
       - name: Install vcpkg dependencies

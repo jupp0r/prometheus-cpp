@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cstddef>
 #include <cstring>
 #include <iterator>
 #include <string>

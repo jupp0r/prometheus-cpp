@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <iterator>
 #include <limits>
 #include <memory>
-#include <ostream>
 #include <stdexcept>
 #include <utility>
 

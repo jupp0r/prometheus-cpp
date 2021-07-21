@@ -77,7 +77,11 @@ jobs:
         working-directory: "${{ github.workspace }}/_build"
 
       - name: "Test Release"
-        run: ctest -C Debug -V -LE Benchmark
+        run: ctest -C Release -V -LE Benchmark
+        working-directory: "${{ github.workspace }}/_build"
+
+      - name: "Run Benchmark"
+        run: ctest -C Release -V -L Benchmark
         working-directory: "${{ github.workspace }}/_build"
 
       - name: "Install Debug"

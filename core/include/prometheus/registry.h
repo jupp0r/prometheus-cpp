@@ -17,6 +17,7 @@ class Counter;
 class Gauge;
 class Histogram;
 class Summary;
+class ManualSummary;
 
 namespace detail {
 
@@ -91,6 +92,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
   std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
   std::vector<std::unique_ptr<Family<Summary>>> summaries_;
+  std::vector<std::unique_ptr<Family<ManualSummary>>> manual_summaries_;
   mutable std::mutex mutex_;
 };
 

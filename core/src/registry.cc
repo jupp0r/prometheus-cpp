@@ -10,6 +10,7 @@
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/summary.h"
+#include "prometheus/manual_summary.h"
 
 namespace prometheus {
 
@@ -50,6 +51,7 @@ std::vector<MetricFamily> Registry::Collect() const {
   CollectAll(results, gauges_);
   CollectAll(results, histograms_);
   CollectAll(results, summaries_);
+  CollectAll(results, manual_summaries_);
 
   return results;
 }
@@ -75,23 +77,33 @@ std::vector<std::unique_ptr<Family<Summary>>>& Registry::GetFamilies() {
 }
 
 template <>
+std::vector<std::unique_ptr<Family<ManualSummary>>>& Registry::GetFamilies() {
+  return manual_summaries_;
+}
+
+template <>
 bool Registry::NameExistsInOtherType<Counter>(const std::string& name) const {
-  return FamilyNameExists(name, gauges_, histograms_, summaries_);
+  return FamilyNameExists(name, gauges_, histograms_, summaries_, manual_summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Gauge>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, histograms_, summaries_);
+  return FamilyNameExists(name, counters_, histograms_, summaries_, manual_summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Histogram>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, gauges_, summaries_);
+  return FamilyNameExists(name, counters_, gauges_, summaries_, manual_summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, gauges_, histograms_);
+  return FamilyNameExists(name, counters_, gauges_, histograms_, manual_summaries_);
+}
+
+template <>
+bool Registry::NameExistsInOtherType<ManualSummary>(const std::string& name) const {
+  return FamilyNameExists(name, counters_, gauges_, histograms_, summaries_);
 }
 
 template <typename T>
@@ -146,6 +158,10 @@ template Family<Gauge>& Registry::Add(
     const std::map<std::string, std::string>& labels);
 
 template Family<Summary>& Registry::Add(
+    const std::string& name, const std::string& help,
+    const std::map<std::string, std::string>& labels);
+
+template Family<ManualSummary>& Registry::Add(
     const std::string& name, const std::string& help,
     const std::map<std::string, std::string>& labels);
 

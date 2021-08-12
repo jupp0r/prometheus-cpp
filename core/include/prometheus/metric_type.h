@@ -8,6 +8,7 @@ enum class MetricType {
   Summary,
   Untyped,
   Histogram,
+  ManualSummary,
 };
 
 }  // namespace prometheus

@@ -40,7 +40,7 @@ struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
   };
   Gauge gauge;
 
-  // Summary
+  // Summary and ManualSummary
 
   struct Quantile {
     double quantile = 0.0;

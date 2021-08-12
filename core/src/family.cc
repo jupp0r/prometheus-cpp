@@ -12,6 +12,7 @@
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/summary.h"
+#include "prometheus/manual_summary.h"
 
 namespace prometheus {
 
@@ -96,6 +97,7 @@ const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
 
 template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() const {
+  auto current_ts = std::time(nullptr);
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (metrics_.empty()) {
@@ -108,7 +110,10 @@ std::vector<MetricFamily> Family<T>::Collect() const {
   family.type = T::metric_type;
   family.metric.reserve(metrics_.size());
   for (const auto& m : metrics_) {
-    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    if (!m.second->Expired(current_ts)) {
+      family.metric.push_back(
+          std::move(CollectMetric(m.first, m.second.get())));
+    }
   }
   return {family};
 }
@@ -133,5 +138,6 @@ template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Summary>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<ManualSummary>;
 
 }  // namespace prometheus

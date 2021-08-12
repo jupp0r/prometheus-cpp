@@ -194,6 +194,7 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
       }
       break;
     case MetricType::Summary:
+    case MetricType::ManualSummary:
       out << "# TYPE " << family.name << " summary\n";
       for (auto& metric : family.metric) {
         SerializeSummary(out, family, metric);

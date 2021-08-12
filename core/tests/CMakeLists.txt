@@ -9,6 +9,7 @@ add_executable(prometheus_core_test
   registry_test.cc
   serializer_test.cc
   summary_test.cc
+  manual_summary_test.cc
   text_serializer_test.cc
   utils_test.cc
 )

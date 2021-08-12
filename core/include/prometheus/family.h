@@ -56,7 +56,8 @@ namespace prometheus {
 /// Prometheus, but can serve as both a style-guide and a collection of best
 /// practices: https://prometheus.io/docs/practices/naming/
 ///
-/// \tparam T One of the metric types Counter, Gauge, Histogram or Summary.
+/// \tparam T One of the metric types Counter, Gauge, Histogram, Summary
+// or ManualSummary.
 template <typename T>
 class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
  public:
@@ -104,7 +105,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// dimensional data. The function does nothing, if the same set of labels
   /// already exists.
   /// \param args Arguments are passed to the constructor of metric type T. See
-  /// Counter, Gauge, Histogram or Summary for required constructor arguments.
+  /// Counter, Gauge, Histogram, Summary or ManualSummary for required constructor
+  // arguments.
   /// \return Return the newly created dimensional data or - if a same set of
   /// labels already exists - the already existing dimensional data.
   /// \throw std::runtime_exception on invalid label names.

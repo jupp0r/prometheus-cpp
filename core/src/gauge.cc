@@ -14,12 +14,16 @@ void Gauge::Decrement() { Decrement(1.0); }
 
 void Gauge::Decrement(const double value) { Change(-1.0 * value); }
 
-void Gauge::Set(const double value) { value_.store(value); }
+void Gauge::Set(const double value) {
+  value_.store(value);
+  UpdateTS();
+}
 
 void Gauge::Change(const double value) {
   auto current = value_.load();
   while (!value_.compare_exchange_weak(current, current + value))
     ;
+  UpdateTS();
 }
 
 void Gauge::SetToCurrentTime() {

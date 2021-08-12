@@ -5,6 +5,7 @@
 #include "prometheus/client_metric.h"
 #include "prometheus/detail/builder.h"  // IWYU pragma: export
 #include "prometheus/detail/core_export.h"
+#include "prometheus/metric.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -21,7 +22,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Gauge {
+class PROMETHEUS_CPP_CORE_EXPORT Gauge : public Metric {
  public:
   static const MetricType metric_type{MetricType::Gauge};
 

@@ -5,10 +5,10 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "civetweb",
-        strip_prefix = "civetweb-1.14",
-        sha256 = "d02d7ab091c8b4edf21fc13a03c6db08a8a8b8605e35e0073251b9d88443c653",
+        strip_prefix = "civetweb-1.15",
+        sha256 = "90a533422944ab327a4fbb9969f0845d0dba05354f9cacce3a5005fa59f593b9",
         urls = [
-            "https://github.com/civetweb/civetweb/archive/v1.14.tar.gz",
+            "https://github.com/civetweb/civetweb/archive/v1.15.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )

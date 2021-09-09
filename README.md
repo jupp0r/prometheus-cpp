@@ -92,7 +92,7 @@ int main() {
 
 ## Requirements
 
-Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successfully tested with GNU GCC 4.8 on Ubuntu Trusty and Visual Studio 2017 (but Visual Studio 2015 should work, too).
+Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successfully tested with GNU GCC 7.4 on Ubuntu Bionic (18.04) and Visual Studio 2017 (but Visual Studio 2015 should work, too).
 
 ## Building
 
@@ -102,11 +102,15 @@ and [bazel](https://bazel.io). Both are tested in CI and should work
 on master and for all releases.
 
 In case these instructions don't work for you, looking at
-the [travis build script](.travis.yml) might help.
+the [GitHub Workflows](.github/workflows) might help.
 
 ### via CMake
 
-For CMake builds don't forget to fetch the submodules first. Then build as usual.
+For CMake builds don't forget to fetch the submodules first. Please note that
+[zlib](https://zlib.net/) and [libcurl](https://curl.se/) are not provided by
+the included submodules. In the example below their usage is disabled.
+
+Then build as usual.
 
 ``` shell
 # fetch third-party dependencies
@@ -117,17 +121,16 @@ mkdir _build
 cd _build
 
 # run cmake
-cmake .. -DBUILD_SHARED_LIBS=ON # or OFF for static libraries
+cmake .. -DBUILD_SHARED_LIBS=ON -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF
 
 # build
-make -j 4
+cmake --build . --parallel 4
 
 # run tests
 ctest -V
 
 # install the libraries and headers
-mkdir -p deploy
-make DESTDIR=`pwd`/deploy install
+cmake --install .
 ```
 
 ### via Bazel

@@ -10,11 +10,8 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          echo "deb http://deb.debian.org/debian experimental main" > /etc/apt/sources.list.d/experimental.list
           apt-get update
-          apt-get install -y --no-install-recommends ca-certificates clang-12 cmake git libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
-          apt-get install -y --no-install-recommends iwyu
-          apt-get -t experimental install -y iwyu # combine all three lines once iwyu 8.16 entered Debian Sid
+          apt-get install -y --no-install-recommends ca-certificates clang-12 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
 
       - name: Checkout source
         uses: actions/checkout@v2

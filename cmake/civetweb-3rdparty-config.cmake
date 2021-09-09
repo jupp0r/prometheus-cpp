@@ -32,6 +32,7 @@ target_compile_definitions(civetweb
     NO_CGI
     NO_CACHING
     NO_FILES
+    SOCKET_TIMEOUT_QUANTUM=200
 )
 
 target_compile_options(civetweb

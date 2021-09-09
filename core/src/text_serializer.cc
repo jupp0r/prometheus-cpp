@@ -1,20 +1,10 @@
 #include "prometheus/text_serializer.h"
 
-#include <array>
 #include <cmath>
+#include <limits>
 #include <locale>
 #include <ostream>
-#include <stdexcept>
 #include <string>
-
-#if __cpp_lib_to_chars >= 201611L
-#include <charconv>
-#include <stdexcept>
-#include <system_error>
-#else
-#include <cstdio>
-#include <limits>
-#endif
 
 #include "prometheus/client_metric.h"
 #include "prometheus/metric_family.h"
@@ -31,26 +21,7 @@ void WriteValue(std::ostream& out, double value) {
   } else if (std::isinf(value)) {
     out << (value < 0 ? "-Inf" : "+Inf");
   } else {
-    std::array<char, 128> buffer;
-
-#if __cpp_lib_to_chars >= 201611L
-    auto [ptr, ec] =
-        std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
-    if (ec != std::errc()) {
-      throw std::runtime_error("Could not convert double to string: " +
-                               std::make_error_code(ec).message());
-    }
-    out.write(buffer.data(), ptr - buffer.data());
-#else
-    auto wouldHaveWritten =
-        std::snprintf(buffer.data(), buffer.size(), "%.*g",
-                      std::numeric_limits<double>::max_digits10 - 1, value);
-    if (wouldHaveWritten <= 0 ||
-        static_cast<std::size_t>(wouldHaveWritten) >= buffer.size()) {
-      throw std::runtime_error("Could not convert double to string");
-    }
-    out.write(buffer.data(), wouldHaveWritten);
-#endif
+    out << value;
   }
 }
 
@@ -217,11 +188,17 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
 
 void TextSerializer::Serialize(std::ostream& out,
                                const std::vector<MetricFamily>& metrics) const {
-  std::locale saved_locale = out.getloc();
+  auto saved_locale = out.getloc();
+  auto saved_precision = out.precision();
+
   out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
   for (auto& family : metrics) {
     SerializeFamily(out, family);
   }
+
   out.imbue(saved_locale);
+  out.precision(saved_precision);
 }
 }  // namespace prometheus

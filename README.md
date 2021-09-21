@@ -210,7 +210,7 @@ Consuming prometheus-cpp via CMake is the preferred way because all the dependen
 between the three prometheus-cpp libraries are handled correctly.
 
 The `cmake/project-import` directory contains an
-example project and minimal [CMakeLists.txt](cmake/project-import/CMakeLists.txt).
+example project and minimal [CMakeLists.txt](cmake/project-import-cmake/CMakeLists.txt).
 
 ### vcpkg
 

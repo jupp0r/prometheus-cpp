@@ -24,6 +24,8 @@ void Histogram::Observe(const double value) {
       std::find_if(
           std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
           [value](const double boundary) { return boundary >= value; })));
+
+  std::lock_guard<std::mutex> lock(mutex_);
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
 }
@@ -36,6 +38,7 @@ void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
         "the number of buckets in the histogram.");
   }
 
+  std::lock_guard<std::mutex> lock(mutex_);
   sum_.Increment(sum_of_values);
 
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
@@ -44,6 +47,8 @@ void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
 }
 
 ClientMetric Histogram::Collect() const {
+  std::lock_guard<std::mutex> lock(mutex_);
+
   auto metric = ClientMetric{};
 
   auto cumulative_count = 0ULL;

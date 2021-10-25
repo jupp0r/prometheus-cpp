@@ -17,9 +17,9 @@ void Gauge::Decrement(const double value) { Change(-1.0 * value); }
 void Gauge::Set(const double value) { value_.store(value); }
 
 void Gauge::Change(const double value) {
-  auto current = value_.load();
-  while (!value_.compare_exchange_weak(current, current + value))
-    ;
+  do {
+    auto current = value_.load();
+  } while (!value_.compare_exchange_weak(current, current + value));
 }
 
 void Gauge::SetToCurrentTime() {

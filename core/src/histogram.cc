@@ -28,6 +28,7 @@ void Histogram::Observe(const double value) {
   std::lock_guard<std::mutex> lock(mutex_);
   sum_.Increment(value);
   bucket_counts_[bucket_index].Increment();
+  UpdateTS();
 }
 
 void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
@@ -44,6 +45,7 @@ void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
     bucket_counts_[i].Increment(bucket_increments[i]);
   }
+  UpdateTS();
 }
 
 ClientMetric Histogram::Collect() const {

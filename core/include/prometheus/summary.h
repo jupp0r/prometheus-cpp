@@ -10,6 +10,7 @@
 #include "prometheus/detail/ckms_quantiles.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/time_window_quantiles.h"
+#include "prometheus/metric.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -38,7 +39,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Summary {
+class PROMETHEUS_CPP_CORE_EXPORT Summary : public Metric {
  public:
   using Quantiles = std::vector<detail::CKMSQuantiles::Quantile>;
 

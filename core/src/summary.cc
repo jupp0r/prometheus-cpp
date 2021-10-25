@@ -17,6 +17,7 @@ void Summary::Observe(const double value) {
   count_ += 1;
   sum_ += value;
   quantile_values_.insert(value);
+  UpdateTS();
 }
 
 ClientMetric Summary::Collect() const {

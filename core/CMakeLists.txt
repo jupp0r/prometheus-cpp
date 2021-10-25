@@ -7,6 +7,7 @@ add_library(core
   src/detail/time_window_quantiles.cc
   src/detail/utils.cc
   src/family.cc
+  src/metric.cc
   src/gauge.cc
   src/histogram.cc
   src/registry.cc

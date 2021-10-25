@@ -8,6 +8,7 @@
 #include "prometheus/detail/builder.h"  // IWYU pragma: export
 #include "prometheus/detail/core_export.h"
 #include "prometheus/gauge.h"
+#include "prometheus/metric.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -28,7 +29,7 @@ namespace prometheus {
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
-class PROMETHEUS_CPP_CORE_EXPORT Histogram {
+class PROMETHEUS_CPP_CORE_EXPORT Histogram : public Metric {
  public:
   using BucketBoundaries = std::vector<double>;
 

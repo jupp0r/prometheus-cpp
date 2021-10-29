@@ -19,5 +19,5 @@ jobs:
       - name: "Configure for Windows with internal dependencies"
         run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_BUILD_TYPE=Debug -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
 
-      - name: Run MSVC Code Analysis
+      - name: asdf
         uses: microsoft/msvc-code-analysis-action

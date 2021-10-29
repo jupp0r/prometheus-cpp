@@ -21,7 +21,3 @@ jobs:
 
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action
-        id: run-analysis
-        with:
-          cmakeBuildDirectory: "${{ github.workspace }}/_build"
-          buildConfiguration: "Debug"

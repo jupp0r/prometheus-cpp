@@ -1,0 +1,57 @@
+name: Analysis
+on: [push, pull_request]
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Mount vcpkg cache
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/vcpkg/archives"
+          key: vcpkg-${{ runner.os }}
+
+      - name: Install vcpkg dependencies
+        run: vcpkg install benchmark civetweb curl[core] gtest zlib
+
+      - name: Generate German locale on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen de_DE.UTF-8 # used by SerializerTest
+
+      - name: Install ninja on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y ninja-build
+
+      - name: "CMake Configure for Unix with vcpkg dependencies"
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -GNinja -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+
+      - name: Run MSVC Code Analysis
+        uses: microsoft/msvc-code-analysis-action
+        # Provide a unique ID to access the sarif output path
+        id: run-analysis
+        with:
+          cmakeBuildDirectory: ${{ github.workspace }}/_build
+          # Ruleset file that will determine what checks will be run
+          ruleset: NativeRecommendedRules.ruleset
+
+      # Upload SARIF file to GitHub Code Scanning Alerts
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.run-analysis.outputs.sarif }}
+
+      # Upload SARIF file as an Artifact to download and view
+      - name: Upload SARIF as an Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sarif-file
+          path: ${{ steps.run-analysis.outputs.sarif }}

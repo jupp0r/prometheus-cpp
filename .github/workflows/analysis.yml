@@ -18,3 +18,13 @@ jobs:
 
       - name: "Configure for Windows with internal dependencies"
         run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_BUILD_TYPE=Debug -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+
+      - name: Run MSVC Code Analysis
+        uses: microsoft/msvc-code-analysis-action
+        # Provide a unique ID to access the sarif output path
+        id: run-analysis
+        with:
+          cmakeBuildDirectory: ${{ github.workspace }}/_build
+          buildConfiguration: Debug
+          # Ruleset file that will determine what checks will be run
+          ruleset: NativeRecommendedRules.ruleset

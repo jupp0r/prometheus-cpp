@@ -1,4 +1,4 @@
-name: Analysis
+name: analysis
 on: [push, pull_request]
 
 jobs:

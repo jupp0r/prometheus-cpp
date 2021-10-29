@@ -4,35 +4,20 @@ on: [push, pull_request]
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Mount vcpkg cache
-        uses: actions/cache@v2
-        with:
-          path: "~/.cache/vcpkg/archives"
-          key: vcpkg-${{ runner.os }}
-
-      - name: Install vcpkg dependencies
-        run: vcpkg install benchmark civetweb curl[core] gtest zlib
-
-      - name: Generate German locale on Ubuntu
-        if: runner.os == 'Linux'
+      - name: Checkout submodules
+        shell: bash
         run: |
-          sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
-          sudo apt-get update
-          sudo apt-get install -y locales
-          sudo locale-gen de_DE.UTF-8 # used by SerializerTest
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ninja on Ubuntu
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y ninja-build
-
-      - name: "CMake Configure for Unix with vcpkg dependencies"
-        run: cmake -DUSE_THIRDPARTY_LIBRARIES=OFF "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -GNinja -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+      - name: "Configure for Windows with internal dependencies"
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
 
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action

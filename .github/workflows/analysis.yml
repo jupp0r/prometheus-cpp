@@ -2,7 +2,7 @@ name: Analysis
 on: [push, pull_request]
 
 jobs:
-  analyze:
+  build:
     name: Analyze
     runs-on: windows-latest
     steps:

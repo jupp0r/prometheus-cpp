@@ -23,6 +23,13 @@ static const char CONTENT_TYPE[] =
 
 class CurlWrapper {
  public:
+  CurlWrapper() noexcept = default;
+
+  CurlWrapper(const CurlWrapper&) = delete;
+  CurlWrapper(CurlWrapper&&) = delete;
+  CurlWrapper& operator=(const CurlWrapper&) = delete;
+  CurlWrapper& operator=(CurlWrapper&&) = delete;
+
   ~CurlWrapper() { curl_easy_cleanup(curl_); }
 
   CURL* curl() {
@@ -36,9 +43,9 @@ class CurlWrapper {
   CURL* curl_ = nullptr;
 };
 
-Gateway::Gateway(const std::string host, const std::string port,
-                 const std::string jobname, const Labels& labels,
-                 const std::string username, const std::string password) {
+Gateway::Gateway(const std::string& host, const std::string& port,
+                 const std::string& jobname, const Labels& labels,
+                 const std::string& username, const std::string& password) {
   /* In windows, this will init the winsock stuff */
   curl_global_init(CURL_GLOBAL_ALL);
   curlWrapper_ = detail::make_unique<CurlWrapper>();

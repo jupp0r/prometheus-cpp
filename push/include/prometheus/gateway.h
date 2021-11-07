@@ -19,9 +19,15 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
   using Labels = std::map<std::string, std::string>;
 
-  Gateway(const std::string host, const std::string port,
-          const std::string jobname, const Labels& labels = {},
-          const std::string username = {}, const std::string password = {});
+  Gateway(const std::string& host, const std::string& port,
+          const std::string& jobname, const Labels& labels = {},
+          const std::string& username = {}, const std::string& password = {});
+
+  Gateway(const Gateway&) = delete;
+  Gateway(Gateway&&) = delete;
+  Gateway& operator=(const Gateway&) = delete;
+  Gateway& operator=(Gateway&&) = delete;
+
   ~Gateway();
 
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,

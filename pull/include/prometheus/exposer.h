@@ -26,6 +26,12 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
   explicit Exposer(std::vector<std::string> options,
                    const CivetCallbacks* callbacks = nullptr);
   ~Exposer();
+
+  Exposer(const Exposer&) = delete;
+  Exposer(Exposer&&) = delete;
+  Exposer& operator=(const Exposer&) = delete;
+  Exposer& operator=(Exposer&&) = delete;
+
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                            const std::string& uri = std::string("/metrics"));
 

@@ -61,6 +61,18 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// \param insert_behavior How to handle families with the same name.
   explicit Registry(InsertBehavior insert_behavior = InsertBehavior::Merge);
 
+  /// \brief Deleted copy constructor.
+  Registry(const Registry&) = delete;
+
+  /// \brief Deleted copy assignment.
+  Registry& operator=(const Registry&) = delete;
+
+  /// \brief Deleted move constructor.
+  Registry(Registry&&) = delete;
+
+  /// \brief Deleted move assignment.
+  Registry& operator=(Registry&&) = delete;
+
   /// \brief name Destroys a registry.
   ~Registry() override;
 

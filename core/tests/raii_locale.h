@@ -10,6 +10,11 @@ class RAIILocale {
 
   ~RAIILocale() { std::locale::global(savedLocale_); }
 
+  RAIILocale(const RAIILocale&) = delete;
+  RAIILocale(RAIILocale&&) = delete;
+  RAIILocale& operator=(const RAIILocale&) = delete;
+  RAIILocale& operator=(RAIILocale&&) = delete;
+
  private:
   const std::locale savedLocale_;
 };

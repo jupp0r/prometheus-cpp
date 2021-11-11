@@ -18,6 +18,11 @@ class Endpoint {
   explicit Endpoint(CivetServer& server, std::string uri);
   ~Endpoint();
 
+  Endpoint(const Endpoint&) = delete;
+  Endpoint(Endpoint&&) = delete;
+  Endpoint& operator=(const Endpoint&) = delete;
+  Endpoint& operator=(Endpoint&&) = delete;
+
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable);
   void RegisterAuth(
       std::function<bool(const std::string&, const std::string&)> authCB,

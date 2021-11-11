@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <mutex>
+#include <stdexcept>
 #include <vector>
 
 #include "prometheus/client_metric.h"
@@ -63,6 +65,27 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// Also increments the total sum of all observations by the given value.
   void ObserveMultiple(const std::vector<double>& bucket_increments,
                        const double sum_of_values);
+
+  /// Same as above with custom iterator type.
+  template <class InputIt>
+  void ObserveMultiple(InputIt from, InputIt end, const double sum_of_values) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    sum_.Increment(sum_of_values);
+
+    for (std::size_t i{0}; i < bucket_counts_.size(); ++i, ++from) {
+      if (from == end) {
+        throw std::length_error(
+            "The size of bucket_increments should be equal to "
+            "the number of buckets in the histogram.");
+      }
+      bucket_counts_[i].Increment(*from);
+    }
+    if (from != end) {
+      throw std::length_error(
+          "The size of bucket_increments should be equal to "
+          "the number of buckets in the histogram.");
+    }
+  }
 
   /// \brief Get the current value of the histogram.
   ///

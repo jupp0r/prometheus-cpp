@@ -62,7 +62,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   explicit Registry(InsertBehavior insert_behavior = InsertBehavior::Merge);
 
   /// \brief name Destroys a registry.
-  ~Registry();
+  ~Registry() override;
 
   /// \brief Returns a list of metrics and their samples.
   ///

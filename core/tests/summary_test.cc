@@ -75,7 +75,7 @@ TEST(SummaryTest, max_age) {
                   2};
   summary.Observe(8.0);
 
-  static const auto test_value = [&summary](double ref) {
+  const auto test_value = [&summary](double ref) {
     auto metric = summary.Collect();
     auto s = metric.summary;
     ASSERT_EQ(s.quantile.size(), 1U);

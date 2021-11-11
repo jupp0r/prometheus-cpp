@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <chrono>
+#include <cstdint>
 #include <random>
 #include <string>
 #include <vector>
@@ -11,8 +12,9 @@
 
 using prometheus::Histogram;
 
-static Histogram::BucketBoundaries CreateLinearBuckets(double start, double end,
-                                                       double step) {
+static Histogram::BucketBoundaries CreateLinearBuckets(std::int64_t start,
+                                                       std::int64_t end,
+                                                       std::int64_t step) {
   auto bucket_boundaries = Histogram::BucketBoundaries{};
   for (auto i = start; i < end; i += step) {
     bucket_boundaries.push_back(i);

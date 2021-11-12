@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -12,6 +11,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/detail/future_std.h"
+#include "prometheus/detail/utils.h"
 #include "prometheus/metric_family.h"
 
 // IWYU pragma: no_include "prometheus/counter.h"
@@ -142,16 +142,17 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   std::vector<MetricFamily> Collect() const override;
 
  private:
-  std::unordered_map<std::size_t, std::unique_ptr<T>> metrics_;
-  std::unordered_map<std::size_t, std::map<std::string, std::string>> labels_;
-  std::unordered_map<T*, std::size_t> labels_reverse_lookup_;
+  std::unordered_map<std::map<std::string, std::string>, std::unique_ptr<T>,
+                     detail::LabelHasher>
+      metrics_;
 
   const std::string name_;
   const std::string help_;
   const std::map<std::string, std::string> constant_labels_;
   mutable std::mutex mutex_;
 
-  ClientMetric CollectMetric(std::size_t hash, T* metric) const;
+  ClientMetric CollectMetric(const std::map<std::string, std::string>& labels,
+                             T* metric) const;
   T& Add(const std::map<std::string, std::string>& labels,
          std::unique_ptr<T> object);
 };

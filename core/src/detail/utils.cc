@@ -8,7 +8,8 @@ namespace prometheus {
 
 namespace detail {
 
-std::size_t hash_labels(const std::map<std::string, std::string>& labels) {
+std::size_t LabelHasher::operator()(
+    const std::map<std::string, std::string>& labels) const {
   size_t seed = 0;
   for (auto& label : labels) {
     hash_combine(&seed, label.first, label.second);

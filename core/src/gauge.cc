@@ -17,9 +17,11 @@ void Gauge::Decrement(const double value) { Change(-1.0 * value); }
 void Gauge::Set(const double value) { value_.store(value); }
 
 void Gauge::Change(const double value) {
+  // C++ 20 will add std::atomic::fetch_add support for floating point types
   auto current = value_.load();
-  while (!value_.compare_exchange_weak(current, current + value))
-    ;
+  while (!value_.compare_exchange_weak(current, current + value)) {
+    // intentionally empty block
+  }
 }
 
 void Gauge::SetToCurrentTime() {

@@ -26,11 +26,11 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_github_curl",
-        sha256 = "ed936c0b02c06d42cf84b39dd12bb14b62d77c7c4e875ade022280df5dcc81d7",
-        strip_prefix = "curl-7.78.0",
+        sha256 = "dab997c9b08cb4a636a03f2f7f985eaba33279c1c52692430018fae4a4878dc7",
+        strip_prefix = "curl-7.80.0",
         urls = [
-            "https://github.com/curl/curl/releases/download/curl-7_78_0/curl-7.78.0.tar.gz",
-            "https://curl.haxx.se/download/curl-7.78.0.tar.gz",
+            "https://github.com/curl/curl/releases/download/curl-7_80_0/curl-7.80.0.tar.gz",
+            "https://curl.haxx.se/download/curl-7.80.0.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )

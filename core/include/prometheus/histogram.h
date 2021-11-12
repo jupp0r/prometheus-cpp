@@ -4,10 +4,8 @@
 #include <vector>
 
 #include "prometheus/client_metric.h"
-#include "prometheus/counter.h"
 #include "prometheus/detail/builder.h"  // IWYU pragma: export
 #include "prometheus/detail/core_export.h"
-#include "prometheus/gauge.h"
 #include "prometheus/metric_type.h"
 
 namespace prometheus {
@@ -70,8 +68,8 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
  private:
   const BucketBoundaries bucket_boundaries_;
   mutable std::mutex mutex_;
-  std::vector<Counter> bucket_counts_;
-  Gauge sum_;
+  std::vector<double> bucket_counts_;
+  double sum_;
 };
 
 /// \brief Return a builder to configure and register a Histogram metric.

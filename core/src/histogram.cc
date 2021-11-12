@@ -12,7 +12,9 @@
 namespace prometheus {
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {
+    : bucket_boundaries_{buckets},
+      bucket_counts_(buckets.size() + 1u, 0.0),
+      sum_{0.0} {
   assert(std::is_sorted(std::begin(bucket_boundaries_),
                         std::end(bucket_boundaries_)));
 }
@@ -26,8 +28,10 @@ void Histogram::Observe(const double value) {
           [value](const double boundary) { return boundary >= value; })));
 
   std::lock_guard<std::mutex> lock(mutex_);
-  sum_.Increment(value);
-  bucket_counts_[bucket_index].Increment();
+  sum_ += value;
+  if (!(value < 0.0)) {
+    bucket_counts_[bucket_index]++;
+  }
 }
 
 void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
@@ -39,10 +43,12 @@ void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
-  sum_.Increment(sum_of_values);
+  sum_ += sum_of_values;
 
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
-    bucket_counts_[i].Increment(bucket_increments[i]);
+    if (!(bucket_increments[i] < 0.0)) {
+      bucket_counts_[i] += bucket_increments[i];
+    }
   }
 }
 
@@ -54,7 +60,7 @@ ClientMetric Histogram::Collect() const {
   auto cumulative_count = 0ULL;
   metric.histogram.bucket.reserve(bucket_counts_.size());
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
-    cumulative_count += bucket_counts_[i].Value();
+    cumulative_count += bucket_counts_[i];
     auto bucket = ClientMetric::Bucket{};
     bucket.cumulative_count = cumulative_count;
     bucket.upper_bound = (i == bucket_boundaries_.size()
@@ -63,7 +69,7 @@ ClientMetric Histogram::Collect() const {
     metric.histogram.bucket.push_back(std::move(bucket));
   }
   metric.histogram.sample_count = cumulative_count;
-  metric.histogram.sample_sum = sum_.Value();
+  metric.histogram.sample_sum = sum_;
 
   return metric;
 }

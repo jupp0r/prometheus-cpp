@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -50,6 +51,7 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
 
   std::unique_ptr<CivetServer> server_;
   std::vector<std::unique_ptr<detail::Endpoint>> endpoints_;
+  std::mutex mutex_;
 };
 
 }  // namespace prometheus

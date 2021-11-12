@@ -27,6 +27,7 @@ Exposer::~Exposer() = default;
 
 void Exposer::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                                   const std::string& uri) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto& endpoint = GetEndpointForUri(uri);
   endpoint.RegisterCollectable(collectable);
 }
@@ -34,12 +35,14 @@ void Exposer::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 void Exposer::RegisterAuth(
     std::function<bool(const std::string&, const std::string&)> authCB,
     const std::string& realm, const std::string& uri) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto& endpoint = GetEndpointForUri(uri);
   endpoint.RegisterAuth(std::move(authCB), realm);
 }
 
 void Exposer::RemoveCollectable(const std::weak_ptr<Collectable>& collectable,
                                 const std::string& uri) {
+  std::lock_guard<std::mutex> lock{mutex_};
   auto& endpoint = GetEndpointForUri(uri);
   endpoint.RemoveCollectable(collectable);
 }

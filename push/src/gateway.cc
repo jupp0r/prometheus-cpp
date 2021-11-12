@@ -55,6 +55,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
     }
   }
 
+  std::lock_guard<std::mutex> lock{mutex_};
   CleanupStalePointers(collectables_);
   collectables_.push_back(std::make_pair(collectable, ss.str()));
 }
@@ -73,6 +74,7 @@ int Gateway::PushAdd() { return push(detail::HttpMethod::Put); }
 int Gateway::push(detail::HttpMethod method) {
   const auto serializer = TextSerializer{};
 
+  std::lock_guard<std::mutex> lock{mutex_};
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
     if (!collectable) {
@@ -104,6 +106,7 @@ std::future<int> Gateway::async_push(detail::HttpMethod method) {
   const auto serializer = TextSerializer{};
   std::vector<std::future<int>> futures;
 
+  std::lock_guard<std::mutex> lock{mutex_};
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
     if (!collectable) {

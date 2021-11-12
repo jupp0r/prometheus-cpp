@@ -3,6 +3,7 @@
 #include <future>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -57,6 +58,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string jobUri_;
   std::string labels_;
   std::unique_ptr<detail::CurlWrapper> curlWrapper_;
+  std::mutex mutex_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;

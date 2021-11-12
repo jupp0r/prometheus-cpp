@@ -3,17 +3,19 @@
 #include <future>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "prometheus/collectable.h"
+#include "prometheus/detail/http_method.h"
 #include "prometheus/detail/push_export.h"
 
 namespace prometheus {
 
+namespace detail {
 class CurlWrapper;
+}
 
 class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
@@ -54,27 +56,16 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  private:
   std::string jobUri_;
   std::string labels_;
-  std::string auth_;
-  std::unique_ptr<CurlWrapper> curlWrapper_;
-  std::mutex mutex_;
+  std::unique_ptr<detail::CurlWrapper> curlWrapper_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;
   std::vector<CollectableEntry> collectables_;
 
   std::string getUri(const CollectableEntry& collectable) const;
 
-  enum class HttpMethod {
-    Post,
-    Put,
-    Delete,
-  };
+  int push(detail::HttpMethod method);
 
-  int performHttpRequest(HttpMethod method, const std::string& uri,
-                         const std::string& body);
-
-  int push(HttpMethod method);
-
-  std::future<int> async_push(HttpMethod method);
+  std::future<int> async_push(detail::HttpMethod method);
 
   static void CleanupStalePointers(std::vector<CollectableEntry>& collectables);
 };

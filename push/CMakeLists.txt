@@ -2,6 +2,8 @@
 find_package(CURL REQUIRED)
 
 add_library(push
+  src/curl_wrapper.cc
+  src/curl_wrapper.h
   src/gateway.cc
 )
 

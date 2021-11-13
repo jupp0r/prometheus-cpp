@@ -80,6 +80,19 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// \return Zero or more metrics and their samples.
   std::vector<MetricFamily> Collect() const override;
 
+  /// \brief Removes a metrics family from the registry.
+  ///
+  /// Please note that this operation invalidates the previously
+  /// returned reference to the Family and all of their added
+  /// metric objects.
+  ///
+  /// \tparam T One of the metric types Counter, Gauge, Histogram or Summary.
+  /// \param family The family to remove
+  ///
+  /// \return True if the family was found and removed.
+  template <typename T>
+  bool Remove(const Family<T>& family);
+
  private:
   template <typename T>
   friend class detail::Builder;

@@ -151,4 +151,34 @@ template Family<Histogram>& Registry::Add(const std::string& name,
                                           const std::string& help,
                                           const Labels& labels);
 
+template <typename T>
+bool Registry::Remove(const Family<T>& family) {
+  std::lock_guard<std::mutex> lock{mutex_};
+
+  auto& families = GetFamilies<T>();
+  auto same_family = [&family](const std::unique_ptr<Family<T>>& in) {
+    return &family == in.get();
+  };
+
+  auto it = std::find_if(families.begin(), families.end(), same_family);
+  if (it == families.end()) {
+    return false;
+  }
+
+  families.erase(it);
+  return true;
+}
+
+template bool PROMETHEUS_CPP_CORE_EXPORT
+Registry::Remove(const Family<Counter>& family);
+
+template bool PROMETHEUS_CPP_CORE_EXPORT
+Registry::Remove(const Family<Gauge>& family);
+
+template bool PROMETHEUS_CPP_CORE_EXPORT
+Registry::Remove(const Family<Summary>& family);
+
+template bool PROMETHEUS_CPP_CORE_EXPORT
+Registry::Remove(const Family<Histogram>& family);
+
 }  // namespace prometheus

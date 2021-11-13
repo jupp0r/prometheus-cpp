@@ -41,6 +41,20 @@ TEST(RegistryTest, build_histogram_family) {
   ASSERT_EQ(collected.size(), 1U);
 }
 
+TEST(RegistryTest, unable_to_remove_family) {
+  Family<Counter> family{"name", "help", {}};
+  Registry registry{};
+  EXPECT_FALSE(registry.Remove(family));
+}
+
+TEST(RegistryTest, remove_and_readd_family) {
+  Registry registry{Registry::InsertBehavior::Throw};
+
+  auto& counter = BuildCounter().Name("name").Register(registry);
+  EXPECT_TRUE(registry.Remove(counter));
+  EXPECT_NO_THROW(BuildCounter().Name("name").Register(registry));
+}
+
 TEST(RegistryTest, reject_different_type_than_counter) {
   const auto same_name = std::string{"same_name"};
   Registry registry{};

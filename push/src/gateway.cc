@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -38,11 +39,11 @@ Gateway::Gateway(const std::string& host, const std::string& port,
 
 Gateway::~Gateway() = default;
 
-const Gateway::Labels Gateway::GetInstanceLabel(std::string hostname) {
+Labels Gateway::GetInstanceLabel(std::string hostname) {
   if (hostname.empty()) {
-    return Gateway::Labels{};
+    return Labels{};
   }
-  return Gateway::Labels{{"instance", hostname}};
+  return Labels{{"instance", hostname}};
 }
 
 void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,

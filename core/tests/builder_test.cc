@@ -14,6 +14,7 @@
 #include "prometheus/family.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/labels.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 
@@ -53,8 +54,8 @@ class BuilderTest : public testing::Test {
 
   const std::string name = "some_name";
   const std::string help = "Additional description.";
-  const std::map<std::string, std::string> const_labels = {{"key", "value"}};
-  const std::map<std::string, std::string> more_labels = {{"name", "test"}};
+  const Labels const_labels = {{"key", "value"}};
+  const Labels more_labels = {{"name", "test"}};
   const std::vector<ClientMetric::Label> expected_labels = getExpectedLabels();
 };
 

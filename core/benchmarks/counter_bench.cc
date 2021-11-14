@@ -1,7 +1,5 @@
 #include <benchmark/benchmark.h>
 
-#include <string>
-
 #include "prometheus/counter.h"
 #include "prometheus/family.h"
 #include "prometheus/registry.h"

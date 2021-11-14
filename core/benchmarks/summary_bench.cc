@@ -4,7 +4,6 @@
 #include <chrono>
 #include <cmath>
 #include <random>
-#include <string>
 #include <vector>
 
 #include "prometheus/family.h"

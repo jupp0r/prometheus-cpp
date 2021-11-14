@@ -96,7 +96,7 @@ bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
 
 template <typename T>
 Family<T>& Registry::Add(const std::string& name, const std::string& help,
-                         const std::map<std::string, std::string>& labels) {
+                         const Labels& labels) {
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (NameExistsInOtherType<T>(name)) {
@@ -137,20 +137,20 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
   return ref;
 }
 
-template Family<Counter>& Registry::Add(
-    const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+template Family<Counter>& Registry::Add(const std::string& name,
+                                        const std::string& help,
+                                        const Labels& labels);
 
-template Family<Gauge>& Registry::Add(
-    const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+template Family<Gauge>& Registry::Add(const std::string& name,
+                                      const std::string& help,
+                                      const Labels& labels);
 
-template Family<Summary>& Registry::Add(
-    const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+template Family<Summary>& Registry::Add(const std::string& name,
+                                        const std::string& help,
+                                        const Labels& labels);
 
-template Family<Histogram>& Registry::Add(
-    const std::string& name, const std::string& help,
-    const std::map<std::string, std::string>& labels);
+template Family<Histogram>& Registry::Add(const std::string& name,
+                                          const std::string& help,
+                                          const Labels& labels);
 
 }  // namespace prometheus

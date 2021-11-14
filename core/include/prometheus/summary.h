@@ -113,7 +113,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
 ///
 /// - Name(const std::string&) to set the metric name,
 /// - Help(const std::string&) to set an additional description.
-/// - Label(const std::map<std::string, std::string>&) to assign a set of
+/// - Labels(const Labels&) to assign a set of
 ///   key-value pairs (= labels) to the metric.
 ///
 /// To finish the configuration of the Summary metric register it with

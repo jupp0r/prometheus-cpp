@@ -9,6 +9,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/histogram.h"
+#include "prometheus/labels.h"
 
 namespace prometheus {
 namespace {
@@ -29,7 +30,7 @@ TEST(FamilyTest, labels) {
 }
 
 TEST(FamilyTest, reject_same_label_keys) {
-  auto labels = std::map<std::string, std::string>{{"component", "test"}};
+  auto labels = Labels{{"component", "test"}};
 
   Family<Counter> family{"total_requests", "Counts all requests", labels};
   EXPECT_ANY_THROW(family.Add(labels));
@@ -80,8 +81,7 @@ TEST(FamilyTest, add_twice) {
 
 TEST(FamilyTest, throw_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
-    return detail::make_unique<Family<Counter>>(
-        "", "empty name", std::map<std::string, std::string>{});
+    return detail::make_unique<Family<Counter>>("", "empty name", Labels{});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_name());
 }
@@ -90,7 +90,7 @@ TEST(FamilyTest, throw_on_invalid_constant_label_name) {
   auto create_family_with_invalid_labels = []() {
     return detail::make_unique<Family<Counter>>(
         "total_requests", "Counts all requests",
-        std::map<std::string, std::string>{{"__inavlid", "counter1"}});
+        Labels{{"__inavlid", "counter1"}});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_labels());
 }

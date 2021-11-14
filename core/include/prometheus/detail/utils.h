@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cstddef>
-#include <map>
-#include <string>
 
 #include "prometheus/detail/core_export.h"
+#include "prometheus/labels.h"
 
 namespace prometheus {
 namespace detail {
@@ -16,8 +15,7 @@ struct PROMETHEUS_CPP_CORE_EXPORT LabelHasher {
   /// \param labels The map that will be computed the hash value.
   ///
   /// \returns The hash value of the given labels.
-  std::size_t operator()(
-      const std::map<std::string, std::string>& labels) const;
+  std::size_t operator()(const Labels& labels) const;
 };
 
 }  // namespace detail

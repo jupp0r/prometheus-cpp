@@ -12,8 +12,7 @@ namespace prometheus {
 namespace detail {
 
 template <typename T>
-Builder<T>& Builder<T>::Labels(
-    const std::map<std::string, std::string>& labels) {
+Builder<T>& Builder<T>::Labels(const ::prometheus::Labels& labels) {
   labels_ = labels;
   return *this;
 }

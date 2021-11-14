@@ -1,7 +1,6 @@
 #pragma once
 
 #include <future>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -11,6 +10,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/http_method.h"
 #include "prometheus/detail/push_export.h"
+#include "prometheus/labels.h"
 
 namespace prometheus {
 
@@ -20,8 +20,6 @@ class CurlWrapper;
 
 class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
-  using Labels = std::map<std::string, std::string>;
-
   Gateway(const std::string& host, const std::string& port,
           const std::string& jobname, const Labels& labels = {},
           const std::string& username = {}, const std::string& password = {});
@@ -36,7 +34,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   void RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
                            const Labels* labels = nullptr);
 
-  static const Labels GetInstanceLabel(std::string hostname);
+  static Labels GetInstanceLabel(std::string hostname);
 
   // Push metrics to the given pushgateway.
   int Push();

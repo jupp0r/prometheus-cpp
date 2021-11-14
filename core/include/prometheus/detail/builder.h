@@ -1,7 +1,8 @@
 #pragma once
 
-#include <map>
 #include <string>
+
+#include "prometheus/labels.h"
 
 // IWYU pragma: private
 // IWYU pragma: no_include "prometheus/family.h"
@@ -17,13 +18,13 @@ namespace detail {
 template <typename T>
 class Builder {
  public:
-  Builder& Labels(const std::map<std::string, std::string>& labels);
+  Builder& Labels(const ::prometheus::Labels& labels);
   Builder& Name(const std::string&);
   Builder& Help(const std::string&);
   Family<T>& Register(Registry&);
 
  private:
-  std::map<std::string, std::string> labels_;
+  ::prometheus::Labels labels_;
   std::string name_;
   std::string help_;
 };

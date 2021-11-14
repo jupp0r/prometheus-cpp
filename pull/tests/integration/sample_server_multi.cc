@@ -1,6 +1,5 @@
 #include <chrono>
 #include <memory>
-#include <string>
 #include <thread>
 
 #include "prometheus/client_metric.h"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -9,6 +8,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
 #include "prometheus/family.h"
+#include "prometheus/labels.h"
 #include "prometheus/metric_family.h"
 
 namespace prometheus {
@@ -92,7 +92,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
 
   template <typename T>
   Family<T>& Add(const std::string& name, const std::string& help,
-                 const std::map<std::string, std::string>& labels);
+                 const Labels& labels);
 
   const InsertBehavior insert_behavior_;
   std::vector<std::unique_ptr<Family<Counter>>> counters_;

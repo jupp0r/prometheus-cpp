@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <map>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -16,7 +17,7 @@ namespace prometheus {
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const std::map<std::string, std::string>& constant_labels)
+                  const Labels& constant_labels)
     : name_(name), help_(help), constant_labels_(constant_labels) {
   if (!CheckMetricName(name_)) {
     throw std::invalid_argument("Invalid metric name");
@@ -30,8 +31,7 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
-T& Family<T>::Add(const std::map<std::string, std::string>& labels,
-                  std::unique_ptr<T> object) {
+T& Family<T>::Add(const Labels& labels, std::unique_ptr<T> object) {
   std::lock_guard<std::mutex> lock{mutex_};
 
   auto insert_result =
@@ -70,7 +70,7 @@ void Family<T>::Remove(T* metric) {
 }
 
 template <typename T>
-bool Family<T>::Has(const std::map<std::string, std::string>& labels) const {
+bool Family<T>::Has(const Labels& labels) const {
   std::lock_guard<std::mutex> lock{mutex_};
   return metrics_.count(labels) != 0u;
 }
@@ -81,7 +81,7 @@ const std::string& Family<T>::GetName() const {
 }
 
 template <typename T>
-const std::map<std::string, std::string> Family<T>::GetConstantLabels() const {
+const Labels Family<T>::GetConstantLabels() const {
   return constant_labels_;
 }
 
@@ -105,8 +105,8 @@ std::vector<MetricFamily> Family<T>::Collect() const {
 }
 
 template <typename T>
-ClientMetric Family<T>::CollectMetric(
-    const std::map<std::string, std::string>& metric_labels, T* metric) const {
+ClientMetric Family<T>::CollectMetric(const Labels& metric_labels,
+                                      T* metric) const {
   auto collected = metric->Collect();
   collected.label.reserve(constant_labels_.size() + metric_labels.size());
   const auto add_label =

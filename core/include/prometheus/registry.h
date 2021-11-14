@@ -50,10 +50,6 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
     Merge,
     /// \brief Throws if a family with the same name already exists.
     Throw,
-    /// \brief Never merge and always create a new family. This violates the
-    /// prometheus specification but was the default behavior in earlier
-    /// versions
-    NonStandardAppend,
   };
 
   /// \brief name Create a new registry.

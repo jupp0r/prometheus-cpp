@@ -120,15 +120,13 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  if (insert_behavior_ != InsertBehavior::NonStandardAppend) {
-    auto same_name = [&name](const std::unique_ptr<Family<T>>& family) {
-      return name == family->GetName();
-    };
+  auto same_name = [&name](const std::unique_ptr<Family<T>>& family) {
+    return name == family->GetName();
+  };
 
-    auto it = std::find_if(families.begin(), families.end(), same_name);
-    if (it != families.end()) {
-      throw std::invalid_argument("Family name already exists");
-    }
+  auto it = std::find_if(families.begin(), families.end(), same_name);
+  if (it != families.end()) {
+    throw std::invalid_argument("Family name already exists");
   }
 
   auto family = detail::make_unique<Family<T>>(name, help, labels);

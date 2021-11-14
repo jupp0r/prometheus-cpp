@@ -81,23 +81,6 @@ TEST(RegistryTest, reject_different_type_than_summary) {
   EXPECT_ANY_THROW(BuildHistogram().Name(same_name).Register(registry));
 }
 
-TEST(RegistryTest, append_same_families) {
-  Registry registry{Registry::InsertBehavior::NonStandardAppend};
-
-  std::size_t loops = 4;
-
-  while (loops-- > 0) {
-    BuildCounter()
-        .Name("counter")
-        .Help("Test Counter")
-        .Register(registry)
-        .Add({{"name", "test_counter"}});
-  }
-
-  auto collected = registry.Collect();
-  EXPECT_EQ(4U, collected.size());
-}
-
 TEST(RegistryTest, throw_for_same_family_name) {
   const auto same_name = std::string{"same_name"};
   Registry registry{Registry::InsertBehavior::Throw};

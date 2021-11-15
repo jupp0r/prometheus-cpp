@@ -18,9 +18,6 @@
 
 namespace prometheus {
 
-static const char CONTENT_TYPE[] =
-    "Content-Type: text/plain; version=0.0.4; charset=utf-8";
-
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password) {

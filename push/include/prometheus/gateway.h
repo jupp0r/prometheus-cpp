@@ -52,6 +52,12 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   // Delete metrics from the given pushgateway.
   std::future<int> AsyncDelete();
 
+  // Delete metrics from the given pushgateway (for configured instance labels).
+  int DeleteForInstance();
+
+  // Delete metrics from the given pushgateway (for configured instance labels).
+  std::future<int> AsyncDeleteForInstance();
+
  private:
   std::string jobUri_;
   std::string labels_;

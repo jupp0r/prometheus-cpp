@@ -146,6 +146,15 @@ std::future<int> Gateway::AsyncDelete() {
   return std::async(std::launch::async, [&] { return Delete(); });
 }
 
+int Gateway::DeleteForInstance() {
+  return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete,
+                                          jobUri_ + labels_, {});
+}
+
+std::future<int> Gateway::AsyncDeleteForInstance() {
+  return std::async(std::launch::async, [&] { return DeleteForInstance(); });
+}
+
 void Gateway::CleanupStalePointers(
     std::vector<CollectableEntry>& collectables) {
   collectables.erase(

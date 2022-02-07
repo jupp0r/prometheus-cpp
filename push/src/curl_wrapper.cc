@@ -46,6 +46,8 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   if (!body.empty()) {
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.data());
+  } else {
+    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, 0L);
   }
 
   if (!auth_.empty()) {

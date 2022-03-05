@@ -38,10 +38,10 @@ def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "com_github_google_benchmark",
-        sha256 = "1f71c72ce08d2c1310011ea6436b31e39ccab8c2db94186d26657d41747c85d6",
-        strip_prefix = "benchmark-1.6.0",
+        sha256 = "6132883bc8c9b0df5375b16ab520fac1a85dc9e4cf5be59480448ece74b278d4",
+        strip_prefix = "benchmark-1.6.1",
         urls = [
-            "https://github.com/google/benchmark/archive/v1.6.0.tar.gz",
+            "https://github.com/google/benchmark/archive/v1.6.1.tar.gz",
         ],
     )
 

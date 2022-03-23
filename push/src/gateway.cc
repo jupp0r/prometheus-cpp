@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>

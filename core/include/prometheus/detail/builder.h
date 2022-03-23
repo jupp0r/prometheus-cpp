@@ -6,6 +6,7 @@
 
 // IWYU pragma: private
 // IWYU pragma: no_include "prometheus/family.h"
+// IWYU pragma: no_include "prometheus/registry.h"
 
 namespace prometheus {
 

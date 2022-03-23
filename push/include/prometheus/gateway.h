@@ -15,7 +15,7 @@
 namespace prometheus {
 
 namespace detail {
-class CurlWrapper;
+class CurlWrapper;  // IWYU pragma: keep
 }
 
 class PROMETHEUS_CPP_PUSH_EXPORT Gateway {

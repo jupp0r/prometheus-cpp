@@ -9,9 +9,11 @@
 #include "prometheus/collectable.h"
 #include "prometheus/registry.h"
 
+// IWYU pragma: no_include "handler.h"
+
 namespace prometheus {
 namespace detail {
-class MetricsHandler;
+class MetricsHandler;  // IWYU pragma: keep
 
 class Endpoint {
  public:

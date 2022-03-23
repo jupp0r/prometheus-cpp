@@ -9,14 +9,15 @@
 
 #include "prometheus/collectable.h"
 #include "prometheus/detail/pull_export.h"
+// IWYU pragma: no_include "CivetServer.h"
 
-class CivetServer;
-struct CivetCallbacks;
+class CivetServer;      // IWYU pragma: keep
+struct CivetCallbacks;  // IWYU pragma: keep
 
 namespace prometheus {
 
 namespace detail {
-class Endpoint;
+class Endpoint;  // IWYU pragma: keep
 }  // namespace detail
 
 class PROMETHEUS_CPP_PULL_EXPORT Exposer {

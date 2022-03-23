@@ -1,9 +1,9 @@
 #include "prometheus/detail/utils.h"
 
-#include <map>
-#include <utility>
-
 #include "hash.h"
+
+// IWYU pragma: no_include <string>
+// IWYU pragma: no_include <utility>
 
 namespace prometheus {
 

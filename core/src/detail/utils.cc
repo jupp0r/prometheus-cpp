@@ -1,5 +1,6 @@
 #include "prometheus/detail/utils.h"
 
+#include <cstddef>
 #include <map>
 #include <utility>
 
@@ -10,7 +11,7 @@ namespace prometheus {
 namespace detail {
 
 std::size_t LabelHasher::operator()(const Labels& labels) const {
-  size_t seed = 0;
+  std::size_t seed = 0;
   for (auto& label : labels) {
     hash_combine(&seed, label.first, label.second);
   }

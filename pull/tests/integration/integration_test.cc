@@ -86,11 +86,11 @@ class IntegrationTest : public testing::Test {
   std::string default_metrics_path_ = "/metrics";
 
  private:
-  static size_t WriteCallback(void* contents, size_t size, size_t nmemb,
-                              void* userp) {
+  static std::size_t WriteCallback(void* contents, std::size_t size,
+                                   std::size_t nmemb, void* userp) {
     auto response = reinterpret_cast<std::string*>(userp);
 
-    size_t realsize = size * nmemb;
+    std::size_t realsize = size * nmemb;
     response->append(reinterpret_cast<const char*>(contents), realsize);
     return realsize;
   }

@@ -30,12 +30,10 @@ Histogram::Histogram(const BucketBoundaries& buckets)
 }
 
 void Histogram::Observe(const double value) {
-  // TODO: determine bucket list size at which binary search would be faster
-  const auto bucket_index = static_cast<std::size_t>(std::distance(
-      bucket_boundaries_.begin(),
-      std::find_if(
-          std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
-          [value](const double boundary) { return boundary >= value; })));
+  const auto bucket_index = static_cast<std::size_t>(
+      std::distance(bucket_boundaries_.begin(),
+                    std::lower_bound(bucket_boundaries_.begin(),
+                                     bucket_boundaries_.end(), value)));
 
   std::lock_guard<std::mutex> lock(mutex_);
   sum_.Increment(value);

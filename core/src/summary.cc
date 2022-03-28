@@ -7,8 +7,11 @@ namespace prometheus {
 Summary::Summary(const Quantiles& quantiles,
                  const std::chrono::milliseconds max_age, const int age_buckets)
     : quantiles_{quantiles},
-      count_{0},
-      sum_{0},
+      quantile_values_{quantiles_, max_age, age_buckets} {}
+
+Summary::Summary(Quantiles&& quantiles, const std::chrono::milliseconds max_age,
+                 const int age_buckets)
+    : quantiles_{std::move(quantiles)},
       quantile_values_{quantiles_, max_age, age_buckets} {}
 
 void Summary::Observe(const double value) {

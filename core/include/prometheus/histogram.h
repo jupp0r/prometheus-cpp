@@ -44,7 +44,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// exponential etc..
   ///
   /// The bucket boundaries cannot be changed once the histogram is created.
-  Histogram(const BucketBoundaries& buckets);
+  explicit Histogram(const BucketBoundaries& buckets);
+
+  explicit Histogram(BucketBoundaries&& buckets);
 
   /// \brief Observe the given amount.
   ///
@@ -68,7 +70,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   ClientMetric Collect() const;
 
  private:
-  const BucketBoundaries bucket_boundaries_;
+  BucketBoundaries bucket_boundaries_;
   mutable std::mutex mutex_;
   std::vector<Counter> bucket_counts_;
   Gauge sum_;

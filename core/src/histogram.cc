@@ -23,7 +23,15 @@ bool is_strict_sorted(ForwardIterator first, ForwardIterator last) {
 }  // namespace
 
 Histogram::Histogram(const BucketBoundaries& buckets)
-    : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {
+    : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1} {
+  if (!is_strict_sorted(begin(bucket_boundaries_), end(bucket_boundaries_))) {
+    throw std::invalid_argument("Bucket Boundaries must be strictly sorted");
+  }
+}
+
+Histogram::Histogram(BucketBoundaries&& buckets)
+    : bucket_boundaries_{std::move(buckets)},
+      bucket_counts_{bucket_boundaries_.size() + 1} {
   if (!is_strict_sorted(begin(bucket_boundaries_), end(bucket_boundaries_))) {
     throw std::invalid_argument("Bucket Boundaries must be strictly sorted");
   }

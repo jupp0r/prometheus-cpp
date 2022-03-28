@@ -71,9 +71,13 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// and how smooth the time window is moved. With only one age bucket it
   /// effectively results in a complete reset of the summary each time max_age
   /// has passed. The default value is 5.
-  Summary(const Quantiles& quantiles,
-          std::chrono::milliseconds max_age = std::chrono::seconds{60},
-          int age_buckets = 5);
+  explicit Summary(const Quantiles& quantiles,
+                   std::chrono::milliseconds max_age = std::chrono::seconds{60},
+                   int age_buckets = 5);
+
+  explicit Summary(Quantiles&& quantiles,
+                   std::chrono::milliseconds max_age = std::chrono::seconds{60},
+                   int age_buckets = 5);
 
   /// \brief Observe the given amount.
   void Observe(double value);
@@ -84,10 +88,10 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   ClientMetric Collect() const;
 
  private:
-  const Quantiles quantiles_;
+  Quantiles quantiles_;
   mutable std::mutex mutex_;
-  std::uint64_t count_;
-  double sum_;
+  std::uint64_t count_{};
+  double sum_{};
   detail::TimeWindowQuantiles quantile_values_;
 };
 

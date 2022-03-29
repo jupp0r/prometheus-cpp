@@ -1,8 +1,8 @@
 #include "prometheus/histogram.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
+#include <functional>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -11,10 +11,22 @@
 
 namespace prometheus {
 
+namespace {
+
+template <class ForwardIterator>
+bool is_strict_sorted(ForwardIterator first, ForwardIterator last) {
+  return std::adjacent_find(first, last,
+                            std::greater_equal<typename std::iterator_traits<
+                                ForwardIterator>::value_type>()) == last;
+}
+
+}  // namespace
+
 Histogram::Histogram(const BucketBoundaries& buckets)
     : bucket_boundaries_{buckets}, bucket_counts_{buckets.size() + 1}, sum_{} {
-  assert(std::is_sorted(std::begin(bucket_boundaries_),
-                        std::end(bucket_boundaries_)));
+  if (!is_strict_sorted(begin(bucket_boundaries_), end(bucket_boundaries_))) {
+    throw std::invalid_argument("Bucket Boundaries must be strictly sorted");
+  }
 }
 
 void Histogram::Observe(const double value) {

@@ -7,10 +7,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-2019]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Generate German locale on Ubuntu
         if: runner.os == 'Linux'

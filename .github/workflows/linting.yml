@@ -45,14 +45,16 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
-          sudo apt-get update
-          sudo apt-get install -y clang-format-11
+      # clang-format comes pre-installed
+      # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
+      #- name: Install dependencies
+      #  run: |
+      #    sudo apt-get remove -y --purge man-db # avoid time-consuming trigger
+      #    sudo apt-get update
+      #    sudo apt-get install -y clang-format-12
 
       - name: Run clang-format
-        run: find . -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.o' -o -name '*.h' -o -name '*.hpp' -o -name '*.hxx' \) -exec clang-format-11 -style=file -i {} \;
+        run: find . -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.o' -o -name '*.h' -o -name '*.hpp' -o -name '*.hxx' \) -exec clang-format-12 -style=file -i {} \;
 
       - name: Check for changes
         run: git diff --exit-code

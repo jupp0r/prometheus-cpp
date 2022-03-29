@@ -53,6 +53,14 @@ TEST(HistogramTest, bucket_bounds) {
             std::numeric_limits<double>::infinity());
 }
 
+TEST(HistogramTest, reject_unsorted_bucket_bounds) {
+  EXPECT_ANY_THROW(Histogram({2, 1}));
+}
+
+TEST(HistogramTest, reject_non_incrementing_bucket_bounds) {
+  EXPECT_ANY_THROW(Histogram({1, 2, 2, 3}));
+}
+
 TEST(HistogramTest, bucket_counts_not_reset_by_collection) {
   Histogram histogram{{1, 2}};
   histogram.Observe(1.5);

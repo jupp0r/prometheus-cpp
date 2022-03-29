@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-latest, ubuntu-18.04, windows-2016]
+        os: [macOS-latest, ubuntu-18.04, windows-2019]
         dependencies: [submodule, vcpkg]
     steps:
       - name: Checkout source
@@ -28,6 +28,10 @@ jobs:
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ matrix.os }}
+
+      - name: Default to x64-windows vcpkg triplet
+        if: matrix.dependencies == 'vcpkg' && runner.os == 'Windows'
+        run: echo "VCPKG_DEFAULT_TRIPLET=x64-windows" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
 
       - name: Install vcpkg dependencies
         if: matrix.dependencies == 'vcpkg'

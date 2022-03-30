@@ -62,7 +62,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   void ObserveMultiple(const std::vector<double>& bucket_increments,
                        const double sum_of_values);
 
-  /// \brief Get the current value of the counter.
+  /// \brief Get the current value of the histogram.
   ///
   /// Collect is called by the Registry when collecting metrics.
   ClientMetric Collect() const;

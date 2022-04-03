@@ -46,6 +46,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// The bucket boundaries cannot be changed once the histogram is created.
   explicit Histogram(const BucketBoundaries& buckets);
 
+  /// \copydoc Histogram::Histogram(const BucketBoundaries&)
   explicit Histogram(BucketBoundaries&& buckets);
 
   /// \brief Observe the given amount.

@@ -17,6 +17,11 @@ add_library(core
 
 add_library(${PROJECT_NAME}::core ALIAS core)
 
+target_compile_features(core
+  PUBLIC
+    cxx_std_14
+)
+
 target_link_libraries(core
   PRIVATE
     Threads::Threads

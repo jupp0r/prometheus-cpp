@@ -7,7 +7,6 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
-#include "prometheus/detail/future_std.h"
 #include "prometheus/histogram.h"
 #include "prometheus/labels.h"
 
@@ -81,16 +80,16 @@ TEST(FamilyTest, add_twice) {
 
 TEST(FamilyTest, throw_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
-    return detail::make_unique<Family<Counter>>("", "empty name", Labels{});
+    return std::make_unique<Family<Counter>>("", "empty name", Labels{});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_name());
 }
 
 TEST(FamilyTest, throw_on_invalid_constant_label_name) {
   auto create_family_with_invalid_labels = []() {
-    return detail::make_unique<Family<Counter>>(
-        "total_requests", "Counts all requests",
-        Labels{{"__inavlid", "counter1"}});
+    return std::make_unique<Family<Counter>>("total_requests",
+                                             "Counts all requests",
+                                             Labels{{"__inavlid", "counter1"}});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_labels());
 }

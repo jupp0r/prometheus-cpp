@@ -9,7 +9,6 @@
 #include "prometheus/client_metric.h"
 #include "prometheus/collectable.h"
 #include "prometheus/detail/core_export.h"
-#include "prometheus/detail/future_std.h"
 #include "prometheus/detail/utils.h"
 #include "prometheus/labels.h"
 #include "prometheus/metric_family.h"
@@ -110,7 +109,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \throw std::runtime_exception on invalid label names.
   template <typename... Args>
   T& Add(const Labels& labels, Args&&... args) {
-    return Add(labels, detail::make_unique<T>(args...));
+    return Add(labels, std::make_unique<T>(args...));
   }
 
   /// \brief Remove the given dimensional data.

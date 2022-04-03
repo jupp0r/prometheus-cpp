@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(prometheus-cpp-import)
 
-set(CMAKE_CXX_STANDARD 11)
-
 find_package(prometheus-cpp CONFIG REQUIRED)
 
 if(PROMETHEUS_CPP_ENABLE_PUSH)

@@ -9,6 +9,11 @@ add_library(push
 
 add_library(${PROJECT_NAME}::push ALIAS push)
 
+target_compile_features(push
+  PUBLIC
+    cxx_std_14
+)
+
 target_link_libraries(push
   PUBLIC
     ${PROJECT_NAME}::core

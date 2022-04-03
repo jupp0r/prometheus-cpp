@@ -28,7 +28,7 @@ option(GENERATE_PKGCONFIG "Generate and install pkg-config files" ${UNIX})
 option(RUN_IWYU "Run include-what-you-use" OFF)
 
 if(OVERRIDE_CXX_STANDARD_FLAGS)
-  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_EXTENSIONS Off)
 endif()
 

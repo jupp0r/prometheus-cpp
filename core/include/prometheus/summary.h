@@ -75,6 +75,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
                    std::chrono::milliseconds max_age = std::chrono::seconds{60},
                    int age_buckets = 5);
 
+  /// \copydoc Summary::Summary(const Quantiles&,std::chrono::milliseconds,int)
   explicit Summary(Quantiles&& quantiles,
                    std::chrono::milliseconds max_age = std::chrono::seconds{60},
                    int age_buckets = 5);

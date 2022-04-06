@@ -14,11 +14,42 @@
 #include "prometheus/summary.h"
 
 namespace prometheus {
+namespace {
+
+template <class Key, class T, class Compare, class Alloc, class Pred>
+void erase_if(std::map<Key, T, Compare, Alloc>& c, Pred pred) {
+  for (auto i = c.begin(), last = c.end(); i != last;)
+    if (pred(*i)) {
+      i = c.erase(i);
+    } else {
+      ++i;
+    }
+}
+
+auto empty_label_value = [](const Labels::value_type& label) {
+  return label.second.empty();
+};
+
+// A label with an empty label value is considered equivalent to a label that
+// does not exist.
+void filter_labels(Labels& labels) {
+  // with C++20 use std::erase_if
+  erase_if(labels, empty_label_value);
+}
+
+Labels filter_and_return_labels(Labels labels) {
+  filter_labels(labels);
+  return labels;
+}
+
+}  // namespace
 
 template <typename T>
 Family<T>::Family(const std::string& name, const std::string& help,
-                  const Labels& constant_labels)
-    : name_(name), help_(help), constant_labels_(constant_labels) {
+                  Labels constant_labels)
+    : name_(name),
+      help_(help),
+      constant_labels_(filter_and_return_labels(std::move(constant_labels))) {
   if (!CheckMetricName(name_)) {
     throw std::invalid_argument("Invalid metric name");
   }
@@ -31,7 +62,9 @@ Family<T>::Family(const std::string& name, const std::string& help,
 }
 
 template <typename T>
-T& Family<T>::Add(const Labels& labels, std::unique_ptr<T> object) {
+T& Family<T>::Add(Labels labels, std::unique_ptr<T> object) {
+  filter_labels(labels);
+
   std::lock_guard<std::mutex> lock{mutex_};
 
   auto insert_result =
@@ -70,9 +103,12 @@ void Family<T>::Remove(T* metric) {
 }
 
 template <typename T>
-bool Family<T>::Has(const Labels& labels) const {
+bool Family<T>::Has(Labels labels) const {
+  filter_labels(labels);
+
   std::lock_guard<std::mutex> lock{mutex_};
-  return metrics_.count(labels) != 0u;
+  auto count = metrics_.count(labels);
+  return count != 0u;
 }
 
 template <typename T>

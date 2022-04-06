@@ -22,14 +22,12 @@ const TestVector testVector[] = {
     {"foobar", "Zm9vYmFy"},
 };
 
-const unsigned nVectors = sizeof(testVector) / sizeof(testVector[0]);
-
 using namespace testing;
 
 TEST(Base64Test, decodeTest) {
-  for (unsigned i = 0; i < nVectors; ++i) {
-    std::string decoded = detail::base64_decode(testVector[i].encoded);
-    EXPECT_EQ(testVector[i].decoded, decoded);
+  for (const auto& test_case : testVector) {
+    std::string decoded = detail::base64_decode(test_case.encoded);
+    EXPECT_EQ(test_case.decoded, decoded);
   }
 }
 

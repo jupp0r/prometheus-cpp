@@ -78,7 +78,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   ///
   ///     http_requests_total{job= "prometheus"}
   ///
-  /// For further information see: [Quering Basics]
+  /// For further information see: [Querying Basics]
   /// (https://prometheus.io/docs/prometheus/latest/querying/basics/)
   ///
   /// \param name Set the metric name.
@@ -131,7 +131,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \brief Returns the constant labels for this family.
   ///
   /// \return All constant labels as key-value pairs.
-  const Labels GetConstantLabels() const;
+  const Labels& GetConstantLabels() const;
 
   /// \brief Returns the current value of each dimensional data.
   ///

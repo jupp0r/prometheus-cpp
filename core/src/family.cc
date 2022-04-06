@@ -81,7 +81,7 @@ const std::string& Family<T>::GetName() const {
 }
 
 template <typename T>
-const Labels Family<T>::GetConstantLabels() const {
+const Labels& Family<T>::GetConstantLabels() const {
   return constant_labels_;
 }
 

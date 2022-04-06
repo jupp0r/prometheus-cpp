@@ -4,7 +4,7 @@
 
 class RAIILocale {
  public:
-  RAIILocale(const char* name) : savedLocale_(std::locale::classic()) {
+  explicit RAIILocale(const char* name) {
     std::locale::global(std::locale(name));
   }
 
@@ -16,5 +16,5 @@ class RAIILocale {
   RAIILocale& operator=(RAIILocale&&) = delete;
 
  private:
-  const std::locale savedLocale_;
+  const std::locale savedLocale_ = std::locale{};
 };

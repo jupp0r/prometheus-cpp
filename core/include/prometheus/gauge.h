@@ -29,7 +29,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   Gauge() = default;
 
   /// \brief Create a gauge that starts at the given amount.
-  Gauge(double);
+  explicit Gauge(double);
 
   /// \brief Increment the gauge by 1.
   void Increment();
@@ -46,7 +46,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   /// \brief Set the gauge to the given value.
   void Set(double);
 
-  /// \brief Set the gauge to the current unixtime in seconds.
+  /// \brief Set the gauge to the current unix time in seconds.
   void SetToCurrentTime();
 
   /// \brief Get the current value of the gauge.

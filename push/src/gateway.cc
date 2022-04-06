@@ -54,7 +54,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
   std::lock_guard<std::mutex> lock{mutex_};
   CleanupStalePointers(collectables_);
-  collectables_.push_back(std::make_pair(collectable, ss.str()));
+  collectables_.emplace_back(collectable, ss.str());
 }
 
 std::string Gateway::getUri(const CollectableEntry& collectable) const {

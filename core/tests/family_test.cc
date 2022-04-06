@@ -89,7 +89,7 @@ TEST(FamilyTest, throw_on_invalid_constant_label_name) {
   auto create_family_with_invalid_labels = []() {
     return std::make_unique<Family<Counter>>("total_requests",
                                              "Counts all requests",
-                                             Labels{{"__inavlid", "counter1"}});
+                                             Labels{{"__invalid", "counter1"}});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_labels());
 }
@@ -109,10 +109,10 @@ TEST(FamilyTest, should_not_collect_empty_metrics) {
 }
 
 TEST(FamilyTest, query_family_if_metric_already_exists) {
-  Family<Counter> family{"total_rquests", "Counts all requests", {}};
+  Family<Counter> family{"total_requests", "Counts all requests", {}};
   family.Add({{"name", "counter1"}});
   EXPECT_TRUE(family.Has({{"name", "counter1"}}));
-  EXPECT_FALSE(family.Has({{"name", "couner2"}}));
+  EXPECT_FALSE(family.Has({{"name", "counter2"}}));
 }
 
 }  // namespace

@@ -26,7 +26,7 @@ class BuilderTest : public testing::Test {
   std::vector<ClientMetric::Label> getExpectedLabels() {
     std::vector<ClientMetric::Label> labels;
 
-    auto gen = [](std::pair<const std::string, std::string> p) {
+    auto gen = [](const std::pair<const std::string, std::string>& p) {
       return ClientMetric::Label{p.first, p.second};
     };
 

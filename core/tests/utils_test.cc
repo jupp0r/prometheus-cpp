@@ -12,7 +12,7 @@ class UtilsTest : public testing::Test {
 };
 
 TEST_F(UtilsTest, hash_labels_1) {
-  Labels labels{{"key1", "value1"}, {"key2", "vaule2"}};
+  Labels labels{{"key1", "value1"}, {"key2", "value2"}};
   EXPECT_EQ(hasher(labels), hasher(labels));
 }
 

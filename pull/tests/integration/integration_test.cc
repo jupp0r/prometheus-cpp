@@ -27,7 +27,7 @@ class IntegrationTest : public testing::Test {
     base_url_ = std::string("http://127.0.0.1:") + std::to_string(ports.at(0));
   }
 
-  struct Resonse {
+  struct Response {
     long code = 0;
     std::string body;
     std::string contentType;
@@ -35,14 +35,14 @@ class IntegrationTest : public testing::Test {
 
   std::function<void(CURL*)> fetchPrePerform_;
 
-  Resonse FetchMetrics(std::string metrics_path) {
+  Response FetchMetrics(const std::string& metrics_path) const {
     auto curl = std::shared_ptr<CURL>(curl_easy_init(), curl_easy_cleanup);
     if (!curl) {
       throw std::runtime_error("failed to initialize libcurl");
     }
 
     const auto url = base_url_ + metrics_path;
-    Resonse response;
+    Response response;
 
     curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response.body);
@@ -69,8 +69,8 @@ class IntegrationTest : public testing::Test {
   }
 
   std::shared_ptr<Registry> RegisterSomeCounter(const std::string& name,
-                                                const std::string& path) {
-    const auto registry = std::make_shared<Registry>();
+                                                const std::string& path) const {
+    auto registry = std::make_shared<Registry>();
 
     BuildCounter().Name(name).Register(*registry).Add({}).Increment();
 

@@ -1,7 +1,8 @@
 
 add_executable(prometheus_core_test
   builder_test.cc
-  check_names_test.cc
+  check_label_name_test.cc
+  check_metric_name_test.cc
   counter_test.cc
   family_test.cc
   gauge_test.cc

@@ -9,6 +9,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/histogram.h"
 #include "prometheus/labels.h"
+#include "prometheus/summary.h"
 
 namespace prometheus {
 namespace {
@@ -113,6 +114,29 @@ TEST(FamilyTest, query_family_if_metric_already_exists) {
   family.Add({{"name", "counter1"}});
   EXPECT_TRUE(family.Has({{"name", "counter1"}}));
   EXPECT_FALSE(family.Has({{"name", "counter2"}}));
+}
+
+TEST(FamilyTest, reject_histogram_with_constant_le_label) {
+  auto labels = Labels{{"le", "test"}};
+  EXPECT_ANY_THROW(std::make_unique<Family<Histogram>>("name", "help", labels));
+}
+
+TEST(FamilyTest, reject_histogram_with_le_label) {
+  Family<Histogram> family{"name", "help", {}};
+  auto labels = Labels{{"le", "test"}};
+  EXPECT_ANY_THROW(family.Add(labels, Histogram::BucketBoundaries{0, 1, 2}));
+}
+
+TEST(FamilyTest, reject_summary_with_constant_quantile_label) {
+  auto labels = Labels{{"quantile", "test"}};
+  EXPECT_ANY_THROW(std::make_unique<Family<Summary>>("name", "help", labels));
+}
+
+TEST(FamilyTest, reject_summary_with_quantile_label) {
+  Family<Summary> family{"name", "help", {}};
+  auto labels = Labels{{"quantile", "test"}};
+  auto quantiles = Summary::Quantiles{{0.5, 0.05}};
+  EXPECT_ANY_THROW(family.Add(labels, quantiles));
 }
 
 }  // namespace

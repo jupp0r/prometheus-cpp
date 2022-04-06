@@ -24,7 +24,7 @@ Family<T>::Family(const std::string& name, const std::string& help,
   }
   for (auto& label_pair : constant_labels_) {
     auto& label_name = label_pair.first;
-    if (!CheckLabelName(label_name)) {
+    if (!CheckLabelName(label_name, T::metric_type)) {
       throw std::invalid_argument("Invalid label name");
     }
   }
@@ -41,7 +41,7 @@ T& Family<T>::Add(const Labels& labels, std::unique_ptr<T> object) {
     // insertion took place, retroactively check for unlikely issues
     for (auto& label_pair : labels) {
       const auto& label_name = label_pair.first;
-      if (!CheckLabelName(label_name)) {
+      if (!CheckLabelName(label_name, T::metric_type)) {
         metrics_.erase(insert_result.first);
         throw std::invalid_argument("Invalid label name");
       }

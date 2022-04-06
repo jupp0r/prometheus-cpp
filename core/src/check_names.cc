@@ -62,8 +62,9 @@ bool CheckMetricName(const std::string& name) {
 /// \see https://prometheus.io/docs/concepts/data_model/
 ///
 /// \param name label name
+/// \param type metric type
 /// \return true is valid, false otherwise
-bool CheckLabelName(const std::string& name) {
+bool CheckLabelName(const std::string& name, MetricType type) {
   if (!nameStartsValid(name)) {
     return false;
   }
@@ -71,6 +72,11 @@ bool CheckLabelName(const std::string& name) {
   auto validLabelCharacters = [](char c) {
     return isLocaleIndependentAlphaNumeric(c) || c == '_';
   };
+
+  if ((type == MetricType::Histogram && name == "le") ||
+      (type == MetricType::Summary && name == "quantile")) {
+    return false;
+  }
 
   auto mismatch =
       std::find_if_not(std::begin(name), std::end(name), validLabelCharacters);

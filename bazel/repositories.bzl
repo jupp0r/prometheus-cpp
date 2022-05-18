@@ -53,6 +53,7 @@ def prometheus_cpp_repositories():
         urls = [
             "https://mirror.bazel.build/zlib.net/zlib-1.2.11.tar.gz",
             "https://zlib.net/zlib-1.2.11.tar.gz",
+            "https://storage.googleapis.com/bazel-mirror/zlib.net/zlib-1.2.11.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:zlib.BUILD",
     )

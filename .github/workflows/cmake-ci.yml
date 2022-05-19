@@ -12,15 +12,9 @@ jobs:
         dependencies: [submodule, vcpkg]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        if: matrix.dependencies == 'submodule'
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        uses: actions/checkout@v3
+        with:
+          submodules: ${{ matrix.dependencies == 'submodule' }}
 
       - name: Mount vcpkg cache
         if: matrix.dependencies == 'vcpkg'

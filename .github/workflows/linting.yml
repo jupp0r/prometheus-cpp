@@ -14,14 +14,9 @@ jobs:
           apt-get install -y --no-install-recommends ca-certificates clang-12 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
 
       - name: Checkout source
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: "CMake Configure"
         run: cmake -GNinja -DRUN_IWYU=ON -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/_build
@@ -43,7 +38,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # clang-format comes pre-installed
       # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md

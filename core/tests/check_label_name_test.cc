@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
+#include <string>
+
 #include "prometheus/check_names.h"
+#include "prometheus/metric_type.h"
 
 namespace prometheus {
 namespace {

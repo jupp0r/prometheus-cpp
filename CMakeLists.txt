@@ -105,6 +105,23 @@ if(ENABLE_WARNINGS_AS_ERRORS AND NOT MSVC)
   )
 endif()
 
+# pkgconfig
+
+if(GENERATE_PKGCONFIG)
+  # see https://github.com/jupp0r/prometheus-cpp/issues/587
+  if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+    set(PROMETHEUS_CPP_PKGCONFIG_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
+  else()
+    set(PROMETHEUS_CPP_PKGCONFIG_INCLUDEDIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+  endif()
+
+  if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+    set(PROMETHEUS_CPP_PKGCONFIG_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+  else()
+    set(PROMETHEUS_CPP_PKGCONFIG_LIBDIR "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+  endif()
+endif()
+
 # prometheus-cpp
 
 add_subdirectory(core)

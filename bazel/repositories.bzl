@@ -29,7 +29,7 @@ def prometheus_cpp_repositories():
         sha256 = "93fb2cd4b880656b4e8589c912a9fd092750166d555166370247f09d18f5d0c0",
         strip_prefix = "curl-7.83.1",
         urls = [
-            "https://github.com/curl/curl/releases/download/curl-7_82_0/curl-7.83.1.tar.gz",
+            "https://github.com/curl/curl/releases/download/curl-7_83_1/curl-7.83.1.tar.gz",
             "https://curl.haxx.se/download/curl-7.83.1.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",

@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
-libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=@PROMETHEUS_CPP_PKGCONFIG_INCLUDEDIR@
+libdir=@PROMETHEUS_CPP_PKGCONFIG_LIBDIR@
 
 Name: @PROJECT_NAME@-core
 Description: @PROJECT_DESCRIPTION@

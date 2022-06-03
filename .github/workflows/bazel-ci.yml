@@ -41,11 +41,17 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install telegraf
 
+      - name: Build with SSL
+        run: bazel build --config=ssl ${{ matrix.bazel_args }} //...
+
+      - name: Test with SSL
+        run: bazel test --config=ssl ${{ matrix.bazel_args }} --test_output=all //...
+
       - name: Build
         run: bazel build ${{ matrix.bazel_args }} //...
 
       - name: Test
-        run: bazel test ${{ matrix.bazel_args }} --test_output=all //core/... //pull/...
+        run: bazel test ${{ matrix.bazel_args }} --test_output=all //...
 
       - name: Scraping Test
         if: runner.os != 'Windows'

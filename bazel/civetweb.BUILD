@@ -14,6 +14,39 @@ config_setting(
     ],
 )
 
+config_setting(
+    name = "with_ssl",
+    define_values = {
+        "with_civetweb_ssl": "true",
+    },
+    visibility = ["//visibility:public"],
+)
+
+COPTS = [
+    "-DUSE_IPV6",
+    "-DNDEBUG",
+    "-DNO_CGI",
+    "-DNO_CACHING",
+    "-DNO_FILES",
+    "-UDEBUG",
+] + select({
+    ":with_ssl": [
+        "-DOPENSSL_API_1_1",
+        "-DNO_SSL_DL",
+    ],
+    "@//conditions:default": [
+        "-DNO_SSL",
+    ],
+})
+
+DEPS = select({
+    ":with_ssl": [
+        "@boringssl//:crypto",
+        "@boringssl//:ssl",
+    ],
+    "@//conditions:default": [],
+})
+
 cc_library(
     name = "libcivetweb",
     srcs = [
@@ -23,15 +56,7 @@ cc_library(
     hdrs = [
         "include/civetweb.h",
     ],
-    copts = [
-        "-DUSE_IPV6",
-        "-DNDEBUG",
-        "-DNO_CGI",
-        "-DNO_CACHING",
-        "-DNO_SSL",
-        "-DNO_FILES",
-        "-UDEBUG",
-    ],
+    copts = COPTS,
     includes = [
         "include",
     ],
@@ -48,6 +73,7 @@ cc_library(
         "src/handle_form.inl",
     ],
     visibility = ["//visibility:public"],
+    deps = DEPS,
 )
 
 cc_library(
@@ -58,14 +84,7 @@ cc_library(
     hdrs = [
         "include/CivetServer.h",
     ],
-    copts = [
-        "-DUSE_IPV6",
-        "-DNDEBUG",
-        "-DNO_CGI",
-        "-DNO_CACHING",
-        "-DNO_SSL",
-        "-DNO_FILES",
-    ],
+    copts = COPTS,
     includes = [
         "include",
     ],

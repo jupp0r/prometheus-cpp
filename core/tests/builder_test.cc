@@ -14,6 +14,7 @@
 #include "prometheus/family.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/labels.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
@@ -88,6 +89,14 @@ TEST_F(BuilderTest, build_histogram) {
                      .Labels(const_labels)
                      .Register(registry);
   family.Add(more_labels, Histogram::BucketBoundaries{1, 2});
+
+  verifyCollectedLabels();
+}
+
+TEST_F(BuilderTest, build_info) {
+  auto& family =
+      BuildInfo().Name(name).Help(help).Labels(const_labels).Register(registry);
+  family.Add(more_labels);
 
   verifyCollectedLabels();
 }

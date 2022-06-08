@@ -16,6 +16,7 @@ namespace prometheus {
 class Counter;
 class Gauge;
 class Histogram;
+class Info;
 class Summary;
 
 namespace detail {
@@ -33,7 +34,7 @@ class Builder;  // IWYU pragma: keep
 /// that returns zero or more metrics and their samples. The metrics are
 /// represented by the class Family<>, which implements the Collectable
 /// interface. A new metric is registered with BuildCounter(), BuildGauge(),
-/// BuildHistogram() or BuildSummary().
+/// BuildHistogram(), BuildInfo() or BuildSummary().
 ///
 /// The class is thread-safe. No concurrent call to any API of this type causes
 /// a data race.
@@ -111,6 +112,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   std::vector<std::unique_ptr<Family<Counter>>> counters_;
   std::vector<std::unique_ptr<Family<Gauge>>> gauges_;
   std::vector<std::unique_ptr<Family<Histogram>>> histograms_;
+  std::vector<std::unique_ptr<Family<Info>>> infos_;
   std::vector<std::unique_ptr<Family<Summary>>> summaries_;
   mutable std::mutex mutex_;
 };

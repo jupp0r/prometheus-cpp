@@ -9,6 +9,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/exposer.h"
 #include "prometheus/family.h"
+#include "prometheus/info.h"
 #include "prometheus/registry.h"
 
 int main() {
@@ -49,6 +50,11 @@ int main() {
                                     .Help("Number of HTTP requests")
                                     .Register(*registry);
 
+  auto& version_info = BuildInfo()
+                           .Name("versions")
+                           .Help("Static info about the library")
+                           .Register(*registry);
+  version_info.Add({{"prometheus", "1.0"}});
   // ask the exposer to scrape the registry on incoming HTTP requests
   exposer.RegisterCollectable(registry);
 

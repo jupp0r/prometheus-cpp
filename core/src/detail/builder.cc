@@ -4,6 +4,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 
@@ -37,6 +38,7 @@ Family<T>& Builder<T>::Register(Registry& registry) {
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Counter>;
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT Builder<Info>;
 template class PROMETHEUS_CPP_CORE_EXPORT Builder<Summary>;
 
 }  // namespace detail
@@ -44,6 +46,7 @@ template class PROMETHEUS_CPP_CORE_EXPORT Builder<Summary>;
 detail::Builder<Counter> BuildCounter() { return {}; }
 detail::Builder<Gauge> BuildGauge() { return {}; }
 detail::Builder<Histogram> BuildHistogram() { return {}; }
+detail::Builder<Info> BuildInfo() { return {}; }
 detail::Builder<Summary> BuildSummary() { return {}; }
 
 }  // namespace prometheus

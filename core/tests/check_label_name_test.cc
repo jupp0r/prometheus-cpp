@@ -43,7 +43,7 @@ TEST_P(CheckLabelNameTest, reject_quantile_for_histogram) {
 INSTANTIATE_TEST_SUITE_P(AllMetricTypes, CheckLabelNameTest,
                          testing::Values(MetricType::Counter, MetricType::Gauge,
                                          MetricType::Histogram,
-                                         MetricType::Summary,
+                                         MetricType::Info, MetricType::Summary,
                                          MetricType::Untyped));
 
 }  // namespace

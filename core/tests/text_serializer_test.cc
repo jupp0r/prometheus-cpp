@@ -9,6 +9,7 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/metric_family.h"
 #include "prometheus/metric_type.h"
 #include "prometheus/summary.h"
@@ -105,6 +106,14 @@ TEST_F(TextSerializerTest, shouldSerializeHistogram) {
   EXPECT_THAT(serialized, testing::HasSubstr(name + "_bucket{le=\"1\"} 1\n"));
   EXPECT_THAT(serialized,
               testing::HasSubstr(name + "_bucket{le=\"+Inf\"} 2\n"));
+}
+
+TEST_F(TextSerializerTest, shouldSerializeInfo) {
+  Info info;
+  metric = info.Collect();
+
+  const auto serialized = Serialize(MetricType::Info);
+  EXPECT_THAT(serialized, testing::HasSubstr(name + "_info 1"));
 }
 
 TEST_F(TextSerializerTest, shouldSerializeSummary) {

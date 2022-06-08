@@ -16,6 +16,7 @@
 // IWYU pragma: no_include "prometheus/counter.h"
 // IWYU pragma: no_include "prometheus/gauge.h"
 // IWYU pragma: no_include "prometheus/histogram.h"
+// IWYU pragma: no_include "prometheus/info.h"
 // IWYU pragma: no_include "prometheus/summary.h"
 
 namespace prometheus {

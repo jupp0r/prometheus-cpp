@@ -8,6 +8,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
@@ -62,6 +63,7 @@ TEST(RegistryTest, reject_different_type_than_counter) {
   EXPECT_NO_THROW(BuildCounter().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildGauge().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildHistogram().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildInfo().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildSummary().Name(same_name).Register(registry));
 }
 
@@ -72,6 +74,7 @@ TEST(RegistryTest, reject_different_type_than_gauge) {
   EXPECT_NO_THROW(BuildGauge().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildCounter().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildHistogram().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildInfo().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildSummary().Name(same_name).Register(registry));
 }
 
@@ -80,9 +83,21 @@ TEST(RegistryTest, reject_different_type_than_histogram) {
   Registry registry{};
 
   EXPECT_NO_THROW(BuildHistogram().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildInfo().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildCounter().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildGauge().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildSummary().Name(same_name).Register(registry));
+}
+
+TEST(RegistryTest, reject_different_type_than_info) {
+  const auto same_name = std::string{"same_name"};
+  Registry registry{};
+
+  EXPECT_NO_THROW(BuildInfo().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildCounter().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildGauge().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildSummary().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildHistogram().Name(same_name).Register(registry));
 }
 
 TEST(RegistryTest, reject_different_type_than_summary) {
@@ -93,6 +108,7 @@ TEST(RegistryTest, reject_different_type_than_summary) {
   EXPECT_ANY_THROW(BuildCounter().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildGauge().Name(same_name).Register(registry));
   EXPECT_ANY_THROW(BuildHistogram().Name(same_name).Register(registry));
+  EXPECT_ANY_THROW(BuildInfo().Name(same_name).Register(registry));
 }
 
 TEST(RegistryTest, throw_for_same_family_name) {

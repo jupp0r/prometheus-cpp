@@ -11,6 +11,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
@@ -124,6 +125,7 @@ ClientMetric Family<T>::CollectMetric(const Labels& metric_labels,
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Gauge>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Histogram>;
+template class PROMETHEUS_CPP_CORE_EXPORT Family<Info>;
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Summary>;
 
 }  // namespace prometheus

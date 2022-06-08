@@ -9,6 +9,7 @@ add_library(core
   src/family.cc
   src/gauge.cc
   src/histogram.cc
+  src/info.cc
   src/registry.cc
   src/serializer.cc
   src/summary.cc

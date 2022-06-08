@@ -6,6 +6,7 @@ add_executable(benchmarks
   counter_bench.cc
   gauge_bench.cc
   histogram_bench.cc
+  info_bench.cc
   registry_bench.cc
   summary_bench.cc
 )

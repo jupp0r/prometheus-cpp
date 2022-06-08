@@ -96,6 +96,13 @@ void SerializeGauge(std::ostream& out, const MetricFamily& family,
   WriteTail(out, metric);
 }
 
+void SerializeInfo(std::ostream& out, const MetricFamily& family,
+                   const ClientMetric& metric) {
+  WriteHead(out, family, metric, "_info");
+  WriteValue(out, metric.info.value);
+  WriteTail(out, metric);
+}
+
 void SerializeSummary(std::ostream& out, const MetricFamily& family,
                       const ClientMetric& metric) {
   auto& sum = metric.summary;
@@ -162,6 +169,14 @@ void SerializeFamily(std::ostream& out, const MetricFamily& family) {
       out << "# TYPE " << family.name << " gauge\n";
       for (auto& metric : family.metric) {
         SerializeGauge(out, family, metric);
+      }
+      break;
+    // info is not handled by prometheus, we use gauge as workaround
+    // (https://github.com/OpenObservability/OpenMetrics/blob/98ae26c87b1c3bcf937909a880b32c8be643cc9b/specification/OpenMetrics.md#info-1)
+    case MetricType::Info:
+      out << "# TYPE " << family.name << " gauge\n";
+      for (auto& metric : family.metric) {
+        SerializeInfo(out, family, metric);
       }
       break;
     case MetricType::Summary:

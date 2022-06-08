@@ -9,6 +9,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
+#include "prometheus/info.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
@@ -49,6 +50,7 @@ std::vector<MetricFamily> Registry::Collect() const {
   CollectAll(results, counters_);
   CollectAll(results, gauges_);
   CollectAll(results, histograms_);
+  CollectAll(results, infos_);
   CollectAll(results, summaries_);
 
   return results;
@@ -70,28 +72,38 @@ std::vector<std::unique_ptr<Family<Histogram>>>& Registry::GetFamilies() {
 }
 
 template <>
+std::vector<std::unique_ptr<Family<Info>>>& Registry::GetFamilies() {
+  return infos_;
+}
+
+template <>
 std::vector<std::unique_ptr<Family<Summary>>>& Registry::GetFamilies() {
   return summaries_;
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Counter>(const std::string& name) const {
-  return FamilyNameExists(name, gauges_, histograms_, summaries_);
+  return FamilyNameExists(name, gauges_, histograms_, infos_, summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Gauge>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, histograms_, summaries_);
+  return FamilyNameExists(name, counters_, histograms_, infos_, summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Histogram>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, gauges_, summaries_);
+  return FamilyNameExists(name, counters_, gauges_, infos_, summaries_);
+}
+
+template <>
+bool Registry::NameExistsInOtherType<Info>(const std::string& name) const {
+  return FamilyNameExists(name, counters_, gauges_, histograms_, summaries_);
 }
 
 template <>
 bool Registry::NameExistsInOtherType<Summary>(const std::string& name) const {
-  return FamilyNameExists(name, counters_, gauges_, histograms_);
+  return FamilyNameExists(name, counters_, gauges_, histograms_, infos_);
 }
 
 template <typename T>
@@ -143,6 +155,10 @@ template Family<Gauge>& Registry::Add(const std::string& name,
                                       const std::string& help,
                                       const Labels& labels);
 
+template Family<Info>& Registry::Add(const std::string& name,
+                                     const std::string& help,
+                                     const Labels& labels);
+
 template Family<Summary>& Registry::Add(const std::string& name,
                                         const std::string& help,
                                         const Labels& labels);
@@ -180,5 +196,8 @@ Registry::Remove(const Family<Summary>& family);
 
 template bool PROMETHEUS_CPP_CORE_EXPORT
 Registry::Remove(const Family<Histogram>& family);
+
+template bool PROMETHEUS_CPP_CORE_EXPORT
+Registry::Remove(const Family<Info>& family);
 
 }  // namespace prometheus

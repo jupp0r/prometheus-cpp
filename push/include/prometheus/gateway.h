@@ -58,6 +58,13 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   // Delete metrics from the given pushgateway (for configured instance labels).
   std::future<int> AsyncDeleteForInstance();
 
+  /**
+  * Add a custom http header, it must use after create gateway before push   
+  * `header` is the custom header, its content format is “key:value”, such 
+  *  as "user:gateway"
+  */
+  void AddOptHttpHeader(const std::string& header);
+
  private:
   std::string jobUri_;
   std::string labels_;

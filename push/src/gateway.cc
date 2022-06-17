@@ -164,4 +164,9 @@ void Gateway::CleanupStalePointers(
       std::end(collectables));
 }
 
+void Gateway::AddOptHttpHeader(const std::string& header)
+{
+  curlWrapper_->addOptHttpHeader(header);
+}
+
 }  // namespace prometheus

@@ -40,7 +40,24 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
 
   curl_slist* header_chunk = nullptr;
-  header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE);
+  header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE); 
+  if (nullptr == header_chunk)
+  {
+    return -1;
+  }
+
+  for (int i = 0; i < optHttpHeader_.size(); i++)
+  {
+    curl_slist* header_tmp = nullptr;
+    header_tmp = curl_slist_append(header_chunk, optHttpHeader_[i].c_str());
+    if (nullptr == header_tmp)
+    {
+      curl_slist_free_all(header_chunk);
+      return -1;
+    }
+
+    header_chunk = header_tmp;
+  }
   curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, header_chunk);
 
   if (!body.empty()) {
@@ -84,6 +101,11 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   }
 
   return response_code;
+}
+
+void CurlWrapper::addOptHttpHeader(const std::string& header)
+{
+  optHttpHeader_.push_back(header);
 }
 
 }  // namespace detail

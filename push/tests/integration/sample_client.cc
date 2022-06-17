@@ -52,6 +52,9 @@ int main() {
   // ask the pusher to push the metrics to the pushgateway
   gateway.RegisterCollectable(registry);
 
+  // add custom HTTP header
+  gateway.AddHttpHeader("Foo:foo");
+
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // increment the counter by one (second)

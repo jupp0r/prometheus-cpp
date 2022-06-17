@@ -22,12 +22,18 @@ CurlWrapper::CurlWrapper(const std::string& username,
     throw std::runtime_error("Cannot initialize easy curl!");
   }
 
+  optHttpHeader_ = curl_slist_append(nullptr, CONTENT_TYPE);
+  if (!optHttpHeader_) {
+    throw std::runtime_error("Cannot append the header of the content type");
+  }
+
   if (!username.empty()) {
     auth_ = username + ":" + password;
   }
 }
 
 CurlWrapper::~CurlWrapper() {
+  curl_slist_free_all(optHttpHeader_);
   curl_easy_cleanup(curl_);
   curl_global_cleanup();
 }
@@ -39,9 +45,7 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_reset(curl_);
   curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
 
-  curl_slist* header_chunk = nullptr;
-  header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE);
-  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, header_chunk);
+  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, optHttpHeader_);
 
   if (!body.empty()) {
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
@@ -77,13 +81,22 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   long response_code;
   curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
 
-  curl_slist_free_all(header_chunk);
-
   if (curl_error != CURLE_OK) {
     return -curl_error;
   }
 
   return response_code;
+}
+
+bool CurlWrapper::addHttpHeader(const std::string& header) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto updated_header = curl_slist_append(optHttpHeader_, header.c_str());
+  if (!updated_header) {
+    return false;
+  }
+
+  optHttpHeader_ = updated_header;
+  return true;
 }
 
 }  // namespace detail

@@ -2,7 +2,6 @@
 
 #include <mutex>
 #include <string>
-#include <vector>
 
 #include "prometheus/detail/http_method.h"
 
@@ -22,13 +21,13 @@ class CurlWrapper {
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
                          const std::string& body);
-  void addOptHttpHeader(const std::string& header);
+  int addOptHttpHeader(const std::string& header);
 
  private:
   CURL* curl_;
   std::string auth_;
   std::mutex mutex_;
-  std::vector<std::string> optHttpHeader_;
+  curl_slist* optHttpHeader_;
 };
 
 }  // namespace detail

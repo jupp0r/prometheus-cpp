@@ -20,7 +20,7 @@ namespace prometheus {
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password) {
-  curlWrapper_ = std::make_unique<detail::CurlWrapper>(username, password);
+  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username, password);
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics/job/" << jobname;
@@ -164,9 +164,10 @@ void Gateway::CleanupStalePointers(
       std::end(collectables));
 }
 
-void Gateway::AddOptHttpHeader(const std::string& header)
+int Gateway::AddHttpHeader(const std::string& header)
 {
-  curlWrapper_->addOptHttpHeader(header);
+  std::lock_guard<std::mutex> lock{mutex_};
+  return curlWrapper_->addOptHttpHeader(header);
 }
 
 }  // namespace prometheus

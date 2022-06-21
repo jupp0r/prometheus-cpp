@@ -21,7 +21,7 @@ class CurlWrapper {
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
                          const std::string& body);
-  int addOptHttpHeader(const std::string& header);
+  int addHttpHeader(const std::string& header);
 
  private:
   CURL* curl_;

@@ -166,8 +166,7 @@ void Gateway::CleanupStalePointers(
 
 int Gateway::AddHttpHeader(const std::string& header)
 {
-  std::lock_guard<std::mutex> lock{mutex_};
-  return curlWrapper_->addOptHttpHeader(header);
+  return curlWrapper_->addHttpHeader(header);
 }
 
 }  // namespace prometheus

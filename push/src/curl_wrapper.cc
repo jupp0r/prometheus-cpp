@@ -30,10 +30,7 @@ CurlWrapper::CurlWrapper(const std::string& username,
 }
 
 CurlWrapper::~CurlWrapper() {
-  if (optHttpHeader_ != nullptr)
-  {
-    curl_slist_free_all(optHttpHeader_);
-  }
+  curl_slist_free_all(optHttpHeader_);
   curl_easy_cleanup(curl_);
   curl_global_cleanup();
 }
@@ -111,11 +108,10 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   return response_code;
 }
 
-int CurlWrapper::addOptHttpHeader(const std::string& header)
+int CurlWrapper::addHttpHeader(const std::string& header)
 {
   std::lock_guard<std::mutex> lock{mutex_};
-  curl_slist* header_tmp = nullptr;
-  header_tmp = curl_slist_append(optHttpHeader_, header.c_str());
+  auto header_tmp = curl_slist_append(optHttpHeader_, header.c_str());
   if (nullptr == header_tmp)
   {
     return -1;

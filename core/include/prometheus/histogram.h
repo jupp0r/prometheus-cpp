@@ -65,6 +65,13 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   void ObserveMultiple(const std::vector<double>& bucket_increments,
                        double sum_of_values);
 
+  /// \brief Transfer the contents of one histogram to other
+  ///
+  /// All buckets and sum are transferred from one histogram to the other. This
+  /// is especially useful if histogram is tracked elsewhere but report in
+  /// prometheus system.
+  void TransferBucketCounters(const std::vector<double> & counter_values, double sum);
+
   /// \brief Get the current value of the histogram.
   ///
   /// Collect is called by the Registry when collecting metrics.

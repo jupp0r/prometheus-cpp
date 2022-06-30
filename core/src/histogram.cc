@@ -64,6 +64,22 @@ void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
   }
 }
 
+void Histogram::TransferBucketCounters(const std::vector<double> & counter_values, double sum) {
+  double sum_diff = sum - sum_.Value();
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  auto bkts_size = std::min(bucket_counts_.size(), counter_values.size());
+  for (std::size_t i = 0; i < bkts_size; ++i) {
+    double current_value = bucket_counts_[i].Value();
+    double diff = counter_values[i] - current_value;
+    // if diff turns out to  be "-0.00", i.e., <0, gaugue increment will discard it.
+    bucket_counts_[i].Increment(diff);
+  }
+
+  // if sum_diff turns out to  be "-0.00", i.e., <0, gaugue increment will discard it.
+  sum_.Increment(sum_diff);
+}
+
 ClientMetric Histogram::Collect() const {
   std::lock_guard<std::mutex> lock(mutex_);
 

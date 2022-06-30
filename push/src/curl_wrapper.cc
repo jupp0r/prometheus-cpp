@@ -22,7 +22,10 @@ CurlWrapper::CurlWrapper(const std::string& username,
     throw std::runtime_error("Cannot initialize easy curl!");
   }
 
-  optHttpHeader_ = nullptr;
+  optHttpHeader_ = curl_slist_append(nullptr, CONTENT_TYPE);
+  if (!optHttpHeader_) {
+    throw std::runtime_error("Cannot append the header of the content type");
+  }
 
   if (!username.empty()) {
     auth_ = username + ":" + password;
@@ -42,28 +45,7 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_reset(curl_);
   curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
 
-  curl_slist* header_chunk = nullptr;
-  header_chunk = curl_slist_append(header_chunk, CONTENT_TYPE); 
-  if (nullptr == header_chunk)
-  {
-    return -1;
-  }
-
-  curl_slist* optHeader_tmp = optHttpHeader_;
-  while (optHeader_tmp)
-  {
-    curl_slist* header_tmp = curl_slist_append(header_chunk, optHeader_tmp->data);
-    if (nullptr == header_tmp)
-    {
-      curl_slist_free_all(header_chunk);
-      return -1;
-    }
-
-    header_chunk = header_tmp;
-    optHeader_tmp = optHeader_tmp->next;
-  }
-
-  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, header_chunk);
+  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, optHttpHeader_);
 
   if (!body.empty()) {
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
@@ -98,8 +80,6 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
 
   long response_code;
   curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
-
-  curl_slist_free_all(header_chunk);
 
   if (curl_error != CURLE_OK) {
     return -curl_error;

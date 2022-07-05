@@ -1,9 +1,10 @@
 name: Renovate
 on:
-  schedule:
+  workflow_dispatch
+  #schedule:
     # The "*" (#42, asterisk) character has special semantics in YAML, so this
     # string has to be quoted.
-    - cron: '22 2 * * *'
+    #- cron: '22 2 * * *'
 jobs:
   renovate:
     runs-on: ubuntu-latest

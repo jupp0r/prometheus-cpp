@@ -65,6 +65,12 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   void ObserveMultiple(const std::vector<double>& bucket_increments,
                        double sum_of_values);
 
+  /// \brief Reset all data points collected so far.
+  ///
+  /// All buckets and sum are reset to its oringal value. This is especially
+  /// useful if histogram is tracked elsewhere but report in prometheus system.
+  void Reset();
+
   /// \brief Get the current value of the histogram.
   ///
   /// Collect is called by the Registry when collecting metrics.

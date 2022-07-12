@@ -37,5 +37,15 @@ TEST(CounterTest, inc_negative_value) {
   EXPECT_EQ(counter.Value(), 5.0);
 }
 
+TEST(CounterTest, reset) {
+  Counter counter;
+  counter.Increment();
+  counter.Reset();
+  EXPECT_EQ(counter.Value(), 0.0);
+  counter.Increment(5);
+  counter.Increment();
+  EXPECT_EQ(counter.Value(), 6.0);
+}
+
 }  // namespace
 }  // namespace prometheus

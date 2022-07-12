@@ -118,6 +118,26 @@ TEST(HistogramTest, observe_multiple_test_length_error) {
   ASSERT_THROW(histogram.ObserveMultiple({5, 9}, 20), std::length_error);
 }
 
+TEST(HistogramTest, test_reset) {
+  Histogram histogram{{1, 2}};
+  histogram.ObserveMultiple({5, 9, 3}, 20);
+  histogram.ObserveMultiple({0, 20, 6}, 34);
+  histogram.Reset();
+  auto metric = histogram.Collect();
+  auto h = metric.histogram;
+  EXPECT_EQ(h.sample_count, 0U);
+  EXPECT_EQ(h.sample_sum, 0U);
+  EXPECT_EQ(h.bucket.at(0).cumulative_count, 0U);
+  EXPECT_EQ(h.bucket.at(1).cumulative_count, 0U);
+  EXPECT_EQ(h.bucket.at(2).cumulative_count, 0U);
+  histogram.ObserveMultiple({5, 9, 3}, 20);
+  histogram.ObserveMultiple({0, 20, 6}, 34);
+  metric = histogram.Collect();
+  h = metric.histogram;
+  EXPECT_EQ(h.sample_count, 43U);
+  EXPECT_EQ(h.sample_sum, 54);
+}
+
 TEST(HistogramTest, sum_can_go_down) {
   Histogram histogram{{1}};
   auto metric1 = histogram.Collect();

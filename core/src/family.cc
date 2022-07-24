@@ -61,12 +61,11 @@ T& Family<T>::Add(const Labels& labels, std::unique_ptr<T> object) {
 template <typename T>
 void Family<T>::Remove(T* metric) {
   std::lock_guard<std::mutex> lock{mutex_};
-
-  for (auto it = metrics_.begin(); it != metrics_.end(); ++it) {
-    if (it->second.get() == metric) {
-      metrics_.erase(it);
-      break;
-    }
+  const auto it =
+      std::find_if(std::begin(metrics_), std::end(metrics_),
+                   [&metric](auto&& it) { return it.second.get() == metric; });
+  if (it != std::end(metrics_)) {
+    metrics_.erase(it);
   }
 }
 

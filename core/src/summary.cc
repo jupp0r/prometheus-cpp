@@ -5,21 +5,34 @@
 namespace prometheus {
 
 Summary::Summary(const Quantiles& quantiles,
-                 const std::chrono::milliseconds max_age, const int age_buckets)
+                 const std::chrono::milliseconds max_age, const int age_buckets,
+                 const double sample_ratio)
     : quantiles_{quantiles},
-      quantile_values_{quantiles_, max_age, age_buckets} {}
+      quantile_values_{quantiles_, max_age, age_buckets} {
+  if (sample_ratio > 0 && sample_ratio < 1) {
+    sample_ratio_threshold_ = sample_ratio * RAND_MAX;
+  }
+}
 
 Summary::Summary(Quantiles&& quantiles, const std::chrono::milliseconds max_age,
-                 const int age_buckets)
+                 const int age_buckets, const double sample_ratio)
     : quantiles_{std::move(quantiles)},
-      quantile_values_{quantiles_, max_age, age_buckets} {}
+      quantile_values_{quantiles_, max_age, age_buckets} {
+  if (sample_ratio > 0 && sample_ratio < 1) {
+    sample_ratio_threshold_ = sample_ratio * RAND_MAX;
+  }
+}
 
 void Summary::Observe(const double value) {
+  bool should_observe =
+      (sample_ratio_threshold_ == 0 || sample_ratio_threshold_ < std::rand());
   std::lock_guard<std::mutex> lock(mutex_);
 
   count_ += 1;
   sum_ += value;
-  quantile_values_.insert(value);
+  if (should_observe) {
+    quantile_values_.insert(value);
+  }
 }
 
 ClientMetric Summary::Collect() const {

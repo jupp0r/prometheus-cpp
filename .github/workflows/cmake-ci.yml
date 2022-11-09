@@ -18,7 +18,7 @@ jobs:
 
       - name: Mount vcpkg cache
         if: matrix.dependencies == 'vcpkg'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ matrix.os }}

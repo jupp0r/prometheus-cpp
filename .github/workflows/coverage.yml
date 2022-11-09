@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Mount vcpkg cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ runner.os }}

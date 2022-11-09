@@ -92,7 +92,7 @@ int main() {
 
 ## Requirements
 
-Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successfully tested with GNU GCC 7.4 on Ubuntu Bionic (18.04) and Visual Studio 2017 (but Visual Studio 2015 should work, too).
+Using `prometheus-cpp` requires a C++14 compliant compiler. It has been successfully tested with GNU GCC 7.4 on Ubuntu Bionic (18.04) and Visual Studio 2017.
 
 ## Building
 
@@ -247,20 +247,19 @@ guidelines](https://chris.beams.io/posts/git-commit/).
 
 You can check out this repo and build the library using
 ``` bash
-bazel build //...           # build everything
-bazel build //core //pull   # build just the libraries
+bazel build --cxxopt=-std=c++14 //...
 ```
 
 Run the unit tests using
 ```
-bazel test //...
+bazel test --cxxopt=-std=c++14 //...
 ```
 
 There is also an integration test that
 uses [telegraf](https://github.com/influxdata/telegraf) to scrape a
 sample server. With telegraf installed, it can be run using
 ```
-bazel test //pull/tests/integration:scrape-test
+bazel test --cxxopt=-std=c++14 //pull/tests/integration:scrape-test
 ```
 
 ## Benchmarks

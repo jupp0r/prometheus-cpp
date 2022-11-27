@@ -139,5 +139,44 @@ TEST(FamilyTest, reject_summary_with_quantile_label) {
   EXPECT_ANY_THROW(family.Add(labels, quantiles));
 }
 
+TEST(FamilyTest, ignore_constant_labels_with_empty_value) {
+  auto labels = Labels{{"foo", "bar"}, {"label", ""}};
+  auto expected_labels = Labels{{"foo", "bar"}};
+
+  Family<Counter> family{"total_requests", "All Requests", labels};
+  EXPECT_EQ(expected_labels, family.GetConstantLabels());
+}
+
+TEST(FamilyTest, ignore_labels_with_empty_value_on_add) {
+  auto labels = Labels{{"foo", "bar"}, {"label", ""}};
+  auto expected_labels = Labels{{"foo", "bar"}};
+
+  Family<Counter> family{"total_requests", "All Requests", {}};
+  family.Add(labels);
+
+  EXPECT_TRUE(family.Has(expected_labels));
+}
+
+TEST(FamilyTest, ignore_labels_with_empty_value_for_has) {
+  auto labels = Labels{{"foo", "bar"}};
+  auto accepted_labels = Labels{{"foo", "bar"}, {"label", ""}};
+
+  Family<Counter> family{"total_requests", "All Requests", {}};
+  family.Add(labels);
+
+  EXPECT_TRUE(family.Has(accepted_labels));
+}
+
+TEST(FamilyTest, ignore_labels_with_empty_value_and_merge) {
+  auto labelsA = Labels{{"foo", "bar"}};
+  auto labelsB = Labels{{"foo", "bar"}, {"label", ""}};
+
+  Family<Counter> family{"total_requests", "All Requests", {}};
+  auto& a = family.Add(labelsA);
+  auto& b = family.Add(labelsB);
+
+  EXPECT_EQ(&a, &b);
+}
+
 }  // namespace
 }  // namespace prometheus

@@ -7,6 +7,7 @@
 
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/histogram.h"
 #include "prometheus/labels.h"
 #include "prometheus/summary.h"
@@ -81,16 +82,16 @@ TEST(FamilyTest, add_twice) {
 
 TEST(FamilyTest, throw_on_invalid_metric_name) {
   auto create_family_with_invalid_name = []() {
-    return std::make_unique<Family<Counter>>("", "empty name", Labels{});
+    return detail::make_unique<Family<Counter>>("", "empty name", Labels{});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_name());
 }
 
 TEST(FamilyTest, throw_on_invalid_constant_label_name) {
   auto create_family_with_invalid_labels = []() {
-    return std::make_unique<Family<Counter>>("total_requests",
-                                             "Counts all requests",
-                                             Labels{{"__invalid", "counter1"}});
+    return detail::make_unique<Family<Counter>>(
+        "total_requests", "Counts all requests",
+        Labels{{"__inavlid", "counter1"}});
   };
   EXPECT_ANY_THROW(create_family_with_invalid_labels());
 }
@@ -118,7 +119,8 @@ TEST(FamilyTest, query_family_if_metric_already_exists) {
 
 TEST(FamilyTest, reject_histogram_with_constant_le_label) {
   auto labels = Labels{{"le", "test"}};
-  EXPECT_ANY_THROW(std::make_unique<Family<Histogram>>("name", "help", labels));
+  EXPECT_ANY_THROW(
+      detail::make_unique<Family<Histogram>>("name", "help", labels));
 }
 
 TEST(FamilyTest, reject_histogram_with_le_label) {
@@ -129,7 +131,8 @@ TEST(FamilyTest, reject_histogram_with_le_label) {
 
 TEST(FamilyTest, reject_summary_with_constant_quantile_label) {
   auto labels = Labels{{"quantile", "test"}};
-  EXPECT_ANY_THROW(std::make_unique<Family<Summary>>("name", "help", labels));
+  EXPECT_ANY_THROW(
+      detail::make_unique<Family<Summary>>("name", "help", labels));
 }
 
 TEST(FamilyTest, reject_summary_with_quantile_label) {

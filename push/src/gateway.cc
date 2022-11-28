@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "curl_wrapper.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"  // IWYU pragma: keep
 #include "prometheus/text_serializer.h"
 
@@ -20,7 +21,7 @@ namespace prometheus {
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password) {
-  curlWrapper_ = std::make_unique<detail::CurlWrapper>(username, password);
+  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username, password);
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics/job/" << jobname;

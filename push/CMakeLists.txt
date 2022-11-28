@@ -11,7 +11,7 @@ add_library(${PROJECT_NAME}::push ALIAS push)
 
 target_compile_features(push
   PUBLIC
-    cxx_std_14
+    cxx_std_11
 )
 
 target_link_libraries(push

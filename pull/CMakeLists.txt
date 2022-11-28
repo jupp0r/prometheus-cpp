@@ -39,7 +39,7 @@ add_library(${PROJECT_NAME}::pull ALIAS pull)
 
 target_compile_features(pull
   PUBLIC
-    cxx_std_14
+    cxx_std_11
 )
 
 target_link_libraries(pull

@@ -1,10 +1,10 @@
 #include "endpoint.h"
 
-#include <memory>
 #include <utility>
 
 #include "basic_auth.h"
 #include "handler.h"
+#include "prometheus/detail/future_std.h"
 
 namespace prometheus {
 namespace detail {
@@ -21,7 +21,8 @@ Endpoint::Endpoint(CivetServer& server, std::string uri)
     : server_(server),
       uri_(std::move(uri)),
       endpoint_registry_(std::make_shared<Registry>()),
-      metrics_handler_(std::make_unique<MetricsHandler>(*endpoint_registry_)) {
+      metrics_handler_(
+          detail::make_unique<MetricsHandler>(*endpoint_registry_)) {
   RegisterCollectable(endpoint_registry_);
   server_.addHandler(uri_, metrics_handler_.get());
 }
@@ -46,7 +47,7 @@ void Endpoint::RegisterAuth(
   // split creating, assigning, and storing to avoid a race-condition when
   // being called the second time and the handler is replaced
   auto new_handler =
-      std::make_unique<BasicAuthHandler>(std::move(authCB), realm);
+      detail::make_unique<BasicAuthHandler>(std::move(authCB), realm);
   server_.addAuthHandler(uri_, new_handler.get());
   auth_handler_ = std::move(new_handler);
 }

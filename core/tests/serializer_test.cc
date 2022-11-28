@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "prometheus/counter.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/family.h"
 #include "prometheus/metric_family.h"
 #include "prometheus/text_serializer.h"
@@ -40,7 +41,7 @@ TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
   // ignore missing locale and skip test if setup fails
   try {
     localeWithCommaDecimalSeparator =
-        std::make_unique<RAIILocale>("de_DE.UTF-8");
+        detail::make_unique<RAIILocale>("de_DE.UTF-8");
   } catch (std::runtime_error&) {
     GTEST_SKIP();
   }

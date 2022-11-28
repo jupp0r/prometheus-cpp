@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "prometheus/counter.h"
+#include "prometheus/detail/future_std.h"
 #include "prometheus/exposer.h"
 #include "prometheus/family.h"
 #include "prometheus/registry.h"
@@ -22,7 +23,7 @@ using namespace testing;
 class IntegrationTest : public testing::Test {
  public:
   void SetUp() override {
-    exposer_ = std::make_unique<Exposer>("127.0.0.1:0");
+    exposer_ = detail::make_unique<Exposer>("127.0.0.1:0");
     auto ports = exposer_->GetListeningPorts();
     base_url_ = std::string("http://127.0.0.1:") + std::to_string(ports.at(0));
   }

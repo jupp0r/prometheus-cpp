@@ -8,14 +8,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        include:
-          - os: macOS-latest
-            bazel_args: "--cxxopt=-std=c++14"
-          - os: ubuntu-latest
-            bazel_args: "--cxxopt=-std=c++14"
-          - os: windows-latest
-            bazel_args: "--cxxopt=/std:c++14"
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -48,14 +40,14 @@ jobs:
         run: bazel test --config=ssl ${{ matrix.bazel_args }} --test_output=all //...
 
       - name: Build
-        run: bazel build ${{ matrix.bazel_args }} //...
+        run: bazel build //...
 
       - name: Test
         run: bazel test ${{ matrix.bazel_args }} --test_output=all //...
 
       - name: Scraping Test
         if: runner.os != 'Windows'
-        run: bazel test ${{ matrix.bazel_args }} --test_output=all //pull/tests/integration:scrape-test
+        run: bazel test --test_output=all //pull/tests/integration:scrape-test
 
       - name: Benchmark
-        run: bazel run ${{ matrix.bazel_args }} -c opt //core/benchmarks
+        run: bazel run -c opt //core/benchmarks

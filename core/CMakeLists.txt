@@ -20,7 +20,7 @@ add_library(${PROJECT_NAME}::core ALIAS core)
 
 target_compile_features(core
   PUBLIC
-    cxx_std_14
+    cxx_std_11
 )
 
 target_link_libraries(core

@@ -4,7 +4,6 @@
 #include <cassert>
 #include <map>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 
 #include "prometheus/check_names.h"

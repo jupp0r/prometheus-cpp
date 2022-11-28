@@ -20,7 +20,8 @@ Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads,
 
 Exposer::Exposer(std::vector<std::string> options,
                  const CivetCallbacks* callbacks)
-    : server_(std::make_unique<CivetServer>(std::move(options), callbacks)) {}
+    : server_(std::unique_ptr<CivetServer>(
+          new CivetServer(std::move(options), callbacks))) {}
 
 Exposer::~Exposer() = default;
 
@@ -59,7 +60,8 @@ detail::Endpoint& Exposer::GetEndpointForUri(const std::string& uri) {
     return *it->get();
   }
 
-  endpoints_.emplace_back(std::make_unique<detail::Endpoint>(*server_, uri));
+  endpoints_.emplace_back(
+      std::unique_ptr<detail::Endpoint>(new detail::Endpoint(*server_, uri)));
   return *endpoints_.back().get();
 }
 

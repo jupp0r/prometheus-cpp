@@ -141,7 +141,7 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     throw std::invalid_argument("Family name already exists");
   }
 
-  auto family = std::make_unique<Family<T>>(name, help, labels);
+  auto family = std::unique_ptr<Family<T>>(new Family<T>(name, help, labels));
   auto& ref = *family;
   families.push_back(std::move(family));
   return ref;

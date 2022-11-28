@@ -22,7 +22,7 @@ using namespace testing;
 class IntegrationTest : public testing::Test {
  public:
   void SetUp() override {
-    exposer_ = std::make_unique<Exposer>("127.0.0.1:0");
+    exposer_ = std::unique_ptr<Exposer>(new Exposer("127.0.0.1:0"));
     auto ports = exposer_->GetListeningPorts();
     base_url_ = std::string("http://127.0.0.1:") + std::to_string(ports.at(0));
   }

@@ -40,7 +40,7 @@ TEST_F(SerializerTest, shouldSerializeLocaleIndependent) {
   // ignore missing locale and skip test if setup fails
   try {
     localeWithCommaDecimalSeparator =
-        std::make_unique<RAIILocale>("de_DE.UTF-8");
+        std::unique_ptr<RAIILocale>(new RAIILocale("de_DE.UTF-8"));
   } catch (std::runtime_error&) {
     GTEST_SKIP();
   }

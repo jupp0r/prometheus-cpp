@@ -110,7 +110,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// \throw std::runtime_exception on invalid label names.
   template <typename... Args>
   T& Add(const Labels& labels, Args&&... args) {
-    return Add(labels, std::make_unique<T>(args...));
+    return Add(labels, std::unique_ptr<T>(new T(args...)));
   }
 
   /// \brief Remove the given dimensional data.

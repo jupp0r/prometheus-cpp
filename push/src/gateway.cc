@@ -20,7 +20,8 @@ namespace prometheus {
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password) {
-  curlWrapper_ = std::make_unique<detail::CurlWrapper>(username, password);
+  curlWrapper_ = std::unique_ptr<detail::CurlWrapper>(
+      new detail::CurlWrapper(username, password));
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics/job/" << jobname;

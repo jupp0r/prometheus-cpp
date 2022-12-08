@@ -6,4 +6,5 @@ add_executable(sample_client
 target_link_libraries(sample_client
   PRIVATE
     ${PROJECT_NAME}::push
+    $<$<BOOL:${WIN32}>:Ws2_32>
 )

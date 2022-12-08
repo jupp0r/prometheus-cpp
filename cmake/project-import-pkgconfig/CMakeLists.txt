@@ -12,7 +12,7 @@ pkg_check_modules(PROMETHEUS_CPP_PULL IMPORTED_TARGET prometheus-cpp-pull)
 
 if(PROMETHEUS_CPP_PUSH_FOUND)
   add_executable(sample-client sample_client.cc)
-  target_link_libraries(sample-client PRIVATE PkgConfig::PROMETHEUS_CPP_PUSH)
+  target_link_libraries(sample-client PRIVATE PkgConfig::PROMETHEUS_CPP_PUSH $<$<BOOL:${WIN32}>:Ws2_32>)
 endif()
 
 if(PROMETHEUS_CPP_PULL_FOUND)

@@ -8,7 +8,7 @@ find_package(prometheus-cpp CONFIG REQUIRED)
 
 if(PROMETHEUS_CPP_ENABLE_PUSH)
   add_executable(sample-client sample_client.cc)
-  target_link_libraries(sample-client PRIVATE prometheus-cpp::push)
+  target_link_libraries(sample-client PRIVATE prometheus-cpp::push $<$<BOOL:${WIN32}>:Ws2_32>)
 endif()
 
 if(PROMETHEUS_CPP_ENABLE_PULL)

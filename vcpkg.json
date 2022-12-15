@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "prometheus-cpp",
+  "version": "1.1.0",
+  "dependencies": [
+    "benchmark",
+    "civetweb",
+    {
+      "name": "curl",
+      "default-features": false
+    },
+    "gtest",
+    "zlib"
+  ]
+}

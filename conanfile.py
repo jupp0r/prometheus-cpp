@@ -14,4 +14,8 @@ class PrometheusCpp(ConanFile):
         tc.cache_variables["USE_THIRDPARTY_LIBRARIES"] = False
         #tc.variables["MYVAR"] = "MYVAR_VALUE"
         #tc.preprocessor_definitions["MYDEFINE"] = "MYDEF_VALUE"
+        #tc.user_presets_path = ".."
         tc.generate()
+
+    def layout(self):
+        pass

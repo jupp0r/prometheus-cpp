@@ -1,9 +1,0 @@
-[requires]
-benchmark/1.7.1
-civetweb/1.15
-libcurl/7.86.0
-gtest/1.12.1
-zlib/1.2.13
-
-[generators]
-CMakeToolchain

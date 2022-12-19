@@ -6,5 +6,4 @@ gtest/1.12.1
 zlib/1.2.13
 
 [generators]
-CMakeDeps
 CMakeToolchain

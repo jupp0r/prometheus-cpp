@@ -27,8 +27,14 @@ class PrometheusCpp(ConanFile):
         #tc.user_presets_path = os.path.join(self.source_folder, '..')
         tc.generate()
 
-    #def layout(self):
-    #    self.build = self.generators_folder
-
     def layout(self):
-        cmake_layout(self)
+        BUILD_FOLDER_SUFFIX={
+            "None": "",
+            "Address": "_asan",
+            "Thread": "_tsan",
+            "Memory": "_msan",
+            "UndefinedBehavior": "_ubsan",
+        }
+        build_folder = "_build" + BUILD_FOLDER_SUFFIX[str(self.settings.compiler.sanitizer)]
+        cmake_layout(self, build_folder=build_folder)
+

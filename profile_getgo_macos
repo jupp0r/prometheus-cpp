@@ -16,3 +16,8 @@ os.version=11.0
 tools.cmake.cmaketoolchain:generator=Ninja
 tools.cmake.cmake_layout:build_folder_vars=["settings.compiler.sanitizer"]
 tools.env.virtualenv:auto_use=True
+
+# CLion requires version 3
+# https://www.jetbrains.com/help/clion/cmake-presets.html
+# https://youtrack.jetbrains.com/issue/CPP-29115/Support-CMakeUserPresets.json-version-4-with-include-statement
+#tools.cmake.cmaketoolchain.presets:max_schema_version=3

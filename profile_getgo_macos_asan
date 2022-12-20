@@ -1,0 +1,17 @@
+include(profile_getgo_macos)
+
+[settings]
+compiler.sanitizer=Address
+#compiler.cflags=["-fsanitize=address"]
+#compiler.cxxflags=["-fsanitize=address"]
+#compiler.ldflags=["-fsanitize=address"]
+
+[buildenv]
+CFLAGS+=-fsanitize=address
+CXXFLAGS+=-fsanitize=address
+LDFLAGS+=-fsanitize=address
+
+#[env]
+#CFLAGS=-fsanitize=address
+#CXXFLAGS=-fsanitize=address
+#LDFLAGS=-fsanitize=address

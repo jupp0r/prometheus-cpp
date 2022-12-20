@@ -9,11 +9,11 @@ class PrometheusCpp(ConanFile):
     generators = "CMakeDeps"
 
     def build_requirements(self):
-        if self.settings.os != "Windows":
-            self.build_requires("benchmark/1.7.1")
-        self.build_requires("civetweb/1.15")        
-        self.build_requires("libcurl/7.86.0")        
-        self.build_requires("gtest/1.12.1")        
+        #if self.settings.os != "Windows":
+        #    self.build_requires("benchmark/1.7.1")
+        #self.build_requires("civetweb/1.15")        
+        #self.build_requires("libcurl/7.86.0")        
+        #self.build_requires("gtest/1.12.1")        
         self.build_requires("zlib/1.2.13")        
 
     def configure(self):
@@ -28,13 +28,14 @@ class PrometheusCpp(ConanFile):
         tc.generate()
 
     def layout(self):
-        BUILD_FOLDER_SUFFIX={
-            "None": "",
-            "Address": "_asan",
-            "Thread": "_tsan",
-            "Memory": "_msan",
-            "UndefinedBehavior": "_ubsan",
-        }
-        build_folder = "_build" + BUILD_FOLDER_SUFFIX[str(self.settings.compiler.sanitizer)]
-        cmake_layout(self, build_folder=build_folder)
+        # BUILD_FOLDER_SUFFIX={
+        #     "None": "",
+        #     "Address": "_asan",
+        #     "Thread": "_tsan",
+        #     "Memory": "_msan",
+        #     "UndefinedBehavior": "_ubsan",
+        # }
+        # build_folder = "_build" + BUILD_FOLDER_SUFFIX[str(self.settings.compiler.sanitizer)]
+        # cmake_layout(self, build_folder=build_folder)
+        cmake_layout(self, build_folder="_build")
 

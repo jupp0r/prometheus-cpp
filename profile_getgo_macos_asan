@@ -6,10 +6,16 @@ compiler.sanitizer=Address
 #compiler.cxxflags=["-fsanitize=address"]
 #compiler.ldflags=["-fsanitize=address"]
 
-[buildenv]
-CFLAGS+=-fsanitize=address
-CXXFLAGS+=-fsanitize=address
-LDFLAGS+=-fsanitize=address
+[conf]
+tools.build:cflags=["-fsanitize=address"]
+tools.build:cxxflags=["-fsanitize=address"]
+tools.build:exelinkflags=["-fsanitize=address"]
+tools.build:sharedlinkflags=["-fsanitize=address"]
+
+#[buildenv]
+#CFLAGS+=-fsanitize=address
+#CXXFLAGS+=-fsanitize=address
+#LDFLAGS+=-fsanitize=address
 
 #[env]
 #CFLAGS=-fsanitize=address

@@ -14,4 +14,5 @@ os.version=11.0
 
 [conf]
 tools.cmake.cmaketoolchain:generator=Ninja
+tools.cmake.cmake_layout:build_folder_vars=["settings.compiler.sanitizer"]
 tools.env.virtualenv:auto_use=True

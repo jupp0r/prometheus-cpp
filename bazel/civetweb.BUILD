@@ -3,14 +3,14 @@ licenses(["notice"])  # MIT license
 config_setting(
     name = "osx",
     constraint_values = [
-        "@bazel_tools//platforms:osx",
+        "@platforms//os:osx",
     ],
 )
 
 config_setting(
     name = "windows",
     constraint_values = [
-        "@bazel_tools//platforms:windows",
+        "@platforms//os:windows",
     ],
 )
 

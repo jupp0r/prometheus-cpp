@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <forward_list>
 #include <limits>
 #include <memory>
 #include <stdexcept>
@@ -89,10 +90,24 @@ TEST(HistogramTest, cumulative_bucket_count) {
   EXPECT_EQ(h.bucket.at(2).cumulative_count, 7U);
 }
 
-TEST(HistogramTest, observe_multiple_test_bucket_counts) {
+TEST(HistogramTest, observe_multiple_test_bucket_counts_1) {
   Histogram histogram{{1, 2}};
   histogram.ObserveMultiple({5, 9, 3}, 20);
   histogram.ObserveMultiple({0, 20, 6}, 34);
+  auto metric = histogram.Collect();
+  auto h = metric.histogram;
+  ASSERT_EQ(h.bucket.size(), 3U);
+  EXPECT_EQ(h.bucket.at(0).cumulative_count, 5U);
+  EXPECT_EQ(h.bucket.at(1).cumulative_count, 34U);
+  EXPECT_EQ(h.bucket.at(2).cumulative_count, 43U);
+}
+
+TEST(HistogramTest, observe_multiple_test_bucket_counts_2) {
+  Histogram histogram{{1, 2}};
+  const std::forward_list<double> values1 = {5, 9, 3};
+  const std::forward_list<double> values2 = {0, 20, 6};
+  histogram.ObserveMultiple(values1.begin(), values1.end(), 20);
+  histogram.ObserveMultiple(values2.begin(), values2.end(), 34);
   auto metric = histogram.Collect();
   auto h = metric.histogram;
   ASSERT_EQ(h.bucket.size(), 3U);
@@ -111,11 +126,21 @@ TEST(HistogramTest, observe_multiple_test_total_sum) {
   EXPECT_EQ(h.sample_sum, 54);
 }
 
-TEST(HistogramTest, observe_multiple_test_length_error) {
+TEST(HistogramTest, observe_multiple_test_length_error1) {
   Histogram histogram{{1, 2}};
   // 2 bucket boundaries means there are 3 buckets, so giving just 2 bucket
   // increments should result in a length_error.
   ASSERT_THROW(histogram.ObserveMultiple({5, 9}, 20), std::length_error);
+}
+
+TEST(HistogramTest, observe_multiple_test_length_error2) {
+  Histogram histogram{{1, 2}};
+  const std::forward_list<double> values1 = {5, 9};
+  ASSERT_THROW(histogram.ObserveMultiple(values1.begin(), values1.end(), 20),
+               std::length_error);
+  const std::forward_list<double> values2 = {5, 9, 5, 6};
+  ASSERT_THROW(histogram.ObserveMultiple(values2.begin(), values2.end(), 20),
+               std::length_error);
 }
 
 TEST(HistogramTest, sum_can_go_down) {

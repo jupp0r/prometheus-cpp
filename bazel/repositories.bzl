@@ -47,7 +47,7 @@ def prometheus_cpp_repositories():
 
     maybe(
         http_archive,
-        name = "net_zlib_zlib",
+        name = "zlib",
         sha256 = "b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30",
         strip_prefix = "zlib-1.2.13",
         urls = [
@@ -70,3 +70,10 @@ def prometheus_cpp_repositories():
             "https://github.com/google/boringssl/archive/b9232f9e27e5668bc0414879dcdedb2a59ea75f2.tar.gz",
         ],
     )
+
+def _data_deps_extension_impl(ctx):
+    prometheus_cpp_repositories()
+
+data_deps_ext = module_extension(
+    implementation = _data_deps_extension_impl,
+)

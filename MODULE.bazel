@@ -1,0 +1,19 @@
+module(
+    name = "prometheus-cpp",
+    version = "1.1.0",
+    repo_name = "com_github_jupp0r_prometheus_cpp",
+)
+
+data_deps_ext = use_extension("//bazel:repositories.bzl", "data_deps_ext")
+use_repo(
+    data_deps_ext,
+    "civetweb",
+    "com_github_curl",
+    "com_github_google_benchmark",
+)
+
+bazel_dep(name = "boringssl", version = "0.0.0-20211025-d4f1ab9")
+bazel_dep(name = "googletest", version = "1.12.1", dev_dependency = True, repo_name = "com_google_googletest")
+bazel_dep(name = "platforms", version = "0.0.6", dev_dependency = True)
+bazel_dep(name = "rules_cc", version = "0.0.4", dev_dependency = True)
+bazel_dep(name = "zlib", version = "1.2.13")

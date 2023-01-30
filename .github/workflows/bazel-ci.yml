@@ -35,6 +35,9 @@ jobs:
       - name: Test with SSL
         run: bazel test --config=ssl ${{ matrix.bazel_args }} --test_output=all //...
 
+      - name: Build with SSL and bzlmod
+        run: bazel build --enable_bzlmod --config=ssl ${{ matrix.bazel_args }} //...
+
       - name: Build
         run: bazel build //...
 

@@ -23,7 +23,7 @@ cc_library(
     deps = [
         "//core",
         "@civetweb",
-        "@net_zlib_zlib//:z",
+        "@zlib",
     ],
 )
 

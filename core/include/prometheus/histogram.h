@@ -49,19 +49,29 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// \copydoc Histogram::Histogram(const BucketBoundaries&)
   explicit Histogram(BucketBoundaries&& buckets);
 
-  /// \brief Observe the given amount.
+  /// \brief Observe the given value.
   ///
-  /// The given amount selects the 'observed' bucket. The observed bucket is
-  /// chosen for which the given amount falls into the half-open interval [b_n,
-  /// b_n+1). The counter of the observed bucket is incremented. Also the total
-  /// sum of all observations is incremented.
-  void Observe(double value);
+  /// The given value selects the 'observed' bucket. The observed bucket is
+  /// chosen for which the given value falls into the half-open interval [b_n,
+  /// b_n+1). The counter of the observed bucket is incremented by the given
+  /// quantity. Also the total sum of all observations is incremented by
+  /// value*quantity.
+  ///
+  /// Passing a quantity!=1 can be seen as a generalization for real numbers of
+  /// calling Observe(value, 1) in a loop. The collected bucket counts will be
+  /// truncated but resulting rounding errors (other than those caused by
+  /// summing floating points) will not accumulate over time nor over cumulative
+  /// bucket counts. Same for the cumulative sum of the histogram.
+  void Observe(double value, double quantity = 1.0);
 
   /// \brief Observe multiple data points.
   ///
   /// Increments counters given a count for each bucket. (i.e. the caller of
   /// this function must have already sorted the values into buckets).
   /// Also increments the total sum of all observations by the given value.
+  ///
+  /// See the details in Observe(double, double) about floats when passing
+  /// non-integer values as bucket increments.
   void ObserveMultiple(const std::vector<double>& bucket_increments,
                        double sum_of_values);
 

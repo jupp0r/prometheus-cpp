@@ -200,7 +200,24 @@ cmake --build _build --target package --parallel $(nproc)
 
 This will place an appropriately named .deb in the
 `_build` folder. To build a RPM package set the `CPACK_GENERATOR`
-variable to `RPM`. 
+variable to `RPM`.
+
+Alternatively, rpm packages may be build by using a dedicated spec file and custom
+`rpm` target:
+
+``` shell
+# fetch third-party dependencies
+git submodule update --init
+
+# run cmake
+cmake -B_build -DENABLE_RPM_SPEC=ON -DBUILD_SHARED_LIBS=ON
+
+# build rpm package via custom target
+cmake --build _build --target rpm
+...
+ls _build/rpmbuild/RPMS/$(uname -m)/*.rpm
+
+```
 
 ## Consuming the installed project
 

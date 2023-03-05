@@ -26,6 +26,7 @@ option(THIRDPARTY_CIVETWEB_WITH_SSL "Enable SSL support for embedded civetweb so
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXFLAGS are configured differently" ON)
 option(GENERATE_PKGCONFIG "Generate and install pkg-config files" ${UNIX})
 option(RUN_IWYU "Run include-what-you-use" OFF)
+option(ENABLE_RPM_SPEC "Create rpm package using custom spec" OFF)
 
 if(OVERRIDE_CXX_STANDARD_FLAGS)
   set(CMAKE_CXX_STANDARD 11)
@@ -176,8 +177,60 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 
-  set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
-  set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+  # rpm packaging
+  if(ENABLE_RPM_SPEC)
+    set(CPACK_SOURCE_GENERATOR "TGZ")
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME
+      "${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+    string(TIMESTAMP RPMDATE "%a %b %d %Y")
+
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}.spec.cmake.in"
+      ${PROJECT_NAME}.spec
+    )
+
+    add_custom_command(OUTPUT "${CPACK_SOURCE_PACKAGE_FILE_NAME}.tar.gz"
+      COMMAND ${CMAKE_MAKE_PROGRAM} package_source
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+
+    add_custom_target(rpm-source-tgz
+      DEPENDS "${CPACK_SOURCE_PACKAGE_FILE_NAME}.tar.gz"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      VERBATIM
+    )
+
+    add_custom_target(rpm-prebuild
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/BUILDROOT
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/RPMS
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/SOURCES
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/SPECS
+      COMMAND ${CMAKE_COMMAND} -E make_directory rpmbuild/SRPMS
+      COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_NAME}.spec" rpmbuild/SPECS
+      COMMAND ${CMAKE_COMMAND} -E copy "${CPACK_SOURCE_PACKAGE_FILE_NAME}.tar.gz" rpmbuild/SOURCES
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS rpm-source-tgz
+      VERBATIM
+    )
+
+    string(CONCAT RPMBUILD_COMMAND "rpmbuild -ba --define "
+      "\"_topdir ${CMAKE_CURRENT_BINARY_DIR}/rpmbuild\" "
+      "rpmbuild/SPECS/${PROJECT_NAME}.spec"
+    )
+
+    add_custom_target(rpm
+      COMMAND sh -c "${RPMBUILD_COMMAND}"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS rpm-prebuild
+      COMMENT "Create rpm package"
+      VERBATIM
+    )
+  else()
+    set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
+    set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+  endif()
 
   include(CPack)
 endif()

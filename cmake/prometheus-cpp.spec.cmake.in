@@ -1,0 +1,64 @@
+%undefine _debugsource_packages
+%undefine _debuginfo_subpackages
+
+Name:           @CMAKE_PROJECT_NAME@
+Summary:        Prometheus Client Library for Modern C++
+Version:        @CMAKE_PROJECT_VERSION@
+Release:        1%{?dist}
+License:        MIT
+Group:          Development/Libraries
+Vendor:         The prometheus-cpp authors
+Url:            @CMAKE_PROJECT_HOMEPAGE_URL@
+Source:         @CPACK_SOURCE_PACKAGE_FILE_NAME@.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}.%{_arch}
+Requires:       libxcrypt
+BuildRequires:  cmake
+BuildRequires:  zlib-devel
+BuildRequires:  libcurl-devel
+
+%description
+This library aims to enable Metrics-Driven Development for C++ services. It
+implements the Prometheus Data Model, a powerful abstraction on which to
+collect and expose metrics. We offer the possibility for metrics to be
+collected by Prometheus, but other push/pull collections can be added as
+plugins.
+
+%package devel
+Summary: Prometheus Client Library C++ header files
+Group:          Development/Libraries
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+
+%description devel
+Development files for prometheus-cpp library.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%cmake -B %{_builddir} \
+  -DBUILD_SHARED_LIBS=ON \
+  -DGENERATE_PKGCONFIG=OFF \
+  -DCMAKE_INSTALL_PREFIX:PATH=%{buildroot}/usr
+
+%install
+cmake --build %{_builddir} --target install
+
+%clean
+
+%files
+%defattr(-,root,root,-)
+%{_libdir}/lib*.so.*
+%exclude %{_prefix}/lib/*
+%exclude %{_prefix}/src/*
+
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/prometheus/*
+%{_libdir}/lib*.so
+%{_libdir}/cmake/prometheus-cpp/prometheus-cpp*.cmake
+
+%changelog
+* @RPMDATE@ Shachar Sharon <ssharon@ibm.com> - @CMAKE_PROJECT_VERSION@-1
+  Prometheus-cpp rpm packaging
+
+

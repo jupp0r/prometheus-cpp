@@ -51,7 +51,6 @@ cc_library(
     name = "libcivetweb",
     srcs = [
         "src/civetweb.c",
-        "src/response.inl",
     ],
     hdrs = [
         "include/civetweb.h",
@@ -69,8 +68,11 @@ cc_library(
         "//conditions:default": ["-lrt"],
     }),
     textual_hdrs = [
-        "src/md5.inl",
         "src/handle_form.inl",
+        "src/match.inl",
+        "src/md5.inl",
+        "src/response.inl",
+        "src/sort.inl",
     ],
     visibility = ["//visibility:public"],
     deps = DEPS,

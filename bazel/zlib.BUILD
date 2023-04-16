@@ -12,5 +12,11 @@ cc_library(
         "-Dverbose=-1",
     ],
     includes = ["."],
+    local_defines = select({
+        "@bazel_tools//src/conditions:windows": [],
+        "//conditions:default": [
+            "Z_HAVE_UNISTD_H",
+        ],
+    }),
     visibility = ["//visibility:public"],
 )

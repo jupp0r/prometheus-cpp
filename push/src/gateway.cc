@@ -49,7 +49,10 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
   if (labels) {
     for (auto& label : *labels) {
-      ss << "/" << label.first << "/" << label.second;
+      // A single = is required to encode an empty label value into a URL,
+      // see https://github.com/prometheus/pushgateway#url
+      auto value_url_segment = label.second.empty() ? "=" : label.second;
+      ss << "/" << label.first << "/" << value_url_segment;
     }
   }
 

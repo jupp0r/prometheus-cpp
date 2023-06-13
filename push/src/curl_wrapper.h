@@ -20,7 +20,7 @@ class CurlWrapper {
   ~CurlWrapper();
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
-                         const std::string& body);
+                         const std::string& body, long timeout = 0L);
   bool addHttpHeader(const std::string& header);
 
  private:

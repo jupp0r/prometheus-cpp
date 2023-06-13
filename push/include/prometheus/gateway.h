@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -22,7 +23,8 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
  public:
   Gateway(const std::string& host, const std::string& port,
           const std::string& jobname, const Labels& labels = {},
-          const std::string& username = {}, const std::string& password = {});
+          const std::string& username = {}, const std::string& password = {},
+          std::chrono::seconds timeout = std::chrono::seconds{0});
 
   Gateway(const Gateway&) = delete;
   Gateway(Gateway&&) = delete;
@@ -68,6 +70,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string jobUri_;
   std::string labels_;
   std::unique_ptr<detail::CurlWrapper> curlWrapper_;
+  std::chrono::seconds timeout_{0};
   std::mutex mutex_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;

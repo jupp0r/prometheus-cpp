@@ -20,7 +20,9 @@ namespace prometheus {
 
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
-                 const std::string& username, const std::string& password) {
+                 const std::string& username, const std::string& password,
+                 std::chrono::seconds timeout)
+    : timeout_(timeout) {
   curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username, password);
 
   std::stringstream jobUriStream;
@@ -82,7 +84,8 @@ int Gateway::push(detail::HttpMethod method) {
     auto metrics = collectable->Collect();
     auto body = serializer.Serialize(metrics);
     auto uri = getUri(wcollectable);
-    auto status_code = curlWrapper_->performHttpRequest(method, uri, body);
+    auto status_code =
+        curlWrapper_->performHttpRequest(method, uri, body, timeout_.count());
 
     if (status_code < 100 || status_code >= 400) {
       return status_code;
@@ -116,7 +119,8 @@ std::future<int> Gateway::async_push(detail::HttpMethod method) {
     auto uri = getUri(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
-      return curlWrapper_->performHttpRequest(method, uri, *body);
+      return curlWrapper_->performHttpRequest(method, uri, *body,
+                                              timeout_.count());
     }));
   }
 
@@ -139,7 +143,7 @@ std::future<int> Gateway::async_push(detail::HttpMethod method) {
 
 int Gateway::Delete() {
   return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete, jobUri_,
-                                          {});
+                                          {}, timeout_.count());
 }
 
 std::future<int> Gateway::AsyncDelete() {
@@ -147,8 +151,8 @@ std::future<int> Gateway::AsyncDelete() {
 }
 
 int Gateway::DeleteForInstance() {
-  return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete,
-                                          jobUri_ + labels_, {});
+  return curlWrapper_->performHttpRequest(
+      detail::HttpMethod::Delete, jobUri_ + labels_, {}, timeout_.count());
 }
 
 std::future<int> Gateway::AsyncDeleteForInstance() {

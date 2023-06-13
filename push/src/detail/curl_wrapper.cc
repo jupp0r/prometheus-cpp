@@ -39,7 +39,7 @@ CurlWrapper::~CurlWrapper() {
 }
 
 int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
-                                    const std::string& body) {
+                                    const std::string& body, long timeout) {
   std::lock_guard<std::mutex> l(mutex_);
 
   curl_easy_reset(curl_);
@@ -75,6 +75,8 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
       curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
       break;
   }
+
+  curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout);
 
   auto curl_error = curl_easy_perform(curl_);
 

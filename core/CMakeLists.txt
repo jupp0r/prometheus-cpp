@@ -61,6 +61,26 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+if(GENERATE_PKGCONFIG)
+  set(PKGCONFIG_LIBS)
+  set(PKGCONFIG_REQUIRES)
+
+  if(HAVE_CXX_LIBATOMIC)
+    string(APPEND PKGCONFIG_LIBS " -latomic")
+  endif()
+
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/cmake/prometheus-cpp-core.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-core.pc
+    @ONLY
+  )
+
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-core.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endif()
+
 if(ENABLE_TESTING)
   add_subdirectory(tests)
 endif()

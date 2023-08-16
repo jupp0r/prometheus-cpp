@@ -1,7 +1,11 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(prometheus-cpp VERSION 0.9.0)
+project(prometheus-cpp
+  VERSION 0.9.0
+  DESCRIPTION "This library aims to enable Metrics-Driven Development for C++ services"
+  HOMEPAGE_URL "https://github.com/avidbots/prometheus-cpp"
+)
 
 include(GenerateExportHeader)
 include(GNUInstallDirs)
@@ -114,6 +118,30 @@ install(
   FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
+
+# packaging
+
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(CPACK_PACKAGE_CONTACT "Frank Imerson <frank.imerson@avidbots.com>")
+  set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}")
+  set(CPACK_PACKAGE_RELOCATABLE OFF)
+  set(CPACK_PACKAGE_VENDOR "Avidbots")
+
+  if(CMAKE_VERSION VERSION_LESS "3.12")
+    set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+    set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+    set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+  endif()
+
+  set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
+  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+  set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+
+  set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
+  set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+
+  include(CPack)
+endif()
 
 # summary
 

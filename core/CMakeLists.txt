@@ -79,6 +79,9 @@ if(GENERATE_PKGCONFIG)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/prometheus-cpp-core.pc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
   )
+
+  unset(PKGCONFIG_LIBS)
+  unset(PKGCONFIG_REQUIRES)
 endif()
 
 if(ENABLE_TESTING)

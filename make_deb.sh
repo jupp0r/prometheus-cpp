@@ -1,8 +1,12 @@
 #/bin/bash -ex
 # Create debian package
 
-cmake -B build -DCPACK_GENERATOR=DEB -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
-cmake --build build --target package --parallel $(nproc)
+rm -rf build
+mkdir -p build
+pushd build
+cmake .. -DCPACK_GENERATOR=DEB -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
+popd
+cmake --build build --target package
 
 exit 0;
 

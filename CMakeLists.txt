@@ -1,10 +1,9 @@
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 
 project(prometheus-cpp
   VERSION 0.9.0
   DESCRIPTION "This library aims to enable Metrics-Driven Development for C++ services"
-  HOMEPAGE_URL "https://github.com/avidbots/prometheus-cpp"
 )
 
 include(GenerateExportHeader)
@@ -126,6 +125,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}")
   set(CPACK_PACKAGE_RELOCATABLE OFF)
   set(CPACK_PACKAGE_VENDOR "Avidbots")
+  set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/avidbots/prometheus-cpp")
 
   if(CMAKE_VERSION VERSION_LESS "3.12")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")

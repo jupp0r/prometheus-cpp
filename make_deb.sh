@@ -1,6 +1,14 @@
 #/bin/bash -ex
 # Create debian package
 
+cmake -B build -DCPACK_GENERATOR=DEB -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build --target package --parallel $(nproc)
+
+exit 0;
+
+# Below is what it was before, I updated as much of the metadata as I could in CMakeLists,
+# some information might still be missing (like avidbots version suffix)
+
 echo "Usage: $0 <version>"
 
 if [ -z "$1" ]; then
@@ -25,7 +33,7 @@ pushd build
 #cmake .. -DINSTALL_DIR=$PACKAGE/opt/$DEBPACKAGE
 #cmake .. -DBUILD_SHARED_LIBS=ON
 cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
-make 
+make
 mkdir -p $PACKAGE
 make DESTDIR=`pwd`/$PACKAGE install
 
@@ -40,6 +48,6 @@ Maintainer: Frank Imerson <frank.imerson@avidbots.com>
 Homepage: https://github.com/avidbots/prometheus-cpp
 Description: This library aims to enable Metrics-Driven Development for C++ services
 EOF
-popd 
+popd
 
 dpkg-deb --build $PACKAGE

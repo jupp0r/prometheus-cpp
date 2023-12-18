@@ -47,6 +47,14 @@ TEST(Base64Test, encodeTest) {
   }
 }
 
+TEST(Base64Test, encodeUrlTest) {
+  const char unicodeText[] =
+      "\xce\xa0\xcf\x81\xce\xbf\xce\xbc\xce\xb7\xce\xb8\xce\xb5\xcf\x8d\xcf"
+      "\x82";  // Προμηθεύς
+  std::string encoded = detail::base64url_encode(unicodeText);
+  EXPECT_EQ("zqDPgc6_zrzOt864zrXPjc-C", encoded);
+}
+
 TEST(Base64Test, decodeTest) {
   for (const auto& test_case : testVector) {
     std::string decoded = detail::base64_decode(test_case.encoded);

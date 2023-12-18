@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -64,6 +65,17 @@ inline std::string base64_encode(const std::string& input) {
   }
 
   return encoded;
+}
+
+// https://tools.ietf.org/html/rfc4648#section-5
+inline std::string base64url_encode(const std::string& input) {
+  std::string s = base64_encode(input);
+  std::transform(begin(s), end(s), begin(s), [](char c) {
+    if (c == '+') return '-';
+    if (c == '/') return '_';
+    return c;
+  });
+  return s;
 }
 
 inline std::string base64_decode(const std::string& input) {

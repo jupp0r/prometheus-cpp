@@ -37,9 +37,9 @@ inline std::string base64_encode(const std::string& input) {
   auto it = input.begin();
 
   for (std::size_t i = 0; i < input.size() / 3; ++i) {
-    temp = (*it++) << 16;
-    temp += (*it++) << 8;
-    temp += (*it++);
+    temp = static_cast<std::uint8_t>(*it++) << 16;
+    temp += static_cast<std::uint8_t>(*it++) << 8;
+    temp += static_cast<std::uint8_t>(*it++);
     encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
     encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
     encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
@@ -48,14 +48,14 @@ inline std::string base64_encode(const std::string& input) {
 
   switch (input.size() % 3) {
     case 1:
-      temp = (*it++) << 16;
+      temp = static_cast<std::uint8_t>(*it++) << 16;
       encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
       encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
       encoded.append(2, kPadCharacter);
       break;
     case 2:
-      temp = (*it++) << 16;
-      temp += (*it++) << 8;
+      temp = static_cast<std::uint8_t>(*it++) << 16;
+      temp += static_cast<std::uint8_t>(*it++) << 8;
       encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
       encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
       encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
@@ -118,7 +118,7 @@ inline std::string base64_decode(const std::string& input) {
 
     decoded.push_back((temp >> 16) & 0x000000FF);
     decoded.push_back((temp >> 8) & 0x000000FF);
-    decoded.push_back((temp)&0x000000FF);
+    decoded.push_back((temp) & 0x000000FF);
   }
 
   return decoded;

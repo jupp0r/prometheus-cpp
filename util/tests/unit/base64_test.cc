@@ -13,6 +13,12 @@ struct TestVector {
 };
 
 const TestVector testVector[] = {
+    // RFC 3548 examples
+    {"\x14\xfb\x9c\x03\xd9\x7e", "FPucA9l+"},
+    {"\x14\xfb\x9c\x03\xd9", "FPucA9k="},
+    {"\x14\xfb\x9c\x03", "FPucAw=="},
+
+    // RFC 4648 examples
     {"", ""},
     {"f", "Zg=="},
     {"fo", "Zm8="},
@@ -20,6 +26,16 @@ const TestVector testVector[] = {
     {"foob", "Zm9vYg=="},
     {"fooba", "Zm9vYmE="},
     {"foobar", "Zm9vYmFy"},
+
+    // Wikipedia examples
+    {"sure.", "c3VyZS4="},
+    {"sure", "c3VyZQ=="},
+    {"sur", "c3Vy"},
+    {"su", "c3U="},
+    {"leasure.", "bGVhc3VyZS4="},
+    {"easure.", "ZWFzdXJlLg=="},
+    {"asure.", "YXN1cmUu"},
+    {"sure.", "c3VyZS4="},
 };
 
 using namespace testing;

@@ -25,9 +25,48 @@ PERFORMANCE OF THIS SOFTWARE.
 https://github.com/mvorbrodt/blog/blob/master/src/base64.hpp
 */
 
-inline std::string base64_decode(const std::string& input) {
-  const char kPadCharacter = '=';
+static constexpr char kEncodeLookup[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static constexpr char kPadCharacter = '=';
 
+inline std::string base64_encode(const std::string& input) {
+  std::string encoded;
+  encoded.reserve(((input.size() / 3) + (input.size() % 3 > 0)) * 4);
+
+  std::uint32_t temp{};
+  auto it = input.begin();
+
+  for (std::size_t i = 0; i < input.size() / 3; ++i) {
+    temp = (*it++) << 16;
+    temp += (*it++) << 8;
+    temp += (*it++);
+    encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+    encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+    encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
+    encoded.append(1, kEncodeLookup[(temp & 0x0000003F)]);
+  }
+
+  switch (input.size() % 3) {
+    case 1:
+      temp = (*it++) << 16;
+      encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+      encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+      encoded.append(2, kPadCharacter);
+      break;
+    case 2:
+      temp = (*it++) << 16;
+      temp += (*it++) << 8;
+      encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+      encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+      encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
+      encoded.append(1, kPadCharacter);
+      break;
+  }
+
+  return encoded;
+}
+
+inline std::string base64_decode(const std::string& input) {
   if (input.length() % 4) {
     throw std::runtime_error("Invalid base64 length!");
   }

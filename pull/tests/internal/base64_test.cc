@@ -24,6 +24,13 @@ const TestVector testVector[] = {
 
 using namespace testing;
 
+TEST(Base64Test, encodeTest) {
+  for (const auto& test_case : testVector) {
+    std::string encoded = detail::base64_encode(test_case.decoded);
+    EXPECT_EQ(test_case.encoded, encoded);
+  }
+}
+
 TEST(Base64Test, decodeTest) {
   for (const auto& test_case : testVector) {
     std::string decoded = detail::base64_decode(test_case.encoded);

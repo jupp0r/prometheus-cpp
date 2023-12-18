@@ -31,8 +31,6 @@ add_library(pull
   src/handler.h
   src/metrics_collector.cc
   src/metrics_collector.h
-
-  src/detail/base64.h
 )
 
 add_library(${PROJECT_NAME}::pull ALIAS pull)
@@ -46,6 +44,7 @@ target_link_libraries(pull
   PUBLIC
     ${PROJECT_NAME}::core
   PRIVATE
+    ${PROJECT_NAME}::util
     Threads::Threads
     $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,${PROJECT_NAME}::civetweb,civetweb::civetweb-cpp>
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>

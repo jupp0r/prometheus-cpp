@@ -24,6 +24,20 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//core",
+        "//util",
         "@com_github_curl//:curl",
+    ],
+)
+
+cc_library(
+    name = "push_internal_headers",
+    hdrs = glob(
+        ["src/detail/*.h"],
+    ),
+    strip_include_prefix = "src",
+    visibility = ["//push/tests:__subpackages__"],
+    deps = [
+        "//core",
+        "//push",
     ],
 )

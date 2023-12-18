@@ -2,9 +2,12 @@
 find_package(CURL REQUIRED)
 
 add_library(push
-  src/curl_wrapper.cc
-  src/curl_wrapper.h
   src/gateway.cc
+
+  src/detail/curl_wrapper.cc
+  src/detail/curl_wrapper.h
+  src/detail/label_encoder.cc
+  src/detail/label_encoder.h
 )
 
 add_library(${PROJECT_NAME}::push ALIAS push)
@@ -18,6 +21,7 @@ target_link_libraries(push
   PUBLIC
     ${PROJECT_NAME}::core
   PRIVATE
+    ${PROJECT_NAME}::util
     Threads::Threads
     CURL::libcurl
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
@@ -78,5 +82,10 @@ if(GENERATE_PKGCONFIG)
 endif()
 
 if(ENABLE_TESTING)
+  add_library(push_internal_headers INTERFACE)
+  add_library(${PROJECT_NAME}::push_internal_headers ALIAS push_internal_headers)
+  target_include_directories(push_internal_headers INTERFACE src)
+  target_link_libraries(push_internal_headers INTERFACE ${PROJECT_NAME}::push)
+
   add_subdirectory(tests)
 endif()

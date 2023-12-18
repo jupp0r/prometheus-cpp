@@ -8,7 +8,8 @@
 #include <mutex>
 #include <sstream>
 
-#include "curl_wrapper.h"
+#include "detail/curl_wrapper.h"
+#include "detail/label_encoder.h"
 #include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"  // IWYU pragma: keep
 #include "prometheus/text_serializer.h"
@@ -24,12 +25,13 @@ Gateway::Gateway(const std::string& host, const std::string& port,
   curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username, password);
 
   std::stringstream jobUriStream;
-  jobUriStream << host << ':' << port << "/metrics/job/" << jobname;
+  jobUriStream << host << ':' << port << "/metrics";
+  detail::encodeLabel(jobUriStream, {"job", jobname});
   jobUri_ = jobUriStream.str();
 
   std::stringstream labelStream;
   for (auto& label : labels) {
-    labelStream << "/" << label.first << "/" << label.second;
+    detail::encodeLabel(labelStream, label);
   }
   labels_ = labelStream.str();
 }

@@ -125,6 +125,7 @@ endif()
 # prometheus-cpp
 
 add_subdirectory(core)
+add_subdirectory(util)
 
 if(ENABLE_PULL)
   add_subdirectory(pull)

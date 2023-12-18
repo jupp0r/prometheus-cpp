@@ -118,27 +118,21 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
 
   auto& families = GetFamilies<T>();
 
-  if (insert_behavior_ == InsertBehavior::Merge) {
-    auto same_name_and_labels =
-        [&name, &labels](const std::unique_ptr<Family<T>>& family) {
-          return std::tie(name, labels) ==
-                 std::tie(family->GetName(), family->GetConstantLabels());
-        };
-
-    auto it =
-        std::find_if(families.begin(), families.end(), same_name_and_labels);
-    if (it != families.end()) {
-      return **it;
-    }
-  }
-
   auto same_name = [&name](const std::unique_ptr<Family<T>>& family) {
     return name == family->GetName();
   };
 
   auto it = std::find_if(families.begin(), families.end(), same_name);
   if (it != families.end()) {
-    throw std::invalid_argument("Family name already exists");
+    if (insert_behavior_ == InsertBehavior::Merge) {
+      if ((*it)->GetConstantLabels() == labels) {
+        return **it;
+      }
+      throw std::invalid_argument(
+          "Family name already exists with different constant labels");
+    } else {
+      throw std::invalid_argument("Family name already exists");
+    }
   }
 
   auto family = detail::make_unique<Family<T>>(name, help, labels);

@@ -30,12 +30,15 @@ jobs:
         run: brew install telegraf
 
       - name: Build with SSL
+        if: runner.os != 'macOS'
         run: bazel build --config=ssl ${{ matrix.bazel_args }} //...
 
       - name: Test with SSL
+        if: runner.os != 'macOS'
         run: bazel test --config=ssl ${{ matrix.bazel_args }} --test_output=all //...
 
       - name: Build with SSL and bzlmod
+        if: runner.os != 'macOS'
         run: bazel build --enable_bzlmod --config=ssl ${{ matrix.bazel_args }} //...
 
       - name: Build

@@ -166,49 +166,6 @@ TEST_F(IntegrationTest, acceptOptionalCompression) {
   EXPECT_THAT(metrics.body, HasSubstr(counter_name));
 }
 
-#if 0  // https://github.com/civetweb/civetweb/issues/954
-TEST_F(IntegrationTest, shouldRejectRequestWithoutAuthorization) {
-  const std::string counter_name = "example_total";
-  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
-
-  exposer_->RegisterAuth(
-      [](const std::string& user, const std::string& password) {
-        return user == "test_user" && password == "test_password";
-      },
-      "Some Auth Realm", default_metrics_path_);
-
-  const auto metrics = FetchMetrics(default_metrics_path_);
-
-  ASSERT_EQ(metrics.code, 401);
-}
-#endif
-
-TEST_F(IntegrationTest, shouldPerformProperAuthentication) {
-  const std::string counter_name = "example_total";
-  auto registry = RegisterSomeCounter(counter_name, default_metrics_path_);
-
-  const auto my_username = "test_user";
-  const auto my_password = "test_password";
-
-  fetchPrePerform_ = [my_username, my_password](CURL* curl) {
-    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_easy_setopt(curl, CURLOPT_USERNAME, my_username);
-    curl_easy_setopt(curl, CURLOPT_PASSWORD, my_password);
-  };
-
-  exposer_->RegisterAuth(
-      [my_username, my_password](const std::string& user,
-                                 const std::string& password) {
-        return user == my_username && password == my_password;
-      },
-      "Some Auth Realm", default_metrics_path_);
-
-  const auto metrics = FetchMetrics(default_metrics_path_);
-
-  ASSERT_EQ(metrics.code, 200);
-  EXPECT_THAT(metrics.body, HasSubstr(counter_name));
-}
-
 TEST_F(IntegrationTest, shouldDealWithExpiredCollectables) {
   const std::string first_counter_name = "first_total";
   const std::string second_counter_name = "second_total";
@@ -242,6 +199,101 @@ TEST_F(IntegrationTest, shouldSendBodyAsUtf8) {
 
   ASSERT_EQ(metrics.code, 200);
   EXPECT_THAT(metrics.contentType, HasSubstr("utf-8"));
+}
+
+class BasicAuthIntegrationTest : public IntegrationTest {
+ public:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+
+    registry_ = RegisterSomeCounter(counter_name_, default_metrics_path_);
+
+    exposer_->RegisterAuth(
+        [&](const std::string& user, const std::string& password) {
+          return user == username_ && password == password_;
+        },
+        "Some Auth Realm", default_metrics_path_);
+  }
+
+ protected:
+  const std::string counter_name_ = "example_total";
+  const std::string username_ = "test_user";
+  const std::string password_ = "test_password";
+
+  std::shared_ptr<Registry> registry_;
+};
+
+TEST_F(BasicAuthIntegrationTest, shouldPerformProperAuthentication) {
+  fetchPrePerform_ = [&](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERNAME, username_.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, password_.c_str());
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 200);
+  EXPECT_THAT(metrics.body, HasSubstr(counter_name_));
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectRequestWithoutAuthorization) {
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectRequestWithWrongUsername) {
+  fetchPrePerform_ = [&](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERNAME, "dummy");
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, password_.c_str());
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectRequestWithWrongPassword) {
+  fetchPrePerform_ = [&](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_easy_setopt(curl, CURLOPT_USERNAME, username_.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, "dummy");
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectWrongAuthorizationMethod) {
+  fetchPrePerform_ = [](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
+    curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, "test_token");
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBase64) {
+  std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
+      curl_slist_append(nullptr, "Authorization: Basic $"), curl_slist_free_all);
+
+  fetchPrePerform_ = [&header](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header.get());
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
+TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBasicAuth) {
+  std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
+      curl_slist_append(nullptr, "Authorization: Basic YWJj"), curl_slist_free_all);
+
+  fetchPrePerform_ = [&header](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header.get());
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
 }
 
 }  // namespace

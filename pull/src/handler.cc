@@ -18,6 +18,12 @@
 #include "prometheus/summary.h"
 #include "prometheus/text_serializer.h"
 
+#if CIVETWEB_VERSION_MAJOR < 1 || \
+    (CIVETWEB_VERSION_MAJOR == 1 && CIVETWEB_VERSION_MINOR < 14)
+// https://github.com/civetweb/civetweb/issues/954
+#error "Civetweb version 1.14 or higher required"
+#endif
+
 namespace prometheus {
 namespace detail {
 

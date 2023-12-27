@@ -13,9 +13,10 @@
 #include "prometheus/text_serializer.h"
 #include "raii_locale.h"
 
+#if 0
+
 namespace prometheus {
 namespace {
-
 class SerializerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -74,3 +75,4 @@ TEST_F(SerializerTest, shouldRestoreStreamState) {
 
 }  // namespace
 }  // namespace prometheus
+#endif

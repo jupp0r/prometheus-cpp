@@ -1,6 +1,6 @@
 #include "prometheus/registry.h"
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <cstddef>
 #include <vector>
@@ -14,21 +14,53 @@
 namespace prometheus {
 namespace {
 
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::InSequence;
+using ::testing::Sequence;
+
+namespace {
+class MockSerializer : public Serializer {
+ public:
+  MOCK_METHOD(void, Serialize, (const MetricFamily& family), (const, override));
+  MOCK_METHOD(void, Serialize,
+              (const MetricFamily& family, const ClientMetric& metric),
+              (const, override));
+};
+}  // namespace
+
 TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};
   auto& counter_family =
       BuildCounter().Name("test").Help("a test").Register(registry);
   counter_family.Add({{"name", "counter1"}});
   counter_family.Add({{"name", "counter2"}});
-  auto collected = registry.Collect();
-  ASSERT_EQ(collected.size(), 1U);
-  EXPECT_EQ(collected[0].name, "test");
-  EXPECT_EQ(collected[0].help, "a test");
-  ASSERT_EQ(collected[0].metric.size(), 2U);
-  ASSERT_EQ(collected[0].metric.at(0).label.size(), 1U);
-  EXPECT_EQ(collected[0].metric.at(0).label.at(0).name, "name");
-  ASSERT_EQ(collected[0].metric.at(1).label.size(), 1U);
-  EXPECT_EQ(collected[0].metric.at(1).label.at(0).name, "name");
+
+  MockSerializer serializer;
+
+  {
+    Sequence s1, s2;
+    EXPECT_CALL(
+        serializer,
+        Serialize(AllOf(Field(&MetricFamily::name, "test"),
+                        Field(&MetricFamily::help, "a test"),
+                        Field(&MetricFamily::type, MetricType::Counter))))
+        .InSequence(s1, s2);
+    EXPECT_CALL(serializer,
+                Serialize(_, AllOf(Field(&ClientMetric::label,
+                                         ElementsAre(ClientMetric::Label{
+                                             "name", "counter1"})))))
+        .InSequence(s1);
+    EXPECT_CALL(serializer,
+                Serialize(_, AllOf(Field(&ClientMetric::label,
+                                         ElementsAre(ClientMetric::Label{
+                                             "name", "counter2"})))))
+        .InSequence(s2);
+  }
+
+  registry.Collect(serializer);
 }
 
 TEST(RegistryTest, build_histogram_family) {
@@ -38,8 +70,16 @@ TEST(RegistryTest, build_histogram_family) {
   auto& histogram = histogram_family.Add({{"name", "test_histogram_1"}},
                                          Histogram::BucketBoundaries{0, 1, 2});
   histogram.Observe(1.1);
-  auto collected = registry.Collect();
-  ASSERT_EQ(collected.size(), 1U);
+
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+  }
+
+  registry.Collect(serializer);
 }
 
 TEST(RegistryTest, unable_to_remove_family) {
@@ -132,8 +172,15 @@ TEST(RegistryTest, merge_same_families) {
         .Add({{"name", "test_counter"}});
   }
 
-  auto collected = registry.Collect();
-  EXPECT_EQ(1U, collected.size());
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+  }
+
+  registry.Collect(serializer);
 }
 
 TEST(RegistryTest, do_not_merge_families_with_different_labels) {

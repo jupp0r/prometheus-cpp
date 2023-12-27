@@ -16,12 +16,12 @@ struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
     std::string name;
     std::string value;
 
-    bool operator<(const Label& rhs) const {
-      return std::tie(name, value) < std::tie(rhs.name, rhs.value);
+    friend bool operator<(const Label& lhs, const Label& rhs) {
+      return std::tie(lhs.name, lhs.value) < std::tie(rhs.name, rhs.value);
     }
 
-    bool operator==(const Label& rhs) const {
-      return std::tie(name, value) == std::tie(rhs.name, rhs.value);
+    friend bool operator==(const Label& lhs, const Label& rhs) {
+      return std::tie(lhs.name, lhs.value) == std::tie(rhs.name, rhs.value);
     }
   };
   std::vector<Label> label;

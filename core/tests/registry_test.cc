@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "mock_serializer.h"
 #include "prometheus/counter.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
@@ -20,16 +21,6 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Sequence;
-
-namespace {
-class MockSerializer : public Serializer {
- public:
-  MOCK_METHOD(void, Serialize, (const MetricFamily& family), (const, override));
-  MOCK_METHOD(void, Serialize,
-              (const MetricFamily& family, const ClientMetric& metric),
-              (const, override));
-};
-}  // namespace
 
 TEST(RegistryTest, collect_single_metric_family) {
   Registry registry{};

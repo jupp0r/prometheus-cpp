@@ -1,27 +1,15 @@
-# Copyright 2018, OpenCensus Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
 
 # Compiler options for building libcurl.
-# copied from: https://github.com/census-instrumentation/opencensus-cpp/blob/master/opencensus/curl.bzl
+# copied from: https://github.com/open-telemetry/opentelemetry-cpp/blob/main/bazel/curl.bzl
 
 BASE_CURL_COPTS = [
     # Disable everything else except HTTP protocol.
     "-DHTTP_ONLY=1",
     "-DENABLE_IPV6=1",
     "-DGETHOSTNAME_TYPE_ARG2=size_t",
-    "-DGETSERVBYPORT_R_ARGS=6",
-    "-DGETSERVBYPORT_R_BUFSIZE=4096",
+    "-DHAVE_ALARM=1",
     "-DHAVE_ALARM=1",
     "-DHAVE_ALLOCA_H=1",
     "-DHAVE_ARPA_INET_H=1",
@@ -37,9 +25,7 @@ BASE_CURL_COPTS = [
     "-DHAVE_FCNTL=1",
     "-DHAVE_FCNTL_H=1",
     "-DHAVE_FCNTL_O_NONBLOCK=1",
-    "-DHAVE_FDOPEN=1",
     "-DHAVE_FREEADDRINFO=1",
-    "-DHAVE_FREEIFADDRS=1",
     "-DHAVE_FSETXATTR=1",
     "-DHAVE_FSETXATTR_5=1",
     "-DHAVE_FTRUNCATE=1",
@@ -47,9 +33,6 @@ BASE_CURL_COPTS = [
     "-DHAVE_GETADDRINFO=1",
     "-DHAVE_GETADDRINFO_THREADSAFE=1",
     "-DHAVE_GETEUID=1",
-    "-DHAVE_GETHOSTBYADDR=1",
-    "-DHAVE_GETHOSTBYADDR_R=1",
-    "-DHAVE_GETHOSTBYADDR_R_8=1",
     "-DHAVE_GETHOSTBYNAME=1",
     "-DHAVE_GETHOSTBYNAME_R=1",
     "-DHAVE_GETHOSTBYNAME_R_6=1",
@@ -59,7 +42,6 @@ BASE_CURL_COPTS = [
     "-DHAVE_GETPWUID=1",
     "-DHAVE_GETPWUID_R=1",
     "-DHAVE_GETRLIMIT=1",
-    "-DHAVE_GETSERVBYPORT_R=1",
     "-DHAVE_GETTIMEOFDAY=1",
     "-DHAVE_GMTIME_R=1",
     "-DHAVE_IFADDRS_H=1",
@@ -96,13 +78,12 @@ BASE_CURL_COPTS = [
     "-DHAVE_SETLOCALE=1",
     "-DHAVE_SETRLIMIT=1",
     "-DHAVE_SETSOCKOPT=1",
-    "-DHAVE_SGTTY_H=1",
     "-DHAVE_SIGACTION=1",
     "-DHAVE_SIGINTERRUPT=1",
     "-DHAVE_SIGNAL=1",
     "-DHAVE_SIGNAL_H=1",
     "-DHAVE_SIGSETJMP=1",
-    "-DHAVE_SIG_ATOMIC_T=1",
+    "-DHAVE_SNPRINTF=1",
     "-DHAVE_SOCKADDR_IN6_SIN6_SCOPE_ID=1",
     "-DHAVE_SOCKET=1",
     "-DHAVE_SOCKETPAIR=1",

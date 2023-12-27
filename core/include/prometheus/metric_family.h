@@ -13,6 +13,5 @@ struct PROMETHEUS_CPP_CORE_EXPORT MetricFamily {
   std::string name;
   std::string help;
   MetricType type = MetricType::Untyped;
-  std::vector<ClientMetric> metric;
 };
 }  // namespace prometheus

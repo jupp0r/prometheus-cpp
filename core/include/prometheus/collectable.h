@@ -1,12 +1,7 @@
 #pragma once
 
-#include <vector>
-
 #include "prometheus/detail/core_export.h"
-
-namespace prometheus {
-struct MetricFamily;
-}
+#include "prometheus/serializer.h"
 
 namespace prometheus {
 
@@ -19,7 +14,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Collectable {
   virtual ~Collectable() = default;
 
   /// \brief Returns a list of metrics and their samples.
-  virtual std::vector<MetricFamily> Collect() const = 0;
+  virtual void Collect(const Serializer& out) const = 0;
 };
 
 }  // namespace prometheus

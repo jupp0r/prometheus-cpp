@@ -11,6 +11,7 @@
 #include "detail/curl_wrapper.h"
 #include "detail/label_encoder.h"
 #include "prometheus/detail/future_std.h"
+#include "prometheus/iovector.h"
 #include "prometheus/metric_family.h"  // IWYU pragma: keep
 #include "prometheus/text_serializer.h"
 
@@ -74,8 +75,6 @@ int Gateway::Push() { return push(detail::HttpMethod::Post); }
 int Gateway::PushAdd() { return push(detail::HttpMethod::Put); }
 
 int Gateway::push(detail::HttpMethod method) {
-  const auto serializer = TextSerializer{};
-
   std::lock_guard<std::mutex> lock{mutex_};
   for (auto& wcollectable : collectables_) {
     auto collectable = wcollectable.first.lock();
@@ -83,8 +82,10 @@ int Gateway::push(detail::HttpMethod method) {
       continue;
     }
 
-    auto metrics = collectable->Collect();
-    auto body = serializer.Serialize(metrics);
+    IOVector body;
+    const auto serializer = TextSerializer{body};
+
+    collectable->Collect(serializer);
     auto uri = getUri(wcollectable);
     auto status_code =
         curlWrapper_->performHttpRequest(method, uri, body, timeout_.count());
@@ -106,22 +107,23 @@ std::future<int> Gateway::AsyncPushAdd() {
 }
 
 std::future<int> Gateway::async_push(detail::HttpMethod method) {
-  const auto serializer = TextSerializer{};
   std::vector<std::future<int>> futures;
 
   std::lock_guard<std::mutex> lock{mutex_};
   for (auto& wcollectable : collectables_) {
+    IOVector body;
+    const auto serializer = TextSerializer{body};
+
     auto collectable = wcollectable.first.lock();
     if (!collectable) {
       continue;
     }
 
-    auto metrics = collectable->Collect();
-    auto body = std::make_shared<std::string>(serializer.Serialize(metrics));
+    collectable->Collect(serializer);
     auto uri = getUri(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
-      return curlWrapper_->performHttpRequest(method, uri, *body,
+      return curlWrapper_->performHttpRequest(method, uri, body,
                                               timeout_.count());
     }));
   }

@@ -11,6 +11,7 @@
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/info.h"
+#include "prometheus/metric_family.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
@@ -86,22 +87,24 @@ const Labels& Family<T>::GetConstantLabels() const {
 }
 
 template <typename T>
-std::vector<MetricFamily> Family<T>::Collect() const {
+void Family<T>::Collect(const Serializer& out) const {
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (metrics_.empty()) {
-    return {};
+    return;
   }
 
   auto family = MetricFamily{};
   family.name = name_;
   family.help = help_;
   family.type = T::metric_type;
-  family.metric.reserve(metrics_.size());
+
+  out.SerializeHelp(family);
+
   for (const auto& m : metrics_) {
-    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    auto&& metric = CollectMetric(m.first, m.second.get());
+    out.SerializeMetrics(family, metric);
   }
-  return {family};
 }
 
 template <typename T>

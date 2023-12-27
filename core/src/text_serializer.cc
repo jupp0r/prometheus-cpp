@@ -4,6 +4,7 @@
 #include <limits>
 #include <locale>
 #include <ostream>
+#include <sstream>
 #include <string>
 
 #include "prometheus/client_metric.h"
@@ -153,67 +154,93 @@ void SerializeHistogram(std::ostream& out, const MetricFamily& family,
     WriteTail(out, metric);
   }
 }
+}  // namespace
 
-void SerializeFamily(std::ostream& out, const MetricFamily& family) {
+TextSerializer::TextSerializer(IOVector& ioVector) : ioVector_(ioVector) {}
+
+void TextSerializer::Serialize(const MetricFamily& family) const {
+  std::ostringstream out;
+
   if (!family.help.empty()) {
     out << "# HELP " << family.name << " " << family.help << "\n";
   }
   switch (family.type) {
     case MetricType::Counter:
       out << "# TYPE " << family.name << " counter\n";
-      for (auto& metric : family.metric) {
-        SerializeCounter(out, family, metric);
-      }
       break;
     case MetricType::Gauge:
       out << "# TYPE " << family.name << " gauge\n";
-      for (auto& metric : family.metric) {
-        SerializeGauge(out, family, metric);
-      }
       break;
     // info is not handled by prometheus, we use gauge as workaround
     // (https://github.com/OpenObservability/OpenMetrics/blob/98ae26c87b1c3bcf937909a880b32c8be643cc9b/specification/OpenMetrics.md#info-1)
     case MetricType::Info:
       out << "# TYPE " << family.name << " gauge\n";
-      for (auto& metric : family.metric) {
-        SerializeInfo(out, family, metric);
-      }
       break;
     case MetricType::Summary:
       out << "# TYPE " << family.name << " summary\n";
-      for (auto& metric : family.metric) {
-        SerializeSummary(out, family, metric);
-      }
       break;
     case MetricType::Untyped:
       out << "# TYPE " << family.name << " untyped\n";
-      for (auto& metric : family.metric) {
-        SerializeUntyped(out, family, metric);
-      }
       break;
     case MetricType::Histogram:
       out << "# TYPE " << family.name << " histogram\n";
-      for (auto& metric : family.metric) {
-        SerializeHistogram(out, family, metric);
-      }
       break;
   }
-}
-}  // namespace
 
-void TextSerializer::Serialize(std::ostream& out,
-                               const std::vector<MetricFamily>& metrics) const {
-  auto saved_locale = out.getloc();
-  auto saved_precision = out.precision();
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const ClientMetric& metric) const {
+  std::ostringstream out;
 
   out.imbue(std::locale::classic());
   out.precision(std::numeric_limits<double>::max_digits10 - 1);
 
-  for (auto& family : metrics) {
-    SerializeFamily(out, family);
+  switch (family.type) {
+    case MetricType::Counter:
+      SerializeCounter(out, family, metric);
+      break;
+    case MetricType::Gauge:
+      SerializeGauge(out, family, metric);
+      break;
+    // info is not handled by prometheus, we use gauge as workaround
+    // (https://github.com/OpenObservability/OpenMetrics/blob/98ae26c87b1c3bcf937909a880b32c8be643cc9b/specification/OpenMetrics.md#info-1)
+    case MetricType::Info:
+      SerializeInfo(out, family, metric);
+      break;
+    case MetricType::Summary:
+      SerializeSummary(out, family, metric);
+      break;
+    case MetricType::Untyped:
+      SerializeUntyped(out, family, metric);
+      break;
+    case MetricType::Histogram:
+      SerializeHistogram(out, family, metric);
+      break;
   }
 
-  out.imbue(saved_locale);
-  out.precision(saved_precision);
+  Add(out);
 }
+
+void TextSerializer::Add(const std::ostringstream& stream) const {
+  std::string str = stream.str();
+
+  std::size_t size = str.size();
+  std::size_t offset = 0;
+
+  while (size > 0) {
+    if (ioVector_.data.empty() || ioVector_.data.back().size() >= chunkSize_) {
+      ioVector_.data.emplace_back();
+      ioVector_.data.back().reserve(chunkSize_);
+    }
+    std::size_t toAdd =
+        std::min(size, chunkSize_ - ioVector_.data.back().size());
+    ioVector_.data.back().append(str.data() + offset, toAdd);
+
+    size -= toAdd;
+    offset += toAdd;
+  }
+}
+
 }  // namespace prometheus

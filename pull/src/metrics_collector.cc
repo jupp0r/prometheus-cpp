@@ -7,7 +7,8 @@
 namespace prometheus {
 namespace detail {
 
-std::vector<MetricFamily> CollectMetrics(
+void CollectMetrics(
+    const Serializer& out,
     const std::vector<std::weak_ptr<prometheus::Collectable>>& collectables) {
   auto collected_metrics = std::vector<MetricFamily>{};
 
@@ -17,13 +18,8 @@ std::vector<MetricFamily> CollectMetrics(
       continue;
     }
 
-    auto&& metrics = collectable->Collect();
-    collected_metrics.insert(collected_metrics.end(),
-                             std::make_move_iterator(metrics.begin()),
-                             std::make_move_iterator(metrics.end()));
+    collectable->Collect(out);
   }
-
-  return collected_metrics;
 }
 
 }  // namespace detail

@@ -16,11 +16,9 @@ namespace prometheus {
 
 namespace {
 template <typename T>
-void CollectAll(std::vector<MetricFamily>& results, const T& families) {
+void CollectAll(const Serializer& out, const T& families) {
   for (auto&& collectable : families) {
-    auto metrics = collectable->Collect();
-    results.insert(results.end(), std::make_move_iterator(metrics.begin()),
-                   std::make_move_iterator(metrics.end()));
+    collectable->Collect(out);
   }
 }
 
@@ -43,17 +41,14 @@ Registry::Registry(InsertBehavior insert_behavior)
 
 Registry::~Registry() = default;
 
-std::vector<MetricFamily> Registry::Collect() const {
+void Registry::Collect(const Serializer& out) const {
   std::lock_guard<std::mutex> lock{mutex_};
-  auto results = std::vector<MetricFamily>{};
 
-  CollectAll(results, counters_);
-  CollectAll(results, gauges_);
-  CollectAll(results, histograms_);
-  CollectAll(results, infos_);
-  CollectAll(results, summaries_);
-
-  return results;
+  CollectAll(out, counters_);
+  CollectAll(out, gauges_);
+  CollectAll(out, histograms_);
+  CollectAll(out, infos_);
+  CollectAll(out, summaries_);
 }
 
 template <>

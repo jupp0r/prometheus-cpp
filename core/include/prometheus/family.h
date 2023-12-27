@@ -140,7 +140,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   /// Collect is called by the Registry when collecting metrics.
   ///
   /// \return Zero or more samples for each dimensional data.
-  std::vector<MetricFamily> Collect() const override;
+  void Collect(const Serializer& out) const override;
 
  private:
   std::unordered_map<Labels, std::unique_ptr<T>, detail::LabelHasher> metrics_;

@@ -86,22 +86,24 @@ const Labels& Family<T>::GetConstantLabels() const {
 }
 
 template <typename T>
-std::vector<MetricFamily> Family<T>::Collect() const {
+void Family<T>::Collect(const Serializer& out) const {
   std::lock_guard<std::mutex> lock{mutex_};
 
   if (metrics_.empty()) {
-    return {};
+    return;
   }
 
   auto family = MetricFamily{};
   family.name = name_;
   family.help = help_;
   family.type = T::metric_type;
-  family.metric.reserve(metrics_.size());
+
+  out.Serialize(family);
+
   for (const auto& m : metrics_) {
-    family.metric.push_back(std::move(CollectMetric(m.first, m.second.get())));
+    auto&& metric = CollectMetric(m.first, m.second.get());
+    out.Serialize(family, metric);
   }
-  return {family};
 }
 
 template <typename T>

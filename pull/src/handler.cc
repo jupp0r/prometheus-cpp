@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstring>
 #include <iterator>
+#include <numeric>
 #include <string>
 
 #ifdef HAVE_ZLIB
@@ -14,6 +15,7 @@
 #include "civetweb.h"
 #include "metrics_collector.h"
 #include "prometheus/counter.h"
+#include "prometheus/iovector.h"
 #include "prometheus/metric_family.h"
 #include "prometheus/summary.h"
 #include "prometheus/text_serializer.h"
@@ -97,12 +99,12 @@ static std::vector<Byte> GZipCompress(const std::string& input) {
 #endif
 
 static std::size_t WriteResponse(struct mg_connection* conn,
-                                 const std::string& body) {
+                                 const IOVector& body) {
   mg_printf(conn,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/plain; charset=utf-8\r\n");
 
-#ifdef HAVE_ZLIB
+#ifdef xHAVE_ZLIB
   auto acceptsGzip = IsEncodingAccepted(conn, "gzip");
 
   if (acceptsGzip) {
@@ -118,10 +120,18 @@ static std::size_t WriteResponse(struct mg_connection* conn,
   }
 #endif
 
+  std::size_t contentSize =
+      std::accumulate(begin(body.data), end(body.data), std::size_t{0},
+                      [](std::size_t size, const std::string& chunk) {
+                        return size + chunk.size();
+                      });
+
   mg_printf(conn, "Content-Length: %lu\r\n\r\n",
-            static_cast<unsigned long>(body.size()));
-  mg_write(conn, body.data(), body.size());
-  return body.size();
+            static_cast<unsigned long>(contentSize));
+  for (auto&& chunk : body.data) {
+    mg_write(conn, chunk.data(), chunk.size());
+  }
+  return contentSize;
 }
 
 void MetricsHandler::RegisterCollectable(
@@ -148,16 +158,15 @@ void MetricsHandler::RemoveCollectable(
 bool MetricsHandler::handleGet(CivetServer*, struct mg_connection* conn) {
   auto start_time_of_request = std::chrono::steady_clock::now();
 
-  std::vector<MetricFamily> metrics;
+  IOVector ioVector;
+  TextSerializer serializer(ioVector);
 
   {
     std::lock_guard<std::mutex> lock{collectables_mutex_};
-    metrics = CollectMetrics(collectables_);
+    CollectMetrics(serializer, collectables_);
   }
 
-  const TextSerializer serializer;
-
-  auto bodySize = WriteResponse(conn, serializer.Serialize(metrics));
+  auto bodySize = WriteResponse(conn, ioVector);
 
   auto stop_time_of_request = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(

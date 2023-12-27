@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "mock_serializer.h"
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
 #include "prometheus/detail/future_std.h"
@@ -12,10 +13,15 @@
 #include "prometheus/labels.h"
 #include "prometheus/summary.h"
 
-#if 0
-
 namespace prometheus {
 namespace {
+
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::InSequence;
+using ::testing::Sequence;
 
 TEST(FamilyTest, labels) {
   auto const_label = ClientMetric::Label{"component", "test"};
@@ -25,11 +31,20 @@ TEST(FamilyTest, labels) {
                          "Counts all requests",
                          {{const_label.name, const_label.value}}};
   family.Add({{dynamic_label.name, dynamic_label.value}});
-  auto collected = family.Collect();
-  ASSERT_GE(collected.size(), 1U);
-  ASSERT_GE(collected.at(0).metric.size(), 1U);
-  EXPECT_THAT(collected.at(0).metric.at(0).label,
-              ::testing::ElementsAre(const_label, dynamic_label));
+
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(
+        serializer,
+        Serialize(_, AllOf(Field(&ClientMetric::label,
+                                 ElementsAre(const_label, dynamic_label)))))
+        .Times(1);
+  }
+
+  family.Collect(serializer);
 }
 
 TEST(FamilyTest, reject_same_label_keys) {
@@ -43,10 +58,20 @@ TEST(FamilyTest, counter_value) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
   auto& counter = family.Add({});
   counter.Increment();
-  auto collected = family.Collect();
-  ASSERT_GE(collected.size(), 1U);
-  ASSERT_GE(collected[0].metric.size(), 1U);
-  EXPECT_EQ(1, collected[0].metric.at(0).counter.value);
+
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(serializer,
+                Serialize(Field(&MetricFamily::type, MetricType::Counter),
+                          Field(&ClientMetric::counter,
+                                Field(&ClientMetric::Counter::value, 1))))
+        .Times(1);
+  }
+
+  family.Collect(serializer);
 }
 
 TEST(FamilyTest, remove) {
@@ -54,9 +79,16 @@ TEST(FamilyTest, remove) {
   auto& counter1 = family.Add({{"name", "counter1"}});
   family.Add({{"name", "counter2"}});
   family.Remove(&counter1);
-  auto collected = family.Collect();
-  ASSERT_GE(collected.size(), 1U);
-  EXPECT_EQ(collected[0].metric.size(), 1U);
+
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+  }
+
+  family.Collect(serializer);
 }
 
 TEST(FamilyTest, removeUnknownMetricMustNotCrash) {
@@ -69,10 +101,21 @@ TEST(FamilyTest, Histogram) {
   auto& histogram1 = family.Add({{"name", "histogram1"}},
                                 Histogram::BucketBoundaries{0, 1, 2});
   histogram1.Observe(0);
-  auto collected = family.Collect();
-  ASSERT_EQ(collected.size(), 1U);
-  ASSERT_GE(collected[0].metric.size(), 1U);
-  EXPECT_EQ(1U, collected[0].metric.at(0).histogram.sample_count);
+
+  MockSerializer serializer;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(serializer, Serialize(_));
+    EXPECT_CALL(
+        serializer,
+        Serialize(Field(&MetricFamily::type, MetricType::Histogram),
+                  Field(&ClientMetric::histogram,
+                        Field(&ClientMetric::Histogram::sample_count, 1))))
+        .Times(1);
+  }
+
+  family.Collect(serializer);
 }
 
 TEST(FamilyTest, add_twice) {
@@ -108,8 +151,8 @@ TEST(FamilyTest, should_throw_on_invalid_labels) {
 
 TEST(FamilyTest, should_not_collect_empty_metrics) {
   Family<Counter> family{"total_requests", "Counts all requests", {}};
-  auto collected = family.Collect();
-  EXPECT_TRUE(collected.empty());
+  MockSerializer serializer;
+  family.Collect(serializer);
 }
 
 TEST(FamilyTest, query_family_if_metric_already_exists) {
@@ -146,5 +189,3 @@ TEST(FamilyTest, reject_summary_with_quantile_label) {
 
 }  // namespace
 }  // namespace prometheus
-
-#endif

@@ -28,7 +28,6 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
-using ::testing::Sequence;
 using ::testing::UnorderedElementsAreArray;
 
 class BuilderTest : public testing::Test {

@@ -34,9 +34,9 @@ class TextSerializerTest : public testing::Test {
     textSerializer.Serialize(metricFamily);
     textSerializer.Serialize(metricFamily, metric);
 
-    return std::accumulate(
-        begin(serialized.data), end(serialized.data), std::string{},
-        [](const std::string& a, const std::string& b) { return a + b; });
+    std::string out(serialized.size(), '\0');
+    serialized.copy(0, &out.front(), out.size());
+    return out;
   }
 
   const std::string name = "my_metric";

@@ -1,6 +1,7 @@
 #include "handler.h"
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <cstring>
 #include <iterator>
@@ -59,7 +60,7 @@ static bool IsEncodingAccepted(struct mg_connection* conn,
   return std::strstr(accept_encoding, encoding) != nullptr;
 }
 
-static std::vector<Byte> GZipCompress(const std::string& input) {
+static IOVector GZipCompress(const IOVector& input) {
   auto zs = z_stream{};
   auto windowSize = 16 + MAX_WBITS;
   auto memoryLevel = 9;
@@ -69,24 +70,46 @@ static std::vector<Byte> GZipCompress(const std::string& input) {
     return {};
   }
 
-  zs.next_in = (Bytef*)input.data();
-  zs.avail_in = input.size();
+  auto s = input.size();
 
   int ret;
-  std::vector<Byte> output;
-  output.reserve(input.size() / 2u);
 
-  do {
-    static const auto outputBytesPerRound = std::size_t{32768};
+  IOVector output;
 
-    zs.avail_out = outputBytesPerRound;
-    output.resize(zs.total_out + zs.avail_out);
-    zs.next_out = reinterpret_cast<Bytef*>(output.data() + zs.total_out);
+  for (std::size_t i = 0; i < input.data.size(); ++i) {
+    bool last = i == input.data.size() - 1U;
+    auto chunk = input.data[i];
 
-    ret = deflate(&zs, Z_FINISH);
+    zs.next_in =
+        const_cast<Bytef*>(reinterpret_cast<const Bytef*>(chunk.data()));
+    zs.avail_in = chunk.size();
 
-    output.resize(zs.total_out);
-  } while (ret == Z_OK);
+    do {
+      static constexpr std::size_t maximumChunkSize = 1 * 1024 * 1024;
+      if (output.data.empty() ||
+          output.data.back().size() >= maximumChunkSize) {
+        output.data.emplace_back();
+        output.data.back().reserve(maximumChunkSize);
+      }
+
+      auto&& chunk = output.data.back();
+
+      const auto previouslyUsed = chunk.size();
+      const auto remainingChunkSize = maximumChunkSize - previouslyUsed;
+
+      zs.avail_out = remainingChunkSize;
+      chunk.resize(chunk.size() + remainingChunkSize);
+      zs.next_out = reinterpret_cast<Bytef*>(chunk.data() + previouslyUsed);
+
+      ret = deflate(&zs, last ? Z_FINISH : Z_NO_FLUSH);
+      assert(ret != Z_STREAM_ERROR);
+
+      chunk.resize(maximumChunkSize - zs.avail_out);
+    } while (zs.avail_out == 0U);
+    assert(zs.avail_in == 0);
+  }
+  assert(ret == Z_STREAM_END);
+  assert(zs.total_out == output.size());
 
   deflateEnd(&zs);
 
@@ -104,18 +127,21 @@ static std::size_t WriteResponse(struct mg_connection* conn,
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/plain; charset=utf-8\r\n");
 
-#ifdef xHAVE_ZLIB
+#ifdef HAVE_ZLIB
   auto acceptsGzip = IsEncodingAccepted(conn, "gzip");
 
   if (acceptsGzip) {
     auto compressed = GZipCompress(body);
     if (!compressed.empty()) {
+      const std::size_t contentSize = compressed.size();
       mg_printf(conn,
                 "Content-Encoding: gzip\r\n"
-                "Content-Length: %lu\r\n\r\n",
-                static_cast<unsigned long>(compressed.size()));
-      mg_write(conn, compressed.data(), compressed.size());
-      return compressed.size();
+                "Content-Length: %s\r\n\r\n",
+                std::to_string(contentSize).c_str());
+      for (auto&& chunk : compressed.data) {
+        mg_write(conn, chunk.data(), chunk.size());
+      }
+      return contentSize;
     }
   }
 #endif

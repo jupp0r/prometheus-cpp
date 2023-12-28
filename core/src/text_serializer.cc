@@ -234,9 +234,9 @@ void TextSerializer::Add(const std::ostringstream& stream) const {
       ioVector_.data.emplace_back();
       ioVector_.data.back().reserve(chunkSize_);
     }
-    std::size_t toAdd =
-        std::min(size, chunkSize_ - ioVector_.data.back().size());
-    ioVector_.data.back().append(str.data() + offset, toAdd);
+    auto&& chunk = ioVector_.data.back();
+    std::size_t toAdd = std::min(size, chunkSize_ - chunk.size());
+    chunk.insert(chunk.end(), str.data() + offset, str.data() + offset + toAdd);
 
     size -= toAdd;
     offset += toAdd;

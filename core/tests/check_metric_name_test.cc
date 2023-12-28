@@ -11,6 +11,9 @@ TEST(CheckMetricNameTest, empty_metric_name) {
 TEST(CheckMetricNameTest, good_metric_name) {
   EXPECT_TRUE(CheckMetricName("prometheus_notifications_total"));
 }
+TEST(CheckMetricNameTest, numeric_metric_name) {
+  EXPECT_FALSE(CheckMetricName("2unlimited"));
+}
 TEST(CheckMetricNameTest, reserved_metric_name) {
   EXPECT_FALSE(CheckMetricName("__some_reserved_metric"));
 }

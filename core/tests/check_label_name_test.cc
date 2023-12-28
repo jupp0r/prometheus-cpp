@@ -30,6 +30,9 @@ TEST_P(CheckLabelNameTest, trailing_invalid_label_name) {
 TEST_P(CheckLabelNameTest, good_label_name) {
   EXPECT_TRUE(CheckLabelName("type"));
 }
+TEST_P(CheckLabelNameTest, numeric_label_name) {
+  EXPECT_FALSE(CheckLabelName("2unlimited"));
+}
 TEST_P(CheckLabelNameTest, reserved_label_name) {
   EXPECT_FALSE(CheckLabelName("__some_reserved_label"));
 }

@@ -74,7 +74,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// \brief Get the current value of the histogram.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  HistogramMetric Collect() const;
 
  private:
   BucketBoundaries bucket_boundaries_;

@@ -9,66 +9,60 @@
 
 namespace prometheus {
 
-struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
+// Common Core Metric
+
+struct PROMETHEUS_CPP_CORE_EXPORT CoreMetric {
+  std::int64_t timestamp_ms = 0;
+};
+
   // Counter
 
-  struct Counter {
-    double value = 0.0;
-  };
-  Counter counter;
+struct PROMETHEUS_CPP_CORE_EXPORT CounterMetric : public CoreMetric {
+  double value = 0.0;
+};
 
   // Gauge
 
-  struct Gauge {
-    double value = 0.0;
-  };
-  Gauge gauge;
+struct PROMETHEUS_CPP_CORE_EXPORT GaugeMetric : public CoreMetric {
+  double value = 0.0;
+};
 
   // Info
 
-  struct Info {
-    double value = 1.0;
-  };
-  Info info;
+struct PROMETHEUS_CPP_CORE_EXPORT InfoMetric : public CoreMetric {
+  double value = 1.0;
+};
 
   // Summary
 
+struct PROMETHEUS_CPP_CORE_EXPORT SummaryMetric : public CoreMetric {
   struct Quantile {
     double quantile = 0.0;
     double value = 0.0;
   };
 
-  struct Summary {
-    std::uint64_t sample_count = 0;
-    double sample_sum = 0.0;
-    std::vector<Quantile> quantile;
-  };
-  Summary summary;
+  std::uint64_t sample_count = 0;
+  double sample_sum = 0.0;
+  std::vector<Quantile> quantile;
+};
 
   // Histogram
 
+struct PROMETHEUS_CPP_CORE_EXPORT HistogramMetric : public CoreMetric {
   struct Bucket {
     std::uint64_t cumulative_count = 0;
     double upper_bound = 0.0;
   };
 
-  struct Histogram {
-    std::uint64_t sample_count = 0;
-    double sample_sum = 0.0;
-    std::vector<Bucket> bucket;
-  };
-  Histogram histogram;
+  std::uint64_t sample_count = 0;
+  double sample_sum = 0.0;
+  std::vector<Bucket> bucket;
+};
 
   // Untyped
 
-  struct Untyped {
-    double value = 0;
-  };
-  Untyped untyped;
-
-  // Timestamp
-
-  std::int64_t timestamp_ms = 0;
+struct PROMETHEUS_CPP_CORE_EXPORT UntypedMetric : public CoreMetric {
+  double value = 0;
 };
 
 }  // namespace prometheus

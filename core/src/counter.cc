@@ -15,9 +15,9 @@ double Counter::Value() const { return gauge_.Value(); }
 
 void Counter::Reset() { gauge_.Set(0); }
 
-ClientMetric Counter::Collect() const {
-  ClientMetric metric;
-  metric.counter.value = Value();
+CounterMetric Counter::Collect() const {
+  CounterMetric metric;
+  metric.value = Value();
   return metric;
 }
 

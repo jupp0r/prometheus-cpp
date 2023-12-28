@@ -2,9 +2,9 @@
 
 namespace prometheus {
 
-ClientMetric Info::Collect() const {
-  ClientMetric metric;
-  metric.info.value = 1;
+InfoMetric Info::Collect() const {
+  InfoMetric metric;
+  metric.value = 1;
   return metric;
 }
 

@@ -55,7 +55,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   /// \brief Get the current value of the gauge.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  GaugeMetric Collect() const;
 
  private:
   void Change(double);

@@ -84,93 +84,11 @@ void WriteHead(std::ostream& out, const MetricFamily& family,
 }
 
 // Write a line trailer: timestamp
-void WriteTail(std::ostream& out, const ClientMetric& metric) {
+void WriteTail(std::ostream& out, const CoreMetric& metric) {
   if (metric.timestamp_ms != 0) {
     out << " " << metric.timestamp_ms;
   }
   out << "\n";
-}
-
-void SerializeCounter(std::ostream& out, const MetricFamily& family,
-                      const Labels& constantLabels, const Labels& metricLabels,
-                      const ClientMetric& metric) {
-  WriteHead(out, family, constantLabels, metricLabels);
-  WriteValue(out, metric.counter.value);
-  WriteTail(out, metric);
-}
-
-void SerializeGauge(std::ostream& out, const MetricFamily& family,
-                    const Labels& constantLabels, const Labels& metricLabels,
-                    const ClientMetric& metric) {
-  WriteHead(out, family, constantLabels, metricLabels);
-  WriteValue(out, metric.gauge.value);
-  WriteTail(out, metric);
-}
-
-void SerializeInfo(std::ostream& out, const MetricFamily& family,
-                   const Labels& constantLabels, const Labels& metricLabels,
-                   const ClientMetric& metric) {
-  WriteHead(out, family, constantLabels, metricLabels, "_info");
-  WriteValue(out, metric.info.value);
-  WriteTail(out, metric);
-}
-
-void SerializeSummary(std::ostream& out, const MetricFamily& family,
-                      const Labels& constantLabels, const Labels& metricLabels,
-                      const ClientMetric& metric) {
-  auto& sum = metric.summary;
-  WriteHead(out, family, constantLabels, metricLabels, "_count");
-  out << sum.sample_count;
-  WriteTail(out, metric);
-
-  WriteHead(out, family, constantLabels, metricLabels, "_sum");
-  WriteValue(out, sum.sample_sum);
-  WriteTail(out, metric);
-
-  for (auto& q : sum.quantile) {
-    WriteHead(out, family, constantLabels, metricLabels, "", "quantile",
-              q.quantile);
-    WriteValue(out, q.value);
-    WriteTail(out, metric);
-  }
-}
-
-void SerializeUntyped(std::ostream& out, const MetricFamily& family,
-                      const Labels& constantLabels, const Labels& metricLabels,
-                      const ClientMetric& metric) {
-  WriteHead(out, family, constantLabels, metricLabels);
-  WriteValue(out, metric.untyped.value);
-  WriteTail(out, metric);
-}
-
-void SerializeHistogram(std::ostream& out, const MetricFamily& family,
-                        const Labels& constantLabels,
-                        const Labels& metricLabels,
-                        const ClientMetric& metric) {
-  auto& hist = metric.histogram;
-  WriteHead(out, family, constantLabels, metricLabels, "_count");
-  out << hist.sample_count;
-  WriteTail(out, metric);
-
-  WriteHead(out, family, constantLabels, metricLabels, "_sum");
-  WriteValue(out, hist.sample_sum);
-  WriteTail(out, metric);
-
-  double last = -std::numeric_limits<double>::infinity();
-  for (auto& b : hist.bucket) {
-    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
-              b.upper_bound);
-    last = b.upper_bound;
-    out << b.cumulative_count;
-    WriteTail(out, metric);
-  }
-
-  if (last != std::numeric_limits<double>::infinity()) {
-    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
-              "+Inf");
-    out << hist.sample_count;
-    WriteTail(out, metric);
-  }
 }
 }  // namespace
 
@@ -211,34 +129,126 @@ void TextSerializer::Serialize(const MetricFamily& family) const {
 void TextSerializer::Serialize(const MetricFamily& family,
                                const Labels& constantLabels,
                                const Labels& metricLabels,
-                               const ClientMetric& metric) const {
+                               const CounterMetric& metric) const {
   std::ostringstream out;
 
   out.imbue(std::locale::classic());
   out.precision(std::numeric_limits<double>::max_digits10 - 1);
 
-  switch (family.type) {
-    case MetricType::Counter:
-      SerializeCounter(out, family, constantLabels, metricLabels, metric);
-      break;
-    case MetricType::Gauge:
-      SerializeGauge(out, family, constantLabels, metricLabels, metric);
-      break;
-    // info is not handled by prometheus, we use gauge as workaround
-    // (https://github.com/OpenObservability/OpenMetrics/blob/98ae26c87b1c3bcf937909a880b32c8be643cc9b/specification/OpenMetrics.md#info-1)
-    case MetricType::Info:
-      SerializeInfo(out, family, constantLabels, metricLabels, metric);
-      break;
-    case MetricType::Summary:
-      SerializeSummary(out, family, constantLabels, metricLabels, metric);
-      break;
-    case MetricType::Untyped:
-      SerializeUntyped(out, family, constantLabels, metricLabels, metric);
-      break;
-    case MetricType::Histogram:
-      SerializeHistogram(out, family, constantLabels, metricLabels, metric);
-      break;
+  WriteHead(out, family, constantLabels, metricLabels);
+  WriteValue(out, metric.value);
+  WriteTail(out, metric);
+
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
+                               const GaugeMetric& metric) const {
+  std::ostringstream out;
+
+  out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
+  WriteHead(out, family, constantLabels, metricLabels);
+  WriteValue(out, metric.value);
+  WriteTail(out, metric);
+
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
+                               const InfoMetric& metric) const {
+  std::ostringstream out;
+
+  out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
+  WriteHead(out, family, constantLabels, metricLabels, "_info");
+  WriteValue(out, metric.value);
+  WriteTail(out, metric);
+
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
+                               const SummaryMetric& metric) const {
+  std::ostringstream out;
+
+  out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
+  WriteHead(out, family, constantLabels, metricLabels, "_count");
+  out << metric.sample_count;
+  WriteTail(out, metric);
+
+  WriteHead(out, family, constantLabels, metricLabels, "_sum");
+  WriteValue(out, metric.sample_sum);
+  WriteTail(out, metric);
+
+  for (auto& q : metric.quantile) {
+    WriteHead(out, family, constantLabels, metricLabels, "", "quantile",
+              q.quantile);
+    WriteValue(out, q.value);
+    WriteTail(out, metric);
   }
+
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
+                               const HistogramMetric& metric) const {
+  std::ostringstream out;
+
+  out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
+  WriteHead(out, family, constantLabels, metricLabels, "_count");
+  out << metric.sample_count;
+  WriteTail(out, metric);
+
+  WriteHead(out, family, constantLabels, metricLabels, "_sum");
+  WriteValue(out, metric.sample_sum);
+  WriteTail(out, metric);
+
+  double last = -std::numeric_limits<double>::infinity();
+  for (auto& b : metric.bucket) {
+    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
+              b.upper_bound);
+    last = b.upper_bound;
+    out << b.cumulative_count;
+    WriteTail(out, metric);
+  }
+
+  if (last != std::numeric_limits<double>::infinity()) {
+    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
+              "+Inf");
+    out << metric.sample_count;
+    WriteTail(out, metric);
+  }
+
+  Add(out);
+}
+
+void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
+                               const UntypedMetric& metric) const {
+  std::ostringstream out;
+
+  out.imbue(std::locale::classic());
+  out.precision(std::numeric_limits<double>::max_digits10 - 1);
+
+  WriteHead(out, family, constantLabels, metricLabels);
+  WriteValue(out, metric.value);
+  WriteTail(out, metric);
 
   Add(out);
 }

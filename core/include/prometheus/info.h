@@ -33,7 +33,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Info {
   /// \brief Get the current value of the info.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  InfoMetric Collect() const;
 };
 
 /// \brief Return a builder to configure and register a Info metric.

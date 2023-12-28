@@ -22,20 +22,20 @@ void Summary::Observe(const double value) {
   quantile_values_.insert(value);
 }
 
-ClientMetric Summary::Collect() const {
-  auto metric = ClientMetric{};
+SummaryMetric Summary::Collect() const {
+  auto metric = SummaryMetric{};
 
   std::lock_guard<std::mutex> lock(mutex_);
 
-  metric.summary.quantile.reserve(quantiles_.size());
+  metric.quantile.reserve(quantiles_.size());
   for (const auto& quantile : quantiles_) {
-    auto metricQuantile = ClientMetric::Quantile{};
+    auto metricQuantile = SummaryMetric::Quantile{};
     metricQuantile.quantile = quantile.quantile;
     metricQuantile.value = quantile_values_.get(quantile.quantile);
-    metric.summary.quantile.push_back(std::move(metricQuantile));
+    metric.quantile.push_back(std::move(metricQuantile));
   }
-  metric.summary.sample_count = count_;
-  metric.summary.sample_sum = sum_;
+  metric.sample_count = count_;
+  metric.sample_sum = sum_;
 
   return metric;
 }

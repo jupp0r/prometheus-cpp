@@ -72,24 +72,24 @@ void Histogram::Reset() {
   sum_.Set(0);
 }
 
-ClientMetric Histogram::Collect() const {
+HistogramMetric Histogram::Collect() const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto metric = ClientMetric{};
+  auto metric = HistogramMetric{};
 
   auto cumulative_count = 0ULL;
-  metric.histogram.bucket.reserve(bucket_counts_.size());
+  metric.bucket.reserve(bucket_counts_.size());
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
     cumulative_count += bucket_counts_[i].Value();
-    auto bucket = ClientMetric::Bucket{};
+    auto bucket = HistogramMetric::Bucket{};
     bucket.cumulative_count = cumulative_count;
     bucket.upper_bound = (i == bucket_boundaries_.size()
                               ? std::numeric_limits<double>::infinity()
                               : bucket_boundaries_[i]);
-    metric.histogram.bucket.push_back(std::move(bucket));
+    metric.bucket.push_back(std::move(bucket));
   }
-  metric.histogram.sample_count = cumulative_count;
-  metric.histogram.sample_sum = sum_.Value();
+  metric.sample_count = cumulative_count;
+  metric.sample_sum = sum_.Value();
 
   return metric;
 }

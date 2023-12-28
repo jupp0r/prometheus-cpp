@@ -14,9 +14,25 @@ class PROMETHEUS_CPP_CORE_EXPORT TextSerializer : public Serializer {
   TextSerializer(IOVector& ioVector);
 
   void Serialize(const MetricFamily& family) const override;
+
   void Serialize(const MetricFamily& family, const Labels& constantLabels,
                  const Labels& metricLabels,
-                 const ClientMetric& metric) const override;
+                 const CounterMetric& metric) const override;
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
+                 const GaugeMetric& metric) const override;
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
+                 const InfoMetric& metric) const override;
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
+                 const SummaryMetric& metric) const override;
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
+                 const HistogramMetric& metric) const override;
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
+                 const UntypedMetric& metric) const override;
 
  private:
   void Add(const std::ostringstream& stream) const;

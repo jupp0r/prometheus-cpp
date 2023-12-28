@@ -86,7 +86,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// \brief Get the current value of the summary.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  SummaryMetric Collect() const;
 
  private:
   Quantiles quantiles_;

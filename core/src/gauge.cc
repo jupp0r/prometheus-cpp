@@ -36,9 +36,9 @@ void Gauge::SetToCurrentTime() {
 
 double Gauge::Value() const { return value_; }
 
-ClientMetric Gauge::Collect() const {
-  ClientMetric metric;
-  metric.gauge.value = Value();
+GaugeMetric Gauge::Collect() const {
+  GaugeMetric metric;
+  metric.value = Value();
   return metric;
 }
 

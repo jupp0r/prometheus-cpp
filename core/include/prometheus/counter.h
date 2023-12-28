@@ -47,7 +47,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Counter {
   /// \brief Get the current value of the counter.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  CounterMetric Collect() const;
 
  private:
   Gauge gauge_{0.0};

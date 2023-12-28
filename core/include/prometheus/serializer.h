@@ -15,7 +15,27 @@ class PROMETHEUS_CPP_CORE_EXPORT Serializer {
   virtual void Serialize(const MetricFamily& family,
                          const Labels& constantLabels,
                          const Labels& metricLabels,
-                         const ClientMetric& metric) const = 0;
+                         const CounterMetric& metric) const = 0;
+  virtual void Serialize(const MetricFamily& family,
+                         const Labels& constantLabels,
+                         const Labels& metricLabels,
+                         const GaugeMetric& metric) const = 0;
+  virtual void Serialize(const MetricFamily& family,
+                         const Labels& constantLabels,
+                         const Labels& metricLabels,
+                         const InfoMetric& metric) const = 0;
+  virtual void Serialize(const MetricFamily& family,
+                         const Labels& constantLabels,
+                         const Labels& metricLabels,
+                         const SummaryMetric& metric) const = 0;
+  virtual void Serialize(const MetricFamily& family,
+                         const Labels& constantLabels,
+                         const Labels& metricLabels,
+                         const HistogramMetric& metric) const = 0;
+  virtual void Serialize(const MetricFamily& family,
+                         const Labels& constantLabels,
+                         const Labels& metricLabels,
+                         const UntypedMetric& metric) const = 0;
 };
 
 }  // namespace prometheus

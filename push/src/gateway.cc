@@ -53,7 +53,7 @@ void Gateway::RegisterCollectable(const std::weak_ptr<Collectable>& collectable,
 
   if (labels) {
     for (auto& label : *labels) {
-      ss << "/" << label.first << "/" << label.second;
+      detail::encodeLabel(ss, label);
     }
   }
 

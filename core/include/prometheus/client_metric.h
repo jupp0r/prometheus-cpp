@@ -10,22 +10,6 @@
 namespace prometheus {
 
 struct PROMETHEUS_CPP_CORE_EXPORT ClientMetric {
-  // Label
-
-  struct Label {
-    std::string name;
-    std::string value;
-
-    friend bool operator<(const Label& lhs, const Label& rhs) {
-      return std::tie(lhs.name, lhs.value) < std::tie(rhs.name, rhs.value);
-    }
-
-    friend bool operator==(const Label& lhs, const Label& rhs) {
-      return std::tie(lhs.name, lhs.value) == std::tie(rhs.name, rhs.value);
-    }
-  };
-  std::vector<Label> label;
-
   // Counter
 
   struct Counter {

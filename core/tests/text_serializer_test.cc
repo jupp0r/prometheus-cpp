@@ -32,7 +32,8 @@ class TextSerializerTest : public testing::Test {
     TextSerializer textSerializer{serialized};
 
     textSerializer.Serialize(metricFamily);
-    textSerializer.Serialize(metricFamily, metric);
+    textSerializer.Serialize(metricFamily, constantLabels, metricLabels,
+                             metric);
 
     std::string out(serialized.size(), '\0');
     serialized.copy(0, &out.front(), out.size());
@@ -40,6 +41,8 @@ class TextSerializerTest : public testing::Test {
   }
 
   const std::string name = "my_metric";
+  Labels constantLabels;
+  Labels metricLabels;
   ClientMetric metric;
 };
 
@@ -59,19 +62,19 @@ TEST_F(TextSerializerTest, shouldSerializePositiveInfinity) {
 }
 
 TEST_F(TextSerializerTest, shouldEscapeBackslash) {
-  metric.label.resize(1, ClientMetric::Label{"k", "v\\v"});
+  metricLabels.emplace("k", "v\\v");
   EXPECT_THAT(Serialize(MetricType::Gauge),
               testing::HasSubstr(name + "{k=\"v\\\\v\"}"));
 }
 
 TEST_F(TextSerializerTest, shouldEscapeNewline) {
-  metric.label.resize(1, ClientMetric::Label{"k", "v\nv"});
+  metricLabels.emplace("k", "v\nv");
   EXPECT_THAT(Serialize(MetricType::Gauge),
               testing::HasSubstr(name + "{k=\"v\\nv\"}"));
 }
 
 TEST_F(TextSerializerTest, shouldEscapeDoubleQuote) {
-  metric.label.resize(1, ClientMetric::Label{"k", "v\"v"});
+  metricLabels.emplace("k", "v\"v");
   EXPECT_THAT(Serialize(MetricType::Gauge),
               testing::HasSubstr(name + "{k=\"v\\\"v\"}"));
 }

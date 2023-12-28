@@ -14,7 +14,8 @@ class PROMETHEUS_CPP_CORE_EXPORT TextSerializer : public Serializer {
   TextSerializer(IOVector& ioVector);
 
   void Serialize(const MetricFamily& family) const override;
-  void Serialize(const MetricFamily& family,
+  void Serialize(const MetricFamily& family, const Labels& constantLabels,
+                 const Labels& metricLabels,
                  const ClientMetric& metric) const override;
 
  private:

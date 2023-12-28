@@ -21,26 +21,22 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::Sequence;
 
 TEST(FamilyTest, labels) {
-  auto const_label = ClientMetric::Label{"component", "test"};
-  auto dynamic_label = ClientMetric::Label{"status", "200"};
+  const auto const_labels = Labels{{"component", "test"}};
+  const auto dynamic_labels = Labels{{"status", "200"}};
 
-  Family<Counter> family{"total_requests",
-                         "Counts all requests",
-                         {{const_label.name, const_label.value}}};
-  family.Add({{dynamic_label.name, dynamic_label.value}});
+  Family<Counter> family{"total_requests", "Counts all requests", const_labels};
+  family.Add(dynamic_labels);
 
   MockSerializer serializer;
 
   {
     InSequence seq;
     EXPECT_CALL(serializer, Serialize(_));
-    EXPECT_CALL(
-        serializer,
-        Serialize(_, AllOf(Field(&ClientMetric::label,
-                                 ElementsAre(const_label, dynamic_label)))))
+    EXPECT_CALL(serializer, Serialize(_, const_labels, dynamic_labels, _))
         .Times(1);
   }
 
@@ -66,6 +62,7 @@ TEST(FamilyTest, counter_value) {
     EXPECT_CALL(serializer, Serialize(_));
     EXPECT_CALL(serializer,
                 Serialize(Field(&MetricFamily::type, MetricType::Counter),
+                          IsEmpty(), IsEmpty(),
                           Field(&ClientMetric::counter,
                                 Field(&ClientMetric::Counter::value, 1))))
         .Times(1);
@@ -85,7 +82,7 @@ TEST(FamilyTest, remove) {
   {
     InSequence seq;
     EXPECT_CALL(serializer, Serialize(_));
-    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+    EXPECT_CALL(serializer, Serialize(_, _, _, _)).Times(1);
   }
 
   family.Collect(serializer);
@@ -109,7 +106,7 @@ TEST(FamilyTest, Histogram) {
     EXPECT_CALL(serializer, Serialize(_));
     EXPECT_CALL(
         serializer,
-        Serialize(Field(&MetricFamily::type, MetricType::Histogram),
+        Serialize(Field(&MetricFamily::type, MetricType::Histogram), _, _,
                   Field(&ClientMetric::histogram,
                         Field(&ClientMetric::Histogram::sample_count, 1))))
         .Times(1);

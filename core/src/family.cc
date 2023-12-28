@@ -101,26 +101,9 @@ void Family<T>::Collect(const Serializer& out) const {
   out.Serialize(family);
 
   for (const auto& m : metrics_) {
-    auto&& metric = CollectMetric(m.first, m.second.get());
-    out.Serialize(family, metric);
+    auto&& metric = m.second->Collect();
+    out.Serialize(family, constant_labels_, m.first, metric);
   }
-}
-
-template <typename T>
-ClientMetric Family<T>::CollectMetric(const Labels& metric_labels,
-                                      T* metric) const {
-  auto collected = metric->Collect();
-  collected.label.reserve(constant_labels_.size() + metric_labels.size());
-  const auto add_label =
-      [&collected](const std::pair<std::string, std::string>& label_pair) {
-        auto label = ClientMetric::Label{};
-        label.name = label_pair.first;
-        label.value = label_pair.second;
-        collected.label.push_back(std::move(label));
-      };
-  std::for_each(constant_labels_.cbegin(), constant_labels_.cend(), add_label);
-  std::for_each(metric_labels.cbegin(), metric_labels.cend(), add_label);
-  return collected;
 }
 
 template class PROMETHEUS_CPP_CORE_EXPORT Family<Counter>;

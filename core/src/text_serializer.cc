@@ -51,17 +51,25 @@ void WriteValue(std::ostream& out, const std::string& value) {
 // Write a line header: metric name and labels
 template <typename T = std::string>
 void WriteHead(std::ostream& out, const MetricFamily& family,
-               const ClientMetric& metric, const std::string& suffix = "",
+               const Labels& constantLabels, const Labels& metricLabels,
+               const std::string& suffix = "",
                const std::string& extraLabelName = "",
                const T& extraLabelValue = T()) {
   out << family.name << suffix;
-  if (!metric.label.empty() || !extraLabelName.empty()) {
+  if (!constantLabels.empty() || !metricLabels.empty() ||
+      !extraLabelName.empty()) {
     out << "{";
     const char* prefix = "";
 
-    for (auto& lp : metric.label) {
-      out << prefix << lp.name << "=\"";
-      WriteValue(out, lp.value);
+    for (auto& lp : constantLabels) {
+      out << prefix << lp.first << "=\"";
+      WriteValue(out, lp.second);
+      out << "\"";
+      prefix = ",";
+    }
+    for (auto& lp : metricLabels) {
+      out << prefix << lp.first << "=\"";
+      WriteValue(out, lp.second);
       out << "\"";
       prefix = ",";
     }
@@ -84,72 +92,82 @@ void WriteTail(std::ostream& out, const ClientMetric& metric) {
 }
 
 void SerializeCounter(std::ostream& out, const MetricFamily& family,
+                      const Labels& constantLabels, const Labels& metricLabels,
                       const ClientMetric& metric) {
-  WriteHead(out, family, metric);
+  WriteHead(out, family, constantLabels, metricLabels);
   WriteValue(out, metric.counter.value);
   WriteTail(out, metric);
 }
 
 void SerializeGauge(std::ostream& out, const MetricFamily& family,
+                    const Labels& constantLabels, const Labels& metricLabels,
                     const ClientMetric& metric) {
-  WriteHead(out, family, metric);
+  WriteHead(out, family, constantLabels, metricLabels);
   WriteValue(out, metric.gauge.value);
   WriteTail(out, metric);
 }
 
 void SerializeInfo(std::ostream& out, const MetricFamily& family,
+                   const Labels& constantLabels, const Labels& metricLabels,
                    const ClientMetric& metric) {
-  WriteHead(out, family, metric, "_info");
+  WriteHead(out, family, constantLabels, metricLabels, "_info");
   WriteValue(out, metric.info.value);
   WriteTail(out, metric);
 }
 
 void SerializeSummary(std::ostream& out, const MetricFamily& family,
+                      const Labels& constantLabels, const Labels& metricLabels,
                       const ClientMetric& metric) {
   auto& sum = metric.summary;
-  WriteHead(out, family, metric, "_count");
+  WriteHead(out, family, constantLabels, metricLabels, "_count");
   out << sum.sample_count;
   WriteTail(out, metric);
 
-  WriteHead(out, family, metric, "_sum");
+  WriteHead(out, family, constantLabels, metricLabels, "_sum");
   WriteValue(out, sum.sample_sum);
   WriteTail(out, metric);
 
   for (auto& q : sum.quantile) {
-    WriteHead(out, family, metric, "", "quantile", q.quantile);
+    WriteHead(out, family, constantLabels, metricLabels, "", "quantile",
+              q.quantile);
     WriteValue(out, q.value);
     WriteTail(out, metric);
   }
 }
 
 void SerializeUntyped(std::ostream& out, const MetricFamily& family,
+                      const Labels& constantLabels, const Labels& metricLabels,
                       const ClientMetric& metric) {
-  WriteHead(out, family, metric);
+  WriteHead(out, family, constantLabels, metricLabels);
   WriteValue(out, metric.untyped.value);
   WriteTail(out, metric);
 }
 
 void SerializeHistogram(std::ostream& out, const MetricFamily& family,
+                        const Labels& constantLabels,
+                        const Labels& metricLabels,
                         const ClientMetric& metric) {
   auto& hist = metric.histogram;
-  WriteHead(out, family, metric, "_count");
+  WriteHead(out, family, constantLabels, metricLabels, "_count");
   out << hist.sample_count;
   WriteTail(out, metric);
 
-  WriteHead(out, family, metric, "_sum");
+  WriteHead(out, family, constantLabels, metricLabels, "_sum");
   WriteValue(out, hist.sample_sum);
   WriteTail(out, metric);
 
   double last = -std::numeric_limits<double>::infinity();
   for (auto& b : hist.bucket) {
-    WriteHead(out, family, metric, "_bucket", "le", b.upper_bound);
+    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
+              b.upper_bound);
     last = b.upper_bound;
     out << b.cumulative_count;
     WriteTail(out, metric);
   }
 
   if (last != std::numeric_limits<double>::infinity()) {
-    WriteHead(out, family, metric, "_bucket", "le", "+Inf");
+    WriteHead(out, family, constantLabels, metricLabels, "_bucket", "le",
+              "+Inf");
     out << hist.sample_count;
     WriteTail(out, metric);
   }
@@ -191,6 +209,8 @@ void TextSerializer::Serialize(const MetricFamily& family) const {
 }
 
 void TextSerializer::Serialize(const MetricFamily& family,
+                               const Labels& constantLabels,
+                               const Labels& metricLabels,
                                const ClientMetric& metric) const {
   std::ostringstream out;
 
@@ -199,24 +219,24 @@ void TextSerializer::Serialize(const MetricFamily& family,
 
   switch (family.type) {
     case MetricType::Counter:
-      SerializeCounter(out, family, metric);
+      SerializeCounter(out, family, constantLabels, metricLabels, metric);
       break;
     case MetricType::Gauge:
-      SerializeGauge(out, family, metric);
+      SerializeGauge(out, family, constantLabels, metricLabels, metric);
       break;
     // info is not handled by prometheus, we use gauge as workaround
     // (https://github.com/OpenObservability/OpenMetrics/blob/98ae26c87b1c3bcf937909a880b32c8be643cc9b/specification/OpenMetrics.md#info-1)
     case MetricType::Info:
-      SerializeInfo(out, family, metric);
+      SerializeInfo(out, family, constantLabels, metricLabels, metric);
       break;
     case MetricType::Summary:
-      SerializeSummary(out, family, metric);
+      SerializeSummary(out, family, constantLabels, metricLabels, metric);
       break;
     case MetricType::Untyped:
-      SerializeUntyped(out, family, metric);
+      SerializeUntyped(out, family, constantLabels, metricLabels, metric);
       break;
     case MetricType::Histogram:
-      SerializeHistogram(out, family, metric);
+      SerializeHistogram(out, family, constantLabels, metricLabels, metric);
       break;
   }
 

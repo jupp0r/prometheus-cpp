@@ -20,6 +20,8 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::Sequence;
 
 TEST(RegistryTest, collect_single_metric_family) {
@@ -39,15 +41,11 @@ TEST(RegistryTest, collect_single_metric_family) {
                         Field(&MetricFamily::help, "a test"),
                         Field(&MetricFamily::type, MetricType::Counter))))
         .InSequence(s1, s2);
-    EXPECT_CALL(serializer,
-                Serialize(_, AllOf(Field(&ClientMetric::label,
-                                         ElementsAre(ClientMetric::Label{
-                                             "name", "counter1"})))))
+    EXPECT_CALL(serializer, Serialize(_, IsEmpty(),
+                                      ElementsAre(Pair("name", "counter1")), _))
         .InSequence(s1);
-    EXPECT_CALL(serializer,
-                Serialize(_, AllOf(Field(&ClientMetric::label,
-                                         ElementsAre(ClientMetric::Label{
-                                             "name", "counter2"})))))
+    EXPECT_CALL(serializer, Serialize(_, IsEmpty(),
+                                      ElementsAre(Pair("name", "counter2")), _))
         .InSequence(s2);
   }
 
@@ -67,7 +65,7 @@ TEST(RegistryTest, build_histogram_family) {
   {
     InSequence seq;
     EXPECT_CALL(serializer, Serialize(_));
-    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+    EXPECT_CALL(serializer, Serialize(_, _, _, _)).Times(1);
   }
 
   registry.Collect(serializer);
@@ -168,7 +166,7 @@ TEST(RegistryTest, merge_same_families) {
   {
     InSequence seq;
     EXPECT_CALL(serializer, Serialize(_));
-    EXPECT_CALL(serializer, Serialize(_, _)).Times(1);
+    EXPECT_CALL(serializer, Serialize(_, _, _, _)).Times(1);
   }
 
   registry.Collect(serializer);

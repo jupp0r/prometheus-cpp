@@ -150,7 +150,6 @@ class PROMETHEUS_CPP_CORE_EXPORT Family : public Collectable {
   const Labels constant_labels_;
   mutable std::mutex mutex_;
 
-  ClientMetric CollectMetric(const Labels& labels, T* metric) const;
   T& Add(const Labels& labels, std::unique_ptr<T> object);
 };
 

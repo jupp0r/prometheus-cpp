@@ -274,7 +274,8 @@ TEST_F(BasicAuthIntegrationTest, shouldRejectWrongAuthorizationMethod) {
 
 TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBase64) {
   std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
-      curl_slist_append(nullptr, "Authorization: Basic $"), curl_slist_free_all);
+      curl_slist_append(nullptr, "Authorization: Basic $"),
+      curl_slist_free_all);
 
   fetchPrePerform_ = [&header](CURL* curl) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header.get());
@@ -286,7 +287,8 @@ TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBase64) {
 
 TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBasicAuth) {
   std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
-      curl_slist_append(nullptr, "Authorization: Basic YWJj"), curl_slist_free_all);
+      curl_slist_append(nullptr, "Authorization: Basic YWJj"),
+      curl_slist_free_all);
 
   fetchPrePerform_ = [&header](CURL* curl) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header.get());

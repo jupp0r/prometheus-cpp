@@ -1,6 +1,4 @@
-add_library(util INTERFACE
-  include/prometheus/detail/base64.h
-)
+add_library(util INTERFACE)
 
 add_library(${PROJECT_NAME}::util ALIAS util)
 
@@ -12,11 +10,6 @@ target_compile_features(util
 target_include_directories(util
   INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-
-set_target_properties(util
-  PROPERTIES
-    OUTPUT_NAME ${PROJECT_NAME}-util
 )
 
 install(

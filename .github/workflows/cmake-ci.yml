@@ -50,11 +50,11 @@ jobs:
 
       - name: "Configure for Unix with internal dependencies"
         if: matrix.dependencies == 'submodule' && runner.os != 'Windows'
-        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/_install -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_DEBUG_POSTFIX=_d -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/_install -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_DEBUG_POSTFIX=_d -DCMAKE_CONFIGURATION_TYPES='Release;Debug' -G"Ninja Multi-Config" -S ${{ github.workspace }} -B ${{ github.workspace }}/_build -DBUILD_SHARED_LIBS=ON
 
       - name: "Configure for Windows with internal dependencies"
         if: matrix.dependencies == 'submodule' && runner.os == 'Windows'
-        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/_install -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_DEBUG_POSTFIX=_d -S ${{ github.workspace }} -B ${{ github.workspace }}/_build
+        run: cmake -DUSE_THIRDPARTY_LIBRARIES=ON -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/_install -DENABLE_WARNINGS_AS_ERRORS=ON -DENABLE_COMPRESSION=OFF -DENABLE_PUSH=OFF -DCMAKE_DEBUG_POSTFIX=_d -S ${{ github.workspace }} -B ${{ github.workspace }}/_build  -DBUILD_SHARED_LIBS=ON
 
       - name: "Configure for Unix with vcpkg dependencies"
         if: matrix.dependencies == 'vcpkg' && runner.os != 'Windows'

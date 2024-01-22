@@ -48,7 +48,7 @@ static void BM_Histogram_Observe(benchmark::State& state) {
     state.SetIterationTime(elapsed_seconds.count());
   }
 }
-BENCHMARK(BM_Histogram_Observe)->Range(0, 4096);
+BENCHMARK(BM_Histogram_Observe)->Range(0, 4096)->UseManualTime();
 
 static void BM_Histogram_Collect(benchmark::State& state) {
   using prometheus::BuildHistogram;

@@ -1,6 +1,6 @@
 module(
     name = "prometheus-cpp",
-    version = "1.2.0",
+    version = "1.2.3",
     repo_name = "com_github_jupp0r_prometheus_cpp",
 )
 

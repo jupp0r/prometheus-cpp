@@ -262,6 +262,7 @@ TEST_F(BasicAuthIntegrationTest, shouldRejectRequestWithWrongPassword) {
   ASSERT_EQ(metrics.code, 401);
 }
 
+#if defined(CURLAUTH_BEARER) && defined(CURLOPT_XOAUTH2_BEARER)
 TEST_F(BasicAuthIntegrationTest, shouldRejectWrongAuthorizationMethod) {
   fetchPrePerform_ = [](CURL* curl) {
     curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
@@ -271,6 +272,7 @@ TEST_F(BasicAuthIntegrationTest, shouldRejectWrongAuthorizationMethod) {
   const auto metrics = FetchMetrics(default_metrics_path_);
   ASSERT_EQ(metrics.code, 401);
 }
+#endif
 
 TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBase64) {
   std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(

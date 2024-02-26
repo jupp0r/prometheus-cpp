@@ -34,7 +34,7 @@ COPTS = [
         "-DOPENSSL_API_1_1",
         "-DNO_SSL_DL",
     ],
-    "@//conditions:default": [
+    "//conditions:default": [
         "-DNO_SSL",
     ],
 })
@@ -44,7 +44,7 @@ DEPS = select({
         "@boringssl//:crypto",
         "@boringssl//:ssl",
     ],
-    "@//conditions:default": [],
+    "//conditions:default": [],
 })
 
 cc_library(

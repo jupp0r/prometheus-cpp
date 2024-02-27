@@ -1,7 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def prometheus_cpp_repositories():
+def _legacy_and_bzlmod_repositories():
     maybe(
         http_archive,
         name = "civetweb",
@@ -11,16 +11,6 @@ def prometheus_cpp_repositories():
             "https://github.com/civetweb/civetweb/archive/v1.16.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
-    )
-
-    maybe(
-        http_archive,
-        name = "com_google_googletest",
-        sha256 = "81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2",
-        strip_prefix = "googletest-release-1.12.1",
-        urls = [
-            "https://github.com/google/googletest/archive/release-1.12.1.tar.gz",
-        ],
     )
 
     maybe(
@@ -35,6 +25,20 @@ def prometheus_cpp_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )
 
+def prometheus_cpp_repositories():
+    _legacy_and_bzlmod_repositories()
+
+    # These legacy style repos have bzlmod support, they are re-added here for legacy support
+    maybe(
+        http_archive,
+        name = "com_google_googletest",
+        sha256 = "81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2",
+        strip_prefix = "googletest-release-1.12.1",
+        urls = [
+            "https://github.com/google/googletest/archive/release-1.12.1.tar.gz",
+        ],
+    )
+
     maybe(
         http_archive,
         name = "com_github_google_benchmark",
@@ -42,6 +46,19 @@ def prometheus_cpp_repositories():
         strip_prefix = "benchmark-1.8.3",
         urls = [
             "https://github.com/google/benchmark/archive/v1.8.3.tar.gz",
+        ],
+    )
+
+    maybe(
+        http_archive,
+        name = "boringssl",
+        # Use github mirror instead of https://boringssl.googlesource.com/boringssl
+        # to obtain a boringssl archive with consistent sha256
+        sha256 = "b21994a857a7aa6d5256ffe355c735ad4c286de44c6c81dfc04edc41a8feaeef",
+        strip_prefix = "boringssl-2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b",
+        urls = [
+            "https://github.com/google/boringssl/archive/2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b.tar.gz",
+            "https://storage.googleapis.com/grpc-bazel-mirror/github.com/google/boringssl/archive/2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b.tar.gz",
         ],
     )
 
@@ -58,21 +75,8 @@ def prometheus_cpp_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:zlib.BUILD",
     )
 
-    maybe(
-        http_archive,
-        name = "boringssl",
-        # Use github mirror instead of https://boringssl.googlesource.com/boringssl
-        # to obtain a boringssl archive with consistent sha256
-        sha256 = "b21994a857a7aa6d5256ffe355c735ad4c286de44c6c81dfc04edc41a8feaeef",
-        strip_prefix = "boringssl-2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b",
-        urls = [
-            "https://github.com/google/boringssl/archive/2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b.tar.gz",
-            "https://storage.googleapis.com/grpc-bazel-mirror/github.com/google/boringssl/archive/2ff4b968a7e0cfee66d9f151cb95635b43dc1d5b.tar.gz",
-        ],
-    )
-
 def _data_deps_extension_impl(ctx):
-    prometheus_cpp_repositories()
+    _legacy_and_bzlmod_repositories()
 
 data_deps_ext = module_extension(
     implementation = _data_deps_extension_impl,

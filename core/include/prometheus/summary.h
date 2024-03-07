@@ -71,14 +71,21 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   /// and how smooth the time window is moved. With only one age bucket it
   /// effectively results in a complete reset of the summary each time max_age
   /// has passed. The default value is 5.
+  ///
+  /// \param sample_ratio Set the sample ratio for the observed values which are
+  /// used to calculate quantiles. When used in high throughput situations, if
+  /// not sampled the SDK will cause serious performance problem. The value
+  /// valid in [0, 1], and sample_ratio = 0 or 1 will not cause sample. The
+  /// default value is 0.
   explicit Summary(const Quantiles& quantiles,
                    std::chrono::milliseconds max_age = std::chrono::seconds{60},
-                   int age_buckets = 5);
+                   int age_buckets = 5, double sample_ratio = 0);
 
-  /// \copydoc Summary::Summary(const Quantiles&,std::chrono::milliseconds,int)
+  /// \copydoc Summary::Summary(const
+  /// Quantiles&,std::chrono::milliseconds,int,double)
   explicit Summary(Quantiles&& quantiles,
                    std::chrono::milliseconds max_age = std::chrono::seconds{60},
-                   int age_buckets = 5);
+                   int age_buckets = 5, double sample_ratio = 0);
 
   /// \brief Observe the given amount.
   void Observe(double value);
@@ -94,6 +101,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Summary {
   std::uint64_t count_{};
   double sum_{};
   detail::TimeWindowQuantiles quantile_values_;
+  int sample_ratio_threshold_{};
 };
 
 /// \brief Return a builder to configure and register a Summary metric.

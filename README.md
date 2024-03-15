@@ -211,6 +211,12 @@ between the three prometheus-cpp libraries are handled correctly.
 The `cmake/project-import` directory contains an
 example project and minimal [CMakeLists.txt](cmake/project-import-cmake/CMakeLists.txt).
 
+### Ubuntu PPA
+
+The Launchpad [prometheus-cpp team](https://launchpad.net/~prometheus-cpp) provides a
+[PPA for stable versions](https://code.launchpad.net/~prometheus-cpp/+archive/ubuntu/prometheus-cpp-stable).
+Please follow the "Adding this PPA to your system" steps to use it.
+
 ### vcpkg
 
 The [vcpkg](https://github.com/microsoft/vcpkg) package manager contains a

@@ -1,0 +1,5 @@
+<map id="prometheus::Collectable" name="prometheus::Collectable">
+<area shape="rect" id="node1" title="Interface implemented by anything that can be used by Prometheus to collect metrics." alt="" coords="109,5,291,32"/>
+<area shape="rect" id="node2" href="$classprometheus_1_1Family.html" title="A metric of type T with a set of labeled dimensions." alt="" coords="5,80,195,107"/>
+<area shape="rect" id="node3" href="$classprometheus_1_1Registry.html" title="Manages the collection of a number of metrics." alt="" coords="219,80,381,107"/>
+</map>

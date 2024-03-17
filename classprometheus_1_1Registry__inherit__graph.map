@@ -1,0 +1,4 @@
+<map id="prometheus::Registry" name="prometheus::Registry">
+<area shape="rect" id="node1" title="Manages the collection of a number of metrics." alt="" coords="15,80,177,107"/>
+<area shape="rect" id="node2" href="$classprometheus_1_1Collectable.html" title="Interface implemented by anything that can be used by Prometheus to collect metrics." alt="" coords="5,5,187,32"/>
+</map>

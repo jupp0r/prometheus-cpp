@@ -5,6 +5,28 @@
 namespace prometheus {
 namespace detail {
 
+namespace {
+
+struct CurlReadData {
+  CurlReadData(const IOVector& data) : data{data}, size{data.size()} {}
+
+  const IOVector& data;
+  const std::size_t size;
+  std::size_t offset = 0;
+};
+
+std::size_t ReadCallback(char* buffer, std::size_t size, std::size_t nmemb,
+                         void* userdata) {
+  auto source = reinterpret_cast<CurlReadData*>(userdata);
+
+  const std::size_t realsize = size * nmemb;
+  std::size_t copied = source->data.copy(source->offset, buffer, realsize);
+  source->offset += copied;
+
+  return copied;
+}
+}  // namespace
+
 static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
 
@@ -39,8 +61,10 @@ CurlWrapper::~CurlWrapper() {
 }
 
 int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
-                                    const std::string& body, long timeout) {
+                                    const IOVector& body, long timeout) {
   std::lock_guard<std::mutex> l(mutex_);
+
+  const CurlReadData readData{body};
 
   curl_easy_reset(curl_);
   curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
@@ -48,8 +72,10 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, optHttpHeader_);
 
   if (!body.empty()) {
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.data());
+    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE_LARGE, body.size());
+    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, nullptr);
+    curl_easy_setopt(curl_, CURLOPT_READDATA, &readData);
+    curl_easy_setopt(curl_, CURLOPT_READFUNCTION, ReadCallback);
   } else {
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, 0L);
   }

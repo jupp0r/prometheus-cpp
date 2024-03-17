@@ -4,6 +4,7 @@
 #include <string>
 
 #include "prometheus/detail/http_method.h"
+#include "prometheus/iovector.h"
 
 namespace prometheus {
 namespace detail {
@@ -20,7 +21,7 @@ class CurlWrapper {
   ~CurlWrapper();
 
   int performHttpRequest(HttpMethod method, const std::string& uri,
-                         const std::string& body, long timeout = 0L);
+                         const IOVector& body, long timeout = 0L);
   bool addHttpHeader(const std::string& header);
 
  private:

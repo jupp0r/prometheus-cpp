@@ -9,7 +9,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/family.h"
 #include "prometheus/labels.h"
-#include "prometheus/metric_family.h"
+#include "prometheus/serializer.h"
 
 namespace prometheus {
 
@@ -79,7 +79,7 @@ class PROMETHEUS_CPP_CORE_EXPORT Registry : public Collectable {
   /// function.
   ///
   /// \return Zero or more metrics and their samples.
-  std::vector<MetricFamily> Collect() const override;
+  void Collect(const Serializer& out) const override;
 
   /// \brief Removes a metrics family from the registry.
   ///

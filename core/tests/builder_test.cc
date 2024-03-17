@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "mock_serializer.h"
 #include "prometheus/client_metric.h"
 #include "prometheus/counter.h"
 #include "prometheus/family.h"
@@ -16,11 +16,19 @@
 #include "prometheus/histogram.h"
 #include "prometheus/info.h"
 #include "prometheus/labels.h"
+#include "prometheus/metric_family.h"
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 
 namespace prometheus {
 namespace {
+
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::InSequence;
+using ::testing::UnorderedElementsAreArray;
 
 class BuilderTest : public testing::Test {
  protected:
@@ -40,15 +48,22 @@ class BuilderTest : public testing::Test {
   }
 
   void verifyCollectedLabels() {
-    const auto collected = registry.Collect();
+    MockSerializer serializer;
 
-    ASSERT_EQ(1U, collected.size());
-    EXPECT_EQ(name, collected.at(0).name);
-    EXPECT_EQ(help, collected.at(0).help);
-    ASSERT_EQ(1U, collected.at(0).metric.size());
+    {
+      InSequence seq;
 
-    EXPECT_THAT(collected.at(0).metric.at(0).label,
-                testing::UnorderedElementsAreArray(expected_labels));
+      EXPECT_CALL(serializer,
+                  SerializeHelp(AllOf(Field(&MetricFamily::name, name),
+                                      Field(&MetricFamily::help, help))));
+      EXPECT_CALL(
+          serializer,
+          SerializeMetrics(
+              _, AllOf(Field(&ClientMetric::label,
+                             UnorderedElementsAreArray(expected_labels)))));
+    }
+
+    registry.Collect(serializer);
   }
 
   Registry registry;

@@ -7,8 +7,8 @@ add_executable(prometheus_core_test
   family_test.cc
   gauge_test.cc
   histogram_test.cc
+  iovector_test.cc
   registry_test.cc
-  serializer_test.cc
   summary_test.cc
   text_serializer_test.cc
   utils_test.cc

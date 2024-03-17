@@ -93,8 +93,8 @@ endif()
 
 if(ENABLE_TESTING)
   add_subdirectory(tests)
-endif()
 
-if(benchmark_FOUND)
-  add_subdirectory(benchmarks)
+  if(benchmark_FOUND)
+    add_subdirectory(benchmarks)
+  endif()
 endif()

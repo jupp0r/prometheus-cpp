@@ -9,7 +9,9 @@ static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
 
 CurlWrapper::CurlWrapper(const std::string& username,
-                         const std::string& password) {
+                         const std::string& password,
+                         std::function<void(CURL*)> presetupCurl)
+    : presetupCurl_(presetupCurl) {
   /* In windows, this will init the winsock stuff */
   auto error = curl_global_init(CURL_GLOBAL_ALL);
   if (error) {
@@ -22,8 +24,9 @@ CurlWrapper::CurlWrapper(const std::string& username,
     throw std::runtime_error("Cannot initialize easy curl!");
   }
 
-  // TEMP SOLUTION, NEED TO REFACTOR
-  curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0);
+  if (presetupCurl_) {
+    presetupCurl_(curl_);  
+  }
 
   optHttpHeader_ = curl_slist_append(nullptr, CONTENT_TYPE);
   if (!optHttpHeader_) {
@@ -49,6 +52,10 @@ int CurlWrapper::performHttpRequest(HttpMethod method, const std::string& uri,
   curl_easy_setopt(curl_, CURLOPT_URL, uri.c_str());
 
   curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, optHttpHeader_);
+
+  if (presetupCurl_) {
+    presetupCurl_(curl_);  
+  }
 
   if (!body.empty()) {
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());

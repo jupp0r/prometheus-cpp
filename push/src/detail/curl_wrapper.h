@@ -13,7 +13,7 @@ class CurlWrapper {
  public:
   CurlWrapper(const std::string& username,
               const std::string& password,
-              std::function<void(CURL*)> presetupCurl = std::nullptr_t);
+              std::function<void(CURL*)> presetupCurl = nullptr);
 
   CurlWrapper(const CurlWrapper&) = delete;
   CurlWrapper(CurlWrapper&&) = delete;

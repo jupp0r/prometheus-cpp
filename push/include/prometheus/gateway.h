@@ -29,7 +29,7 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
           const std::string& jobname, const Labels& labels = {},
           const std::string& username = {}, const std::string& password = {},
           std::chrono::seconds timeout = {},
-          std::function<void(CURL*)> presetupCurl = std::nullptr_t);
+          std::function<void(CURL*)> presetupCurl = nullptr);
 
   Gateway(const Gateway&) = delete;
   Gateway(Gateway&&) = delete;

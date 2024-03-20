@@ -22,6 +22,9 @@ CurlWrapper::CurlWrapper(const std::string& username,
     throw std::runtime_error("Cannot initialize easy curl!");
   }
 
+  // TEMP SOLUTION, NEED TO REFACTOR
+  curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0);
+
   optHttpHeader_ = curl_slist_append(nullptr, CONTENT_TYPE);
   if (!optHttpHeader_) {
     throw std::runtime_error("Cannot append the header of the content type");

@@ -22,9 +22,12 @@ namespace prometheus {
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password,
-                 std::chrono::seconds timeout)
+                 std::chrono::seconds timeout,
+                 std::function<void(CURL*)> presetupCurl)
     : timeout_(timeout) {
-  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username, password);
+  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username,
+                                                          password,
+                                                          presetupCurl);
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics";

@@ -35,7 +35,7 @@
 # - install riscv64 toolchain:
 #   $ sudo apt-get install g++-riscv64-linux-gnu
 # - cross-compiling config
-#   $ cmake .. -DBUILD_SHARED_LIBS=ON -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-aarch64.cmake
+#   $  cmake .. -DBUILD_SHARED_LIBS=ON -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-riscv64.cmake
 # You may have to set CMAKE_FIND_ROOT_PATH to point to the target enviroment, e.g.
 # by passing -DCMAKE_FIND_ROOT_PATH=/usr/riscv64-linux-gnu on Debian-like systems.
 set(CMAKE_SYSTEM_NAME Linux)

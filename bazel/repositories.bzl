@@ -16,11 +16,11 @@ def _legacy_and_bzlmod_repositories():
     maybe(
         http_archive,
         name = "com_github_curl",
-        sha256 = "05fc17ff25b793a437a0906e0484b82172a9f4de02be5ed447e0cab8c3475add",
-        strip_prefix = "curl-8.5.0",
+        sha256 = "f91249c87f68ea00cf27c44fdfa5a78423e41e71b7d408e5901a9896d905c495",
+        strip_prefix = "curl-8.7.1",
         urls = [
-            "https://github.com/curl/curl/releases/download/curl-8_5_0/curl-8.5.0.tar.gz",
-            "https://curl.haxx.se/download/curl-8.5.0.tar.gz",
+            "https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.gz",
+            "https://curl.haxx.se/download/curl-8.7.1.tar.gz",
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )

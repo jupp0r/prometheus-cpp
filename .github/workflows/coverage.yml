@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Mount vcpkg cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ runner.os }}

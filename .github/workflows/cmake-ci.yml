@@ -12,13 +12,13 @@ jobs:
         dependencies: [submodule, vcpkg]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: ${{ matrix.dependencies == 'submodule' }}
 
       - name: Mount vcpkg cache
         if: matrix.dependencies == 'vcpkg'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ matrix.os }}

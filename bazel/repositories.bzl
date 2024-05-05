@@ -13,6 +13,10 @@ def _legacy_and_bzlmod_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )
 
+def prometheus_cpp_repositories():
+    _legacy_and_bzlmod_repositories()
+
+    # These legacy style repos have bzlmod support, they are re-added here for legacy support
     maybe(
         http_archive,
         name = "com_github_curl",
@@ -25,10 +29,6 @@ def _legacy_and_bzlmod_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:curl.BUILD",
     )
 
-def prometheus_cpp_repositories():
-    _legacy_and_bzlmod_repositories()
-
-    # These legacy style repos have bzlmod support, they are re-added here for legacy support
     maybe(
         http_archive,
         name = "com_google_googletest",

@@ -4,13 +4,8 @@ module(
     repo_name = "com_github_jupp0r_prometheus_cpp",
 )
 
-data_deps_ext = use_extension("//bazel:repositories.bzl", "data_deps_ext")
-use_repo(
-    data_deps_ext,
-    "civetweb",
-)
-
 bazel_dep(name = "boringssl", version = "0.0.0-20240530-2db0eb3")
+bazel_dep(name = "civetweb", version = "1.16")
 bazel_dep(name = "curl", version = "8.7.1", repo_name = "com_github_curl")
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "rules_cc", version = "0.0.9")

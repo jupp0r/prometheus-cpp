@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "13fb26d51bb481693c74b4a5810775719edbfc27e37562b8525a1da84d58dc09",
+  "moduleFileHash": "21f937bd7b97fc69689f0f4136b60e8382940ca75ef728fbeac372fe3fc4c3fb",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -23,27 +23,10 @@
       "repoName": "com_github_jupp0r_prometheus_cpp",
       "executionPlatformsToRegister": [],
       "toolchainsToRegister": [],
-      "extensionUsages": [
-        {
-          "extensionBzlFile": "@com_github_jupp0r_prometheus_cpp//bazel:repositories.bzl",
-          "extensionName": "data_deps_ext",
-          "usingModule": "<root>",
-          "location": {
-            "file": "@@//:MODULE.bazel",
-            "line": 7,
-            "column": 30
-          },
-          "imports": {
-            "civetweb": "civetweb"
-          },
-          "devImports": [],
-          "tags": [],
-          "hasDevUseExtension": false,
-          "hasNonDevUseExtension": true
-        }
-      ],
+      "extensionUsages": [],
       "deps": {
         "boringssl": "boringssl@0.0.0-20240530-2db0eb3",
+        "civetweb": "civetweb@1.16",
         "com_github_curl": "curl@8.7.1",
         "platforms": "platforms@0.0.10",
         "rules_cc": "rules_cc@0.0.9",
@@ -80,6 +63,37 @@
           "strip_prefix": "boringssl-2db0eb3f96a5756298dcd7f9319e56a98585bd10",
           "remote_patches": {
             "https://bcr.bazel.build/modules/boringssl/0.0.0-20240530-2db0eb3/patches/module_dot_bazel.patch": "sha256-ROmpGIa6bWfDTV1c02V7xp0uScaKaRWYJKoz0uAhaoA="
+          },
+          "remote_patch_strip": 0
+        }
+      }
+    },
+    "civetweb@1.16": {
+      "name": "civetweb",
+      "version": "1.16",
+      "key": "civetweb@1.16",
+      "repoName": "civetweb",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "boringssl": "boringssl@0.0.0-20240530-2db0eb3",
+        "platforms": "platforms@0.0.10",
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {
+          "urls": [
+            "https://github.com/civetweb/civetweb/archive/v1.16.tar.gz"
+          ],
+          "integrity": "sha256-8ORxwb9OeASmz7QeqdE+fWI7K8x7weKk3VSVGiTWAoU=",
+          "strip_prefix": "civetweb-1.16",
+          "remote_patches": {
+            "https://bcr.bazel.build/modules/civetweb/1.16/patches/add_build_file.patch": "sha256-0R40p5wAtmQ/MLvqI9XzF9H5BRpxC85lUdXHlW1teIQ=",
+            "https://bcr.bazel.build/modules/civetweb/1.16/patches/module_dot_bazel.patch": "sha256-xbUEcDhFEMv7bJHQpFKzPdqDog1yLfH2f5+lt191on8="
           },
           "remote_patch_strip": 0
         }
@@ -1397,35 +1411,6 @@
     }
   },
   "moduleExtensions": {
-    "//bazel:repositories.bzl%data_deps_ext": {
-      "general": {
-        "bzlTransitiveDigest": "ErvYzuGVMlYMPdcU195knGgSH/TtRksqNyimxwsEV7E=",
-        "recordedFileInputs": {},
-        "recordedDirentsInputs": {},
-        "envVariables": {},
-        "generatedRepoSpecs": {
-          "civetweb": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "strip_prefix": "civetweb-1.16",
-              "sha256": "f0e471c1bf4e7804a6cfb41ea9d13e7d623b2bcc7bc1e2a4dd54951a24d60285",
-              "urls": [
-                "https://github.com/civetweb/civetweb/archive/v1.16.tar.gz"
-              ],
-              "build_file": "@@//bazel:civetweb.BUILD"
-            }
-          }
-        },
-        "recordedRepoMappingEntries": [
-          [
-            "",
-            "bazel_tools",
-            "bazel_tools"
-          ]
-        ]
-      }
-    },
     "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
       "general": {
         "bzlTransitiveDigest": "pMLFCYaRPkgXPQ8vtuNkMfiHfPmRBy6QJfnid4sWfv0=",

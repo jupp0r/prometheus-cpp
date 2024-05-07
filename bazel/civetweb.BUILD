@@ -48,7 +48,7 @@ DEPS = select({
 })
 
 cc_library(
-    name = "libcivetweb",
+    name = "civetweb",
     srcs = [
         "src/civetweb.c",
     ],
@@ -79,7 +79,7 @@ cc_library(
 )
 
 cc_library(
-    name = "civetweb",
+    name = "civetserver",
     srcs = [
         "src/CivetServer.cpp",
     ],
@@ -100,6 +100,6 @@ cc_library(
     }),
     visibility = ["//visibility:public"],
     deps = [
-        ":libcivetweb",
+        ":civetweb",
     ],
 )

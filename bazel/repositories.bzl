@@ -1,7 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def _legacy_and_bzlmod_repositories():
+def prometheus_cpp_repositories():
     maybe(
         http_archive,
         name = "civetweb",
@@ -12,9 +12,6 @@ def _legacy_and_bzlmod_repositories():
         ],
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:civetweb.BUILD",
     )
-
-def prometheus_cpp_repositories():
-    _legacy_and_bzlmod_repositories()
 
     # These legacy style repos have bzlmod support, they are re-added here for legacy support
     maybe(
@@ -75,9 +72,3 @@ def prometheus_cpp_repositories():
         build_file = "@com_github_jupp0r_prometheus_cpp//bazel:zlib.BUILD",
     )
 
-def _data_deps_extension_impl(ctx):
-    _legacy_and_bzlmod_repositories()
-
-data_deps_ext = module_extension(
-    implementation = _data_deps_extension_impl,
-)

@@ -27,15 +27,3 @@ cc_library(
         "@zlib",
     ],
 )
-
-cc_library(
-    name = "pull_internal_headers",
-    hdrs = glob(
-        ["src/detail/*.h"],
-    ),
-    strip_include_prefix = "src",
-    visibility = ["//pull/tests:__subpackages__"],
-    deps = [
-        "//core",
-    ],
-)

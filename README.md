@@ -103,7 +103,7 @@ on master and for all releases.
 In case these instructions don't work for you, looking at
 the [GitHub Workflows](.github/workflows) might help.
 
-### via CMake
+### With CMake
 
 For CMake builds don't forget to fetch the submodules first. Please note that
 [zlib](https://zlib.net/) and [libcurl](https://curl.se/) are not provided by
@@ -132,46 +132,14 @@ ctest -V
 cmake --install .
 ```
 
-### via Bazel
+### With Bazel
 
-Install [bazel](https://www.bazel.io).  Bazel makes it easy to add
-this repo to your project as a dependency. Just add the following
-to your `WORKSPACE`:
+Install a recent [bazel](https://www.bazel.io) version with Modules support.
+To build and test prometheus-cpp run:
 
-```python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
-http_archive(
-    name = "com_github_jupp0r_prometheus_cpp",
-    strip_prefix = "prometheus-cpp-master",
-    urls = ["https://github.com/jupp0r/prometheus-cpp/archive/master.zip"],
-)
-
-load("@com_github_jupp0r_prometheus_cpp//bazel:repositories.bzl", "prometheus_cpp_repositories")
-
-prometheus_cpp_repositories()
+```shell
+bazel test //...
 ```
-
-Then, you can reference this library in your own `BUILD` file, as
-demonstrated with the sample server included in this repository:
-
-```python
-cc_binary(
-    name = "sample_server",
-    srcs = ["sample_server.cc"],
-    deps = ["@com_github_jupp0r_prometheus_cpp//pull"],
-)
-```
-
-When you call `prometheus_cpp_repositories()` in your `WORKSPACE` file,
-you load the following dependencies, if they do not exist yet, into your project:
-
-* `civetweb` for [Civetweb](https://github.com/civetweb/civetweb)
-* `com_google_googletest` for [Google Test](https://github.com/google/googletest)
-* `com_github_google_benchmark` for [Google Benchmark](https://github.com/google/benchmark)
-* `com_github_curl` for [curl](https://curl.haxx.se/)
-* `net_zlib_zlib` for [zlib](http://www.zlib.net/)
-
-The list of dependencies is also available from file [repositories.bzl](bazel/repositories.bzl).
 
 ## Packaging
 
@@ -226,6 +194,16 @@ prometheus-cpp port which has been tested on Linux, macOS, and Windows.
 
 [Conan](https://conan.io/) package manager contains prometheus-cpp package as well
 in [ConanCenter](https://conan.io/center/prometheus-cpp) repository
+
+### Bazel
+
+The Bazel Central Registry (BCR
+[provides the prometheus-cpp package](https://registry.bazel.build/modules/prometheus-cpp).
+Add the following to your `MODULE.bazel` file:
+
+```python
+bazel_dep(name = "prometheus-cpp", version = "1.2.4")
+```
 
 ### Plain Makefiles
 

@@ -5,7 +5,7 @@ if(POLICY CMP0091)
 endif()
 
 project(prometheus-cpp
-  VERSION 1.2.4
+  VERSION 1.3.0
   DESCRIPTION "Prometheus Client Library for Modern C++"
   HOMEPAGE_URL "https://github.com/jupp0r/prometheus-cpp"
 )

@@ -28,8 +28,11 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   Gateway(const std::string& host, const std::string& port,
           const std::string& jobname, const Labels& labels = {},
           const std::string& username = {}, const std::string& password = {},
-          std::chrono::seconds timeout = {},
-          std::function<void(CURL*)> presetupCurl = nullptr);
+          std::chrono::seconds timeout = {});
+
+  Gateway(const std::string& host, const std::string& port,
+          std::function<void(CURL*)> presetupCurl, const std::string& jobname,
+          const Labels& labels = {});
 
   Gateway(const Gateway&) = delete;
   Gateway(Gateway&&) = delete;
@@ -75,7 +78,6 @@ class PROMETHEUS_CPP_PUSH_EXPORT Gateway {
   std::string jobUri_;
   std::string labels_;
   std::unique_ptr<detail::CurlWrapper> curlWrapper_;
-  std::chrono::seconds timeout_;
   std::mutex mutex_;
 
   using CollectableEntry = std::pair<std::weak_ptr<Collectable>, std::string>;

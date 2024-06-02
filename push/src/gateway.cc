@@ -19,15 +19,42 @@
 
 namespace prometheus {
 
+namespace {
+class SetupAdapter {
+ public:
+  SetupAdapter(const std::string& username, const std::string& password,
+               std::chrono::seconds timeout)
+      : timeout_(timeout) {
+    if (!username.empty()) {
+      auth_ = username + ":" + password;
+    }
+  }
+
+  void operator()(CURL* curl) {
+    if (!auth_.empty()) {
+      curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+      curl_easy_setopt(curl, CURLOPT_USERPWD, auth_.c_str());
+    }
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_);
+  }
+
+ private:
+  std::string auth_;
+  std::chrono::seconds timeout_;
+};
+}  // namespace
+
 Gateway::Gateway(const std::string& host, const std::string& port,
                  const std::string& jobname, const Labels& labels,
                  const std::string& username, const std::string& password,
-                 std::chrono::seconds timeout,
-                 std::function<void(CURL*)> presetupCurl)
-    : timeout_(timeout) {
-  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(username,
-                                                          password,
-                                                          presetupCurl);
+                 std::chrono::seconds timeout)
+    : Gateway(host, port, SetupAdapter{username, password, timeout}, jobname,
+              labels) {}
+
+Gateway::Gateway(const std::string& host, const std::string& port,
+                 std::function<void(CURL*)> presetupCurl,
+                 const std::string& jobname, const Labels& labels) {
+  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(presetupCurl);
 
   std::stringstream jobUriStream;
   jobUriStream << host << ':' << port << "/metrics";
@@ -89,8 +116,7 @@ int Gateway::push(detail::HttpMethod method) {
     auto metrics = collectable->Collect();
     auto body = serializer.Serialize(metrics);
     auto uri = getUri(wcollectable);
-    auto status_code =
-        curlWrapper_->performHttpRequest(method, uri, body, timeout_.count());
+    auto status_code = curlWrapper_->performHttpRequest(method, uri, body);
 
     if (status_code < 100 || status_code >= 400) {
       return status_code;
@@ -124,8 +150,7 @@ std::future<int> Gateway::async_push(detail::HttpMethod method) {
     auto uri = getUri(wcollectable);
 
     futures.push_back(std::async(std::launch::async, [method, uri, body, this] {
-      return curlWrapper_->performHttpRequest(method, uri, *body,
-                                              timeout_.count());
+      return curlWrapper_->performHttpRequest(method, uri, *body);
     }));
   }
 
@@ -147,8 +172,7 @@ std::future<int> Gateway::async_push(detail::HttpMethod method) {
 }
 
 int Gateway::Delete() {
-  return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete, jobUri_,
-                                          {}, timeout_.count());
+  return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete, jobUri_);
 }
 
 std::future<int> Gateway::AsyncDelete() {
@@ -156,8 +180,8 @@ std::future<int> Gateway::AsyncDelete() {
 }
 
 int Gateway::DeleteForInstance() {
-  return curlWrapper_->performHttpRequest(
-      detail::HttpMethod::Delete, jobUri_ + labels_, {}, timeout_.count());
+  return curlWrapper_->performHttpRequest(detail::HttpMethod::Delete,
+                                          jobUri_ + labels_);
 }
 
 std::future<int> Gateway::AsyncDeleteForInstance() {

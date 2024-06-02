@@ -20,10 +20,10 @@ target_compile_features(push
 target_link_libraries(push
   PUBLIC
     ${PROJECT_NAME}::core
+    CURL::libcurl
   PRIVATE
     ${PROJECT_NAME}::util
     Threads::Threads
-    CURL::libcurl
     $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
 )
 

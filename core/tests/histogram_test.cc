@@ -89,6 +89,31 @@ TEST(HistogramTest, cumulative_bucket_count) {
   EXPECT_EQ(h.bucket.at(2).cumulative_count, 7U);
 }
 
+TEST(HistogramTest, observe_float_test_bucket_counts) {
+  Histogram histogram{{1, 2}};
+  histogram.Observe(0.1, 2.6);
+  histogram.Observe(1.2, 3.6);
+  histogram.Observe(2.3, 4.6);
+  auto metric = histogram.Collect();
+  auto h = metric.histogram;
+  ASSERT_EQ(h.bucket.size(), 3U);
+  // rounding errors do not accumulate in the cumulative count:
+  EXPECT_EQ(h.bucket.at(0).cumulative_count, 2U); // 2.6, truncated
+  EXPECT_EQ(h.bucket.at(1).cumulative_count, 6U); // 2.6 + 3.6, truncated
+  EXPECT_EQ(h.bucket.at(2).cumulative_count, 10U); // 2.6 + 3.6 + 4.6, truncated
+}
+
+TEST(HistogramTest, observe_float_test_total_sum) {
+  Histogram histogram{{1, 2}};
+  histogram.Observe(0.1, 2.6);
+  histogram.Observe(1.2, 3.6);
+  histogram.Observe(2.3, 4.6);
+  auto metric = histogram.Collect();
+  auto h = metric.histogram;
+  EXPECT_EQ(h.sample_count, 10U);
+  EXPECT_FLOAT_EQ(h.sample_sum, 15.16);
+}
+
 TEST(HistogramTest, observe_multiple_test_bucket_counts) {
   Histogram histogram{{1, 2}};
   histogram.ObserveMultiple({5, 9, 3}, 20);

@@ -42,6 +42,12 @@ class SetupAdapter {
   std::string auth_;
   std::chrono::seconds timeout_;
 };
+
+std::string concatenate(const std::string& host, const std::string& port) {
+  std::stringstream ss;
+  ss << host << ":" << port;
+  return ss.str();
+}
 }  // namespace
 
 Gateway::Gateway(const std::string& host, const std::string& port,
@@ -53,11 +59,20 @@ Gateway::Gateway(const std::string& host, const std::string& port,
 
 Gateway::Gateway(const std::string& host, const std::string& port,
                  std::function<void(CURL*)> presetupCurl,
+                 const std::string& jobname, const Labels& labels)
+    : Gateway(concatenate(host, port), presetupCurl, jobname, labels) {}
+
+Gateway::Gateway(const std::string& url,
+                 std::function<void(CURL*)> presetupCurl,
                  const std::string& jobname, const Labels& labels) {
   curlWrapper_ = detail::make_unique<detail::CurlWrapper>(presetupCurl);
 
   std::stringstream jobUriStream;
-  jobUriStream << host << ':' << port << "/metrics";
+  jobUriStream << url;
+  if (!url.empty() && url.back() != '/') {
+    jobUriStream << "/";
+  }
+  jobUriStream << "metrics";
   detail::encodeLabel(jobUriStream, {"job", jobname});
   jobUri_ = jobUriStream.str();
 

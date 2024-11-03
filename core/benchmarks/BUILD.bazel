@@ -7,6 +7,6 @@ cc_binary(
     linkstatic = True,
     deps = [
         "//core",
-        "@com_github_google_benchmark//:benchmark",
+        "@google_benchmark//:benchmark",
     ],
 )

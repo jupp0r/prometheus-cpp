@@ -44,7 +44,7 @@ cc_test(
     linkstatic = True,
     deps = [
         "//pull",
-        "@com_github_curl//:curl",
-        "@com_google_googletest//:gtest_main",
+        "@curl",
+        "@googletest//:gtest_main",
     ],
 )

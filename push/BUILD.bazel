@@ -25,7 +25,7 @@ cc_library(
     deps = [
         "//core",
         "//util",
-        "@com_github_curl//:curl",
+        "@curl",
     ],
 )
 

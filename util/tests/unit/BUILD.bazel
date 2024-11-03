@@ -5,6 +5,6 @@ cc_test(
     linkstatic = True,
     deps = [
         "//util",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )

@@ -29,24 +29,20 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install telegraf
 
-      - name: Build with SSL (without bzlmod)
-        if: runner.os != 'macOS'
-        run: bazel build --noenable_bzlmod --config=ssl //...
-
       - name: Build with SSL
         if: runner.os != 'macOS'
-        run: bazel build --enable_bzlmod --config=ssl //...
+        run: bazel build --config=ssl //...
 
       - name: Test with SSL
         if: runner.os != 'macOS'
-        run: bazel test --enable_bzlmod --config=ssl --test_output=all //...
+        run: bazel test --config=ssl --test_output=all //...
 
       - name: Build
-        run: bazel build --enable_bzlmod //...
+        run: bazel build //...
 
       - name: Test
-        run: bazel test --enable_bzlmod --test_output=all //...
+        run: bazel test --test_output=all //...
 
       - name: Scraping Test
         if: runner.os != 'Windows'
-        run: bazel test --enable_bzlmod --test_output=all //pull/tests/integration:scrape-test
+        run: bazel test --test_output=all //pull/tests/integration:scrape-test

@@ -37,15 +37,15 @@ Histogram::Histogram(BucketBoundaries&& buckets)
   }
 }
 
-void Histogram::Observe(const double value) {
+void Histogram::Observe(const double value, const double quantity) {
   const auto bucket_index = static_cast<std::size_t>(
       std::distance(bucket_boundaries_.begin(),
                     std::lower_bound(bucket_boundaries_.begin(),
                                      bucket_boundaries_.end(), value)));
 
   std::lock_guard<std::mutex> lock(mutex_);
-  sum_.Increment(value);
-  bucket_counts_[bucket_index].Increment();
+  sum_.Increment(quantity * value);
+  bucket_counts_[bucket_index].Increment(quantity);
 }
 
 void Histogram::ObserveMultiple(const std::vector<double>& bucket_increments,
@@ -77,7 +77,7 @@ ClientMetric Histogram::Collect() const {
 
   auto metric = ClientMetric{};
 
-  auto cumulative_count = 0ULL;
+  auto cumulative_count = 0.0;
   metric.histogram.bucket.reserve(bucket_counts_.size());
   for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
     cumulative_count += bucket_counts_[i].Value();

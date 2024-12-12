@@ -2,7 +2,7 @@
 
 [![Bazel CI](https://github.com/jupp0r/prometheus-cpp/workflows/Bazel%20CI/badge.svg)](https://github.com/jupp0r/prometheus-cpp/actions?workflow=Continuous+Integration)
 [![CMake CI](https://github.com/jupp0r/prometheus-cpp/workflows/CMake%20CI/badge.svg)](https://github.com/jupp0r/prometheus-cpp/actions?workflow=Continuous+Integration)
-[![Coverage Status](https://coveralls.io/repos/github/jupp0r/prometheus-cpp/badge.svg?branch=master)](https://coveralls.io/github/jupp0r/prometheus-cpp?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/jupp0r/prometheus-cpp/badge.svg?branch=main)](https://coveralls.io/github/jupp0r/prometheus-cpp?branch=main)
 
 This library aims to enable
 [Metrics-Driven Development](https://sookocheff.com/post/mdd/mdd/) for
@@ -98,7 +98,7 @@ Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successf
 There are two supported ways to build
 `prometheus-cpp` - [CMake](https://cmake.org)
 and [bazel](https://bazel.io). Both are tested in CI and should work
-on master and for all releases.
+on main and for all releases.
 
 In case these instructions don't work for you, looking at
 the [GitHub Workflows](.github/workflows) might help.
@@ -355,7 +355,7 @@ scraped by telegraf as part of integration tests.
 ### What scrape formats do you support
 
 Only the [Prometheus Text Exposition
-Format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-format-details).
+Format](https://github.com/prometheus/docs/blob/main/content/docs/instrumenting/exposition_formats.md#text-format-details).
 Support for the protobuf format was removed because it's been removed
 from Prometheus 2.0.
 

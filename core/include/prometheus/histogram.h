@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <vector>
 
@@ -74,13 +75,18 @@ class PROMETHEUS_CPP_CORE_EXPORT Histogram {
   /// \brief Get the current value of the histogram.
   ///
   /// Collect is called by the Registry when collecting metrics.
-  ClientMetric Collect() const;
+  ClientMetric Collect();
 
  private:
+  struct Value {
+    std::vector<Gauge> bucket_counts_;
+    std::atomic<std::uint64_t> count_;
+    Gauge sum_;
+  };
   BucketBoundaries bucket_boundaries_;
-  mutable std::mutex mutex_;
-  std::vector<Counter> bucket_counts_;
-  Gauge sum_;
+  std::mutex mutex_;
+  Value values_[2];
+  std::atomic<std::uint64_t> hot_index_value_count_;
 };
 
 /// \brief Return a builder to configure and register a Histogram metric.

@@ -31,6 +31,9 @@ class PROMETHEUS_CPP_CORE_EXPORT Gauge {
   /// \brief Create a gauge that starts at the given amount.
   explicit Gauge(double);
 
+  // \brief Create a gauge from another gauge.
+  Gauge(const Gauge&);
+
   /// \brief Increment the gauge by 1.
   void Increment();
 

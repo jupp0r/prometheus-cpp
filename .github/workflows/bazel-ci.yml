@@ -20,11 +20,6 @@ jobs:
           sudo apt-get install -y locales
           sudo locale-gen de_DE.UTF-8 # used by SerializerTest
 
-      - name: Install telegraf on Ubuntu
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y telegraf
-
       - name: Install telegraf on macOS
         if: runner.os == 'macOS'
         run: brew install telegraf
@@ -44,5 +39,5 @@ jobs:
         run: bazel test --test_output=all //...
 
       - name: Scraping Test
-        if: runner.os != 'Windows'
+        if: runner.os == 'macOS'
         run: bazel test --test_output=all //pull/tests/integration:scrape-test

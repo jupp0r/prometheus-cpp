@@ -57,8 +57,12 @@ jobs:
       - name: Run lcov
         run: lcov --capture --directory "${{ github.workspace }}/_build" --output-file coverage.info --no-external --directory "${{ github.workspace }}" --exclude '*/tests/*'
 
+      - name: dump lcov
+        run: lcov --list coverage.info
+
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: coverage.info
+          debug: true

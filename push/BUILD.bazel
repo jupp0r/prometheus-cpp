@@ -16,8 +16,7 @@ cc_library(
         ["include/**/*.h"],
     ) + [":export_header"],
     linkopts = select({
-        "//:windows": [],
-        "//:windows_msvc": [],
+        "@platforms//os:windows": [],
         "//conditions:default": ["-lpthread"],
     }),
     strip_include_prefix = "include",

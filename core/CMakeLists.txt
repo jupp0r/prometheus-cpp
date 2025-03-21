@@ -26,7 +26,7 @@ target_compile_features(core
 target_link_libraries(core
   PRIVATE
     Threads::Threads
-    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+    $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt>
 )
 
 if(HAVE_CXX_LIBATOMIC)

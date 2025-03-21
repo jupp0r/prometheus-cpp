@@ -11,7 +11,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends ca-certificates clang-14 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
+          apt-get install -y --no-install-recommends ca-certificates clang-19 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
 
       - name: Checkout source
         uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
           submodules: true
 
       - name: "CMake Configure"
-        run: cmake -GNinja -DRUN_IWYU=ON -DCMAKE_C_COMPILER=clang-14 -DCMAKE_CXX_COMPILER=clang++-14 -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/_build
+        run: cmake -GNinja -DRUN_IWYU=ON -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19 -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/_build
 
       - name: Build
         run: cmake --build ${GITHUB_WORKSPACE}/_build 2>&1 | tee ${GITHUB_WORKSPACE}/output.txt
@@ -35,13 +35,13 @@ jobs:
 
   format:
     name: Clang Format
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
       # clang-format comes pre-installed
-      # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
+      # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
 
       - name: Run clang-format
         run: find . -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.o' -o -name '*.h' -o -name '*.hpp' -o -name '*.hxx' \) -exec clang-format-15 -style=file -i {} \;

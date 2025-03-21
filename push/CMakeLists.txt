@@ -24,7 +24,7 @@ target_link_libraries(push
   PRIVATE
     ${PROJECT_NAME}::util
     Threads::Threads
-    $<$<AND:$<BOOL:UNIX>,$<NOT:$<BOOL:APPLE>>>:rt>
+    $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt>
 )
 
 target_include_directories(push

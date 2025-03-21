@@ -4,7 +4,7 @@ on: [pull_request]
 jobs:
   build:
     name: Code Coverage
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
         run: lcov --capture --directory "${{ github.workspace }}/_build" --output-file coverage.info --no-external --directory "${{ github.workspace }}" --exclude '*/tests/*'
 
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.info
+          files: coverage.info

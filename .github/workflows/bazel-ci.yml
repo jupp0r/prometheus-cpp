@@ -8,6 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - os: macOS-latest
+            bazel_args: "--cxxopt=-std=c++17"
+          - os: ubuntu-latest
+            bazel_args: "--cxxopt=-std=c++17"
+          - os: windows-latest
+            bazel_args: "--cxxopt=/std:c++17"
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -26,18 +33,18 @@ jobs:
 
       - name: Build with SSL
         if: runner.os != 'macOS'
-        run: bazel build --config=ssl //...
+        run: bazel build ${{ matrix.bazel_args }} --config=ssl //...
 
       - name: Test with SSL
         if: runner.os != 'macOS'
-        run: bazel test --config=ssl --test_output=all //...
+        run: bazel test ${{ matrix.bazel_args }} --config=ssl --test_output=all //...
 
       - name: Build
-        run: bazel build //...
+        run: bazel build ${{ matrix.bazel_args }} //...
 
       - name: Test
-        run: bazel test --test_output=all //...
+        run: bazel test ${{ matrix.bazel_args }} --test_output=all //...
 
       - name: Scraping Test
         if: runner.os == 'macOS'
-        run: bazel test --test_output=all //pull/tests/integration:scrape-test
+        run: bazel test ${{ matrix.bazel_args }} --test_output=all //pull/tests/integration:scrape-test

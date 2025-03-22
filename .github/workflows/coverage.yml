@@ -40,6 +40,15 @@ jobs:
         run: |
           sudo apt-get install -y lcov
 
+      - name: Install lcov 2.3 (which fixes function coverage calculation, https://bugs.launchpad.net/ubuntu/+source/lcov/+bug/2052354)
+        if: runner.os == 'Linux'
+        run: |
+          echo -e "Package: *\nPin: release n=plucky\nPin-Priority: 100" | sudo tee /etc/apt/preferences.d/99-plucky
+          echo "deb http://azure.archive.ubuntu.com/ubuntu/ plucky main universe" | sudo tee /etc/apt/sources.list.d/ubuntu-plucky.list
+          sudo apt-get update
+          sudo apt-get install -y -t plucky lcov
+          apt-cache policy lcov
+
       - name: "CMake Configure for Unix with vcpkg dependencies"
         env:
           CFLAGS: "--coverage"
@@ -55,7 +64,10 @@ jobs:
         working-directory: "${{ github.workspace }}/_build"
 
       - name: Run lcov
-        run: lcov --capture --directory "${{ github.workspace }}/_build" --output-file coverage.info --no-external --directory "${{ github.workspace }}" --exclude '*/tests/*'
+        run: lcov --capture --directory "${{ github.workspace }}" --output-file coverage.info --no-external --exclude '*/tests/*'
+
+      - name: Dump lcov
+        run: lcov --list coverage.info
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2

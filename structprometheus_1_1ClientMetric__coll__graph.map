@@ -1,0 +1,15 @@
+<map id="prometheus::ClientMetric" name="prometheus::ClientMetric">
+<area shape="rect" id="Node000001" title=" " alt="" coords="311,173,497,198"/>
+<area shape="rect" id="Node000002" href="$structprometheus_1_1ClientMetric_1_1Counter.html" title=" " alt="" coords="5,5,192,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,48,193,55,242,78,288,104,386,170,384,175,285,109,239,82,191,60,174,53"/>
+<area shape="rect" id="Node000003" href="$structprometheus_1_1ClientMetric_1_1Gauge.html" title=" " alt="" coords="5,69,192,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="180,111,287,144,366,170,364,175,286,149,179,116"/>
+<area shape="rect" id="Node000004" href="$structprometheus_1_1ClientMetric_1_1Info.html" title=" " alt="" coords="5,133,192,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="206,162,311,173,310,178,205,167"/>
+<area shape="rect" id="Node000005" href="$structprometheus_1_1ClientMetric_1_1Summary.html" title=" " alt="" coords="5,197,192,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="205,204,310,192,311,198,206,209"/>
+<area shape="rect" id="Node000006" href="$structprometheus_1_1ClientMetric_1_1Histogram.html" title=" " alt="" coords="5,261,192,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="182,255,286,223,366,196,368,201,287,228,183,260"/>
+<area shape="rect" id="Node000007" href="$structprometheus_1_1ClientMetric_1_1Untyped.html" title=" " alt="" coords="5,325,192,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="173,318,191,311,239,290,285,264,341,228,385,196,388,200,344,233,288,269,242,295,193,316,175,323"/>
+</map>

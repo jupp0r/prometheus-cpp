@@ -21,6 +21,7 @@ class Endpoint;
 
 class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  public:
+  explicit Exposer(std::shared_ptr<CivetServer> server);
   explicit Exposer(const std::string& bind_address, std::size_t num_threads = 2,
                    const CivetCallbacks* callbacks = nullptr);
   explicit Exposer(std::vector<std::string> options,
@@ -48,7 +49,7 @@ class PROMETHEUS_CPP_PULL_EXPORT Exposer {
  private:
   detail::Endpoint& GetEndpointForUri(const std::string& uri);
 
-  std::unique_ptr<CivetServer> server_;
+  std::shared_ptr<CivetServer> server_;
   std::vector<std::unique_ptr<detail::Endpoint>> endpoints_;
   std::mutex mutex_;
 };

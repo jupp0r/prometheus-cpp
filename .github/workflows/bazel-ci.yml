@@ -51,4 +51,4 @@ jobs:
 
       - name: Scraping Test
         if: runner.os == 'macOS'
-        run: bazel test ${{ matrix.bazel_args }} --test_output=all //pull/tests/integration:scrape-test
+        run: bazel test ${{ matrix.bazel_args }} --test_output=all --test_env=TELEGRAF="$(brew --prefix telegraf)/bin/telegraf" //pull/tests/integration:scrape-test

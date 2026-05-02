@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-telegraf=$(which telegraf)
-if [ ! -x "$telegraf" ] ; then
+: "${TELEGRAF:=$(which telegraf)}"
+
+if [ ! -x "$TELEGRAF" ] ; then
     echo "telegraf must be in path for this test to run"
     exit 1
 fi
@@ -16,4 +17,4 @@ trap 'kill $(jobs -p)' EXIT
 timeout_after 10
 
 pull/tests/integration/sample-server &
-telegraf --config pull/tests/integration/scrape.conf --quiet | grep -m1 http_requests_total
+"$TELEGRAF" --config pull/tests/integration/scrape.conf --quiet | grep -m1 http_requests_total

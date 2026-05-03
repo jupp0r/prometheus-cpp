@@ -1,7 +1,6 @@
 name: Linting
 on:
   pull_request:
-  push:
     branches:
       - master
 
@@ -10,7 +9,7 @@ jobs:
     name: Include What You Use
     runs-on: ubuntu-latest
     container:
-      image: debian:sid-slim
+      image: debian:trixie-slim
     steps:
       - name: Install dependencies
         run: |
@@ -18,7 +17,7 @@ jobs:
           apt-get install -y --no-install-recommends ca-certificates clang-19 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
 
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -42,7 +41,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # clang-format comes pre-installed
       # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md

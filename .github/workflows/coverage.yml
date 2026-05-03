@@ -1,7 +1,6 @@
 name: Coverage
 on:
   pull_request:
-  push:
     branches:
       - master
 
@@ -11,10 +10,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Mount vcpkg cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ runner.os }}

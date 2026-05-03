@@ -1,7 +1,6 @@
 name: Bazel CI
 on:
   pull_request:
-  push:
     branches:
       - master
 
@@ -14,14 +13,14 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         include:
           - os: macOS-latest
-            bazel_args: "--cxxopt=-std=c++17"
+            bazel_args: "--cxxopt=-std=c++17 --lockfile_mode=error"
           - os: ubuntu-latest
-            bazel_args: "--cxxopt=-std=c++17"
+            bazel_args: "--cxxopt=-std=c++17 --lockfile_mode=error"
           - os: windows-latest
-            bazel_args: "--cxxopt=/std:c++17"
+            bazel_args: "--cxxopt=/std:c++17 --lockfile_mode=error"
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Generate German locale on Ubuntu
         if: runner.os == 'Linux'

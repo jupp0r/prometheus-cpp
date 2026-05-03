@@ -4,13 +4,23 @@ on:
     branches:
       - master
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Documentation
     runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install doxygen
         run: |
@@ -22,9 +32,11 @@ jobs:
         run: doxygen
         working-directory: "${{ github.workspace }}/doc"
 
-      - name: Deploy documentation
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_orphan: true
-          publish_dir: ./doc/html
+          path: ./doc/html
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -13,8 +13,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-24.04
     permissions:
-      pages: write
-      id-token: write
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v6
@@ -29,11 +28,9 @@ jobs:
         run: doxygen
         working-directory: "${{ github.workspace }}/doc"
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy documentation
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./doc/html
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_orphan: true
+          publish_dir: ./doc/html

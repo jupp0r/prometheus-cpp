@@ -1,7 +1,6 @@
 name: Bazel CI
 on:
   pull_request:
-  push:
     branches:
       - master
 
@@ -21,7 +20,7 @@ jobs:
             bazel_args: "--cxxopt=/std:c++17"
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Generate German locale on Ubuntu
         if: runner.os == 'Linux'

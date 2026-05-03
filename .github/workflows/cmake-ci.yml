@@ -1,7 +1,6 @@
 name: CMake CI
 on:
   pull_request:
-  push:
     branches:
       - master
 
@@ -12,17 +11,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, ubuntu-22.04, windows-2019]
+        os: [macos-14, ubuntu-22.04, windows-2022]
         dependencies: [submodule, vcpkg]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: ${{ matrix.dependencies == 'submodule' }}
 
       - name: Mount vcpkg cache
         if: matrix.dependencies == 'vcpkg'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "~/.cache/vcpkg/archives"
           key: vcpkg-${{ matrix.os }}

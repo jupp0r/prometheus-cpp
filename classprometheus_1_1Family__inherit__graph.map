@@ -1,0 +1,5 @@
+<map id="prometheus::Family&lt; T &gt;" name="prometheus::Family&lt; T &gt;">
+<area shape="rect" id="Node000001" title="A metric of type T with a set of labeled dimensions." alt="" coords="5,79,195,104"/>
+<area shape="rect" id="Node000002" href="$classprometheus_1_1Collectable.html" title="Interface implemented by anything that can be used by Prometheus to collect metrics." alt="" coords="9,5,191,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,44,103,79,97,79,97,44"/>
+</map>

@@ -11,6 +11,13 @@
 
 namespace prometheus {
 
+Exposer::Exposer(std::shared_ptr<CivetServer> server)
+    : server_(std::move(server)) {
+  if (!server_) {
+    throw std::invalid_argument("Invalid CivetServer: cannot be null");
+  }
+} 
+
 Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads,
                  const CivetCallbacks* callbacks)
     : Exposer(
@@ -20,7 +27,7 @@ Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads,
 
 Exposer::Exposer(std::vector<std::string> options,
                  const CivetCallbacks* callbacks)
-    : server_(detail::make_unique<CivetServer>(std::move(options), callbacks)) {
+    : Exposer(std::make_shared<CivetServer>(std::move(options), callbacks)) {
 }
 
 Exposer::~Exposer() = default;

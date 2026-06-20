@@ -23,7 +23,7 @@ jobs:
             bazel_args: "--cxxopt=/std:c++17 --lockfile_mode=error"
     steps:
       - name: Checkout source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Generate German locale on Ubuntu
         if: runner.os == 'Linux'

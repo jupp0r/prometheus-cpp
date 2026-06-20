@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include "CivetServer.h"
-
 namespace prometheus {
 namespace {
 

@@ -102,5 +102,26 @@ TEST(SummaryTest, construction_with_dynamic_quantile_vector) {
   summary.Observe(8.0);
 }
 
+TEST(SummaryTest, quantile_with_out_of_order_batches) {
+  // Flush large values into the sample first, then insert smaller values so
+  // that insertBatch() hits the --idx path (value < sample_[item].value).
+  Summary summary{Summary::Quantiles{{0.5, 0.05}}, std::chrono::hours{1}};
+
+  for (int i = 0; i < 10; ++i) summary.Observe(100.0 + i);
+  summary.Collect();  // flushes buffer → sample_ now contains large values
+
+  for (int i = 0; i < 10; ++i) summary.Observe(1.0 + i);
+  auto metric = summary.Collect();  // flushes buffer with small values < existing sample → --idx
+  auto s = metric.summary;
+
+  // 20 observations total, sum = (1..10) + (100..109) = 55 + 1045 = 1100
+  EXPECT_EQ(s.sample_count, 20U);
+  EXPECT_DOUBLE_EQ(s.sample_sum, 1100.0);
+  // p50 with error 0.05 on 20 samples: rank error ≤ 1, true median is 10 or 100
+  ASSERT_EQ(s.quantile.size(), 1U);
+  EXPECT_GE(s.quantile.at(0).value, 1.0);
+  EXPECT_LE(s.quantile.at(0).value, 109.0);
+}
+
 }  // namespace
 }  // namespace prometheus

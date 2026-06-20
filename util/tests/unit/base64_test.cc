@@ -36,6 +36,9 @@ const TestVector testVector[] = {
     {"easure.", "ZWFzdXJlLg=="},
     {"asure.", "YXN1cmUu"},
     {"sure.", "c3VyZS4="},
+
+    // '/' character in encoded output (covers temp |= 0x3F branch in decode)
+    {"\xff\xff\xff", "////"},
 };
 
 using namespace testing;

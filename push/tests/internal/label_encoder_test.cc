@@ -23,6 +23,18 @@ TEST_F(LabelEncoderTest, regular) {
   EXPECT_EQ("/foo/bar", Encode(Label{"foo", "bar"}));
 }
 
+TEST_F(LabelEncoderTest, uppercase) {
+  EXPECT_EQ("/foo/Bar", Encode(Label{"foo", "Bar"}));
+}
+
+TEST_F(LabelEncoderTest, digits) {
+  EXPECT_EQ("/foo/bar123", Encode(Label{"foo", "bar123"}));
+}
+
+TEST_F(LabelEncoderTest, unreserved_chars) {
+  EXPECT_EQ("/foo/a-b.c_d~e", Encode(Label{"foo", "a-b.c_d~e"}));
+}
+
 TEST_F(LabelEncoderTest, empty) {
   EXPECT_EQ("/first_label@base64/=", Encode(Label{"first_label", ""}));
 }

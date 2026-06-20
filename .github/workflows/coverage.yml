@@ -57,7 +57,7 @@ jobs:
         working-directory: "${{ github.workspace }}/_build"
 
       - name: Run lcov
-        run: lcov --capture --directory "${{ github.workspace }}" --output-file coverage.info --no-external --exclude '*/tests/*'
+        run: lcov --capture --directory "${{ github.workspace }}" --output-file coverage.info --filter brace --no-external --exclude '*/tests/*'
 
       - name: Dump lcov
         run: lcov --list coverage.info

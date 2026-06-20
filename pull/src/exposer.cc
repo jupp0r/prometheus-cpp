@@ -16,7 +16,7 @@ Exposer::Exposer(std::shared_ptr<CivetServer> server)
   if (!server_) {
     throw std::invalid_argument("Invalid CivetServer: cannot be null");
   }
-} 
+}
 
 Exposer::Exposer(const std::string& bind_address, const std::size_t num_threads,
                  const CivetCallbacks* callbacks)

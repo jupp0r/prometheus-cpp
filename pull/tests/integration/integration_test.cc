@@ -274,6 +274,19 @@ TEST_F(BasicAuthIntegrationTest, shouldRejectWrongAuthorizationMethod) {
 }
 #endif
 
+TEST_F(BasicAuthIntegrationTest, shouldRejectNonBasicAuthScheme) {
+  std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
+      curl_slist_append(nullptr, "Authorization: Bearer sometoken"),
+      curl_slist_free_all);
+
+  fetchPrePerform_ = [&header](CURL* curl) {
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header.get());
+  };
+
+  const auto metrics = FetchMetrics(default_metrics_path_);
+  ASSERT_EQ(metrics.code, 401);
+}
+
 TEST_F(BasicAuthIntegrationTest, shouldRejectMalformedBase64) {
   std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> header(
       curl_slist_append(nullptr, "Authorization: Basic $"),

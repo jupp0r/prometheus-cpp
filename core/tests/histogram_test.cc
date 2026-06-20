@@ -57,6 +57,11 @@ TEST(HistogramTest, reject_unsorted_bucket_bounds) {
   EXPECT_ANY_THROW(Histogram({2, 1}));
 }
 
+TEST(HistogramTest, reject_unsorted_bucket_bounds_lvalue) {
+  const Histogram::BucketBoundaries unsorted = {2, 1};
+  EXPECT_THROW(Histogram{unsorted}, std::invalid_argument);
+}
+
 TEST(HistogramTest, reject_non_incrementing_bucket_bounds) {
   EXPECT_ANY_THROW(Histogram({1, 2, 2, 3}));
 }

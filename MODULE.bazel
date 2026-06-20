@@ -4,7 +4,7 @@ module(
     repo_name = "com_github_jupp0r_prometheus_cpp",
 )
 
-bazel_dep(name = "boringssl", version = "0.20250311.0")
+bazel_dep(name = "boringssl", version = "0.20260616.0")
 bazel_dep(name = "civetweb", version = "1.16.bcr.4")
 bazel_dep(name = "curl", version = "8.12.0.bcr.1")
 bazel_dep(name = "platforms", version = "0.0.11")

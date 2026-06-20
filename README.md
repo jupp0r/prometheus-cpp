@@ -355,7 +355,7 @@ scraped by telegraf as part of integration tests.
 ### What scrape formats do you support
 
 Only the [Prometheus Text Exposition
-Format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-format-details).
+Format](https://github.com/prometheus/docs/blob/main/docs/instrumenting/exposition_formats.md#details).
 Support for the protobuf format was removed because it's been removed
 from Prometheus 2.0.
 

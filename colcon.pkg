@@ -1,0 +1,8 @@
+{
+  "cmake-args": [
+    "-DBUILD_SHARED_LIBS=ON",
+    "-DENABLE_TESTING=OFF",
+    "-DENABLE_PUSH=OFF",
+    "-DENABLE_COMPRESSION=OFF"
+  ]
+}

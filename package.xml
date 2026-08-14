@@ -1,0 +1,16 @@
+<package format="3">
+  <name>prometheus_cpp</name>
+  <version>1.3.0</version>
+  <description>Prometheus client library for C++: instrumentation and /metrics exposition</description>
+  <maintainer email="lydia.martin@chancemaritime.com">Lydia Martin</maintainer>
+  <license>MIT</license>
+  <author>jupp0r</author>
+
+  <buildtool_depend>cmt_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+<export>
+  <build_type>ament_cmake</build_type>
+</export>
+
+</package>

@@ -86,8 +86,9 @@ template <typename T>
 std::vector<MetricFamily> Family<T>::Collect() const {
   std::lock_guard<std::mutex> lock{mutex_};
 
+  auto families = std::vector<MetricFamily>{};
   if (metrics_.empty()) {
-    return {};
+    return families;
   }
 
   auto family = MetricFamily{};
@@ -98,7 +99,8 @@ std::vector<MetricFamily> Family<T>::Collect() const {
   for (const auto& [metric_labels, metric] : metrics_) {
     family.metric.push_back(CollectMetric(metric_labels, metric.get()));
   }
-  return {family};
+  families.push_back(std::move(family));
+  return families;
 }
 
 template <typename T>

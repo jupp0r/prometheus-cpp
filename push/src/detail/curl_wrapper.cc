@@ -2,8 +2,7 @@
 
 #include <stdexcept>
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 static const char CONTENT_TYPE[] =
     "Content-Type: text/plain; version=0.0.4; charset=utf-8";
@@ -98,5 +97,4 @@ bool CurlWrapper::addHttpHeader(const std::string& header) {
   return true;
 }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

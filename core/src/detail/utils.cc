@@ -6,9 +6,7 @@
 
 #include "hash.h"
 
-namespace prometheus {
-
-namespace detail {
+namespace prometheus::detail {
 
 std::size_t LabelHasher::operator()(const Labels& labels) const {
   std::size_t seed = 0;
@@ -19,6 +17,4 @@ std::size_t LabelHasher::operator()(const Labels& labels) const {
   return seed;
 }
 
-}  // namespace detail
-
-}  // namespace prometheus
+}  // namespace prometheus::detail

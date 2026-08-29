@@ -5,8 +5,7 @@
 #include <limits>
 #include <memory>
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 CKMSQuantiles::Quantile::Quantile(double quantile, double error)
     : quantile(quantile),
@@ -149,5 +148,4 @@ void CKMSQuantiles::compress() {
   }
 }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

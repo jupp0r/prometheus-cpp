@@ -6,7 +6,6 @@
 #include <tuple>
 
 #include "prometheus/counter.h"
-#include "prometheus/detail/future_std.h"
 #include "prometheus/gauge.h"
 #include "prometheus/histogram.h"
 #include "prometheus/info.h"
@@ -135,7 +134,7 @@ Family<T>& Registry::Add(const std::string& name, const std::string& help,
     }
   }
 
-  auto family = detail::make_unique<Family<T>>(name, help, labels);
+  auto family = std::make_unique<Family<T>>(name, help, labels);
   auto& ref = *family;
   families.push_back(std::move(family));
   return ref;

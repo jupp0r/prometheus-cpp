@@ -6,8 +6,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 /*
 Copyright (C) 2019-2020 by Martin Vorbrodt <martin@vorbrodt.blog>
@@ -136,5 +135,4 @@ inline std::string base64_decode(const std::string& input) {
   return decoded;
 }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

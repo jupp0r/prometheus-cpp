@@ -6,8 +6,7 @@
 
 #include "prometheus/detail/http_method.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 class CurlWrapper {
  public:
@@ -31,5 +30,4 @@ class CurlWrapper {
   std::function<void(CURL*)> presetupCurl_;
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

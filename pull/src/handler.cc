@@ -24,8 +24,7 @@
 #error "Civetweb version 1.14 or higher required"
 #endif
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 MetricsHandler::MetricsHandler(Registry& registry)
     : bytes_transferred_family_(
@@ -178,5 +177,4 @@ void MetricsHandler::CleanupStalePointers(
                      }),
       std::end(collectables));
 }
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

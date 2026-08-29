@@ -4,7 +4,7 @@ add_library(${PROJECT_NAME}::util ALIAS util)
 
 target_compile_features(util
   INTERFACE
-    cxx_std_11
+    cxx_std_17
 )
 
 target_include_directories(util

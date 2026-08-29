@@ -3,8 +3,7 @@
 #include <memory>
 #include <ratio>
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 TimeWindowQuantiles::TimeWindowQuantiles(
     const std::vector<CKMSQuantiles::Quantile>& quantiles,
@@ -42,5 +41,4 @@ CKMSQuantiles& TimeWindowQuantiles::rotate() const {
   return ckms_quantiles_[current_bucket_];
 }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

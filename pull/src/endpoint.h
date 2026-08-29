@@ -9,8 +9,7 @@
 #include "prometheus/collectable.h"
 #include "prometheus/registry.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 class MetricsHandler;
 
 class Endpoint {
@@ -40,5 +39,4 @@ class Endpoint {
   std::unique_ptr<BasicAuthHandler> auth_handler_;
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

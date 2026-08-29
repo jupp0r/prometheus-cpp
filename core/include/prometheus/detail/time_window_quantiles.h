@@ -9,8 +9,7 @@
 
 // IWYU pragma: private, include "prometheus/summary.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 class PROMETHEUS_CPP_CORE_EXPORT TimeWindowQuantiles {
   using Clock = std::chrono::steady_clock;
@@ -33,5 +32,4 @@ class PROMETHEUS_CPP_CORE_EXPORT TimeWindowQuantiles {
   const Clock::duration rotation_interval_;
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

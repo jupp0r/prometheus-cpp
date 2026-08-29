@@ -1,20 +1,9 @@
-if(USE_THIRDPARTY_LIBRARIES)
-  find_package(civetweb-3rdparty CONFIG REQUIRED)
-  add_library(${PROJECT_NAME}::civetweb ALIAS civetweb)
-  install(
-    TARGETS civetweb
-    EXPORT ${PROJECT_NAME}-targets
-    # keep embedded civetweb headers scoped to prometheus(-cpp)
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/prometheus
-  )
-else()
-  find_package(civetweb CONFIG REQUIRED)
+find_package(civetweb CONFIG REQUIRED)
 
-  # work-around https://github.com/civetweb/civetweb/pull/918
-  if(WIN32 AND NOT TARGET WINSOCK::WINSOCK)
-    add_library(WINSOCK::WINSOCK INTERFACE IMPORTED)
-    target_link_libraries(WINSOCK::WINSOCK INTERFACE ws2_32)
-  endif()
+# work-around https://github.com/civetweb/civetweb/pull/918
+if(WIN32 AND NOT TARGET WINSOCK::WINSOCK)
+  add_library(WINSOCK::WINSOCK INTERFACE IMPORTED)
+  target_link_libraries(WINSOCK::WINSOCK INTERFACE ws2_32)
 endif()
 
 if(ENABLE_COMPRESSION)
@@ -46,7 +35,7 @@ target_link_libraries(pull
   PRIVATE
     ${PROJECT_NAME}::util
     Threads::Threads
-    $<IF:$<BOOL:${USE_THIRDPARTY_LIBRARIES}>,${PROJECT_NAME}::civetweb,civetweb::civetweb-cpp>
+    civetweb::civetweb-cpp
     $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt>
     $<$<BOOL:${ENABLE_COMPRESSION}>:ZLIB::ZLIB>
 )
@@ -95,9 +84,7 @@ if(GENERATE_PKGCONFIG)
   set(PKGCONFIG_LIBS)
   set(PKGCONFIG_REQUIRES)
 
-  if(NOT USE_THIRDPARTY_LIBRARIES)
-    string(APPEND PKGCONFIG_LIBS " -lcivetweb-cpp -lcivetweb")
-  endif()
+  string(APPEND PKGCONFIG_LIBS " -lcivetweb-cpp -lcivetweb")
 
   if(ENABLE_COMPRESSION)
     string(APPEND PKGCONFIG_REQUIRES " zlib")

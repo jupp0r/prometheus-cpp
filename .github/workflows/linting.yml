@@ -17,12 +17,10 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends ca-certificates clang-19 cmake git iwyu libbenchmark-dev libcurl4-openssl-dev ninja-build zlib1g-dev
+          apt-get install -y --no-install-recommends ca-certificates clang-19 cmake git iwyu libbenchmark-dev libcivetweb-dev libcurl4-openssl-dev ninja-build zlib1g-dev
 
       - name: Checkout source
         uses: actions/checkout@v7
-        with:
-          submodules: true
 
       - name: "CMake Configure"
         run: cmake -GNinja -DRUN_IWYU=ON -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19 -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/_build

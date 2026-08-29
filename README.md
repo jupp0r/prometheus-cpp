@@ -91,7 +91,7 @@ int main() {
 
 ## Requirements
 
-Using `prometheus-cpp` requires a C++11 compliant compiler. It has been successfully tested with GNU GCC 7.4 on Ubuntu Bionic (18.04) and Visual Studio 2017.
+Using `prometheus-cpp` requires a C++17 compliant compiler.
 
 ## Building
 

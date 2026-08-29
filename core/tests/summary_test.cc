@@ -102,6 +102,31 @@ TEST(SummaryTest, construction_with_dynamic_quantile_vector) {
   summary.Observe(8.0);
 }
 
+TEST(SummaryTest, compress_keeps_larger_value_on_merge) {
+  // With q=1.0 the two samples are eligible to be merged in compress().
+  // The surviving sample must retain the larger value, not the smaller one.
+  Summary summary{Summary::Quantiles{{1.0, 0.001}}, std::chrono::hours{1}};
+  summary.Observe(1.0);
+  summary.Observe(100.0);
+  auto metric = summary.Collect();
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 1U);
+  EXPECT_DOUBLE_EQ(s.quantile.at(0).value, 100.0);
+}
+
+TEST(SummaryTest, insert_preserves_double_precision) {
+  // 2^24+1 is not exactly representable as float, so a truncating
+  // double->float->double round trip would corrupt the stored value.
+  Summary summary{Summary::Quantiles{{1.0, 0.001}}, std::chrono::hours{1}};
+  const double v = 16777217.0;
+  summary.Observe(1.0);
+  summary.Observe(v);
+  auto metric = summary.Collect();
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 1U);
+  EXPECT_DOUBLE_EQ(s.quantile.at(0).value, v);
+}
+
 TEST(SummaryTest, quantile_with_out_of_order_batches) {
   // Flush large values into the sample first, then insert smaller values so
   // that insertBatch() hits the --idx path (value < sample_[item].value).

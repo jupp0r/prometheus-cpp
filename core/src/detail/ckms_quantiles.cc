@@ -105,11 +105,11 @@ bool CKMSQuantiles::insertBatch() {
 
   // Loop through the buffer and insert the items into the sample set
   for (std::size_t i = start; i < buffer_count_; ++i) {
-    float value = buffer_[i];
+    double value = buffer_[i];
 
     auto iterator = std::lower_bound(
         sample_.begin(), sample_.end(), value,
-        [](const Item& item, float val) { return item.value < val; });
+        [](const Item& item, double val) { return item.value < val; });
     std::size_t idx = std::distance(sample_.begin(), iterator);
 
     int delta = 0;
@@ -149,8 +149,11 @@ void CKMSQuantiles::compress() {
     // sample
     if (last_compressed_sample.g + current_sample.g + current_sample.delta <=
         allowableError(static_cast<int>(compressed_samples.size()) - 1)) {
-      // Merge current sample into last compressed sample
-      last_compressed_sample.g += current_sample.g;  // Update weight
+      // Keep current_sample's value/delta (matches original semantics of
+      // dropping the earlier, smaller-value sample) but combine weights.
+      int merged_g = last_compressed_sample.g + current_sample.g;
+      last_compressed_sample = current_sample;
+      last_compressed_sample.g = merged_g;
     } else {
       // If not compressible, add current sample to compressed samples
       compressed_samples.push_back(current_sample);

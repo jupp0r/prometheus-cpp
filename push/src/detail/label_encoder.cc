@@ -5,8 +5,7 @@
 
 #include "prometheus/detail/base64.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 namespace {
 // Does this character need encoding like in RFC 3986 section 2.3?
@@ -38,5 +37,4 @@ void encodeLabel(std::ostream& os, const Label& label) {
     os << "/" << label.first << "/" << label.second;
   }
 }
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

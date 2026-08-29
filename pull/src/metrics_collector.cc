@@ -4,8 +4,7 @@
 
 #include "prometheus/collectable.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 std::vector<MetricFamily> CollectMetrics(
     const std::vector<std::weak_ptr<prometheus::Collectable>>& collectables) {
@@ -26,5 +25,4 @@ std::vector<MetricFamily> CollectMetrics(
   return collected_metrics;
 }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

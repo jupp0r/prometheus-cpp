@@ -9,8 +9,7 @@
 
 // IWYU pragma: private, include "prometheus/summary.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 class PROMETHEUS_CPP_CORE_EXPORT CKMSQuantiles {
  public:
@@ -53,5 +52,4 @@ class PROMETHEUS_CPP_CORE_EXPORT CKMSQuantiles {
   std::size_t buffer_count_;
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

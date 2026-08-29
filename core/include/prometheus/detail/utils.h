@@ -5,8 +5,7 @@
 #include "prometheus/detail/core_export.h"
 #include "prometheus/labels.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 /// \brief Label hasher for use in STL containers.
 struct PROMETHEUS_CPP_CORE_EXPORT LabelHasher {
@@ -18,5 +17,4 @@ struct PROMETHEUS_CPP_CORE_EXPORT LabelHasher {
   std::size_t operator()(const Labels& labels) const;
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

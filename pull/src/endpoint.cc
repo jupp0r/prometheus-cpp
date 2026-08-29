@@ -6,8 +6,7 @@
 #include "handler.h"
 #include "prometheus/detail/future_std.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 
 Endpoint::Endpoint(CivetServer& server, std::string uri)
     : server_(server),
@@ -49,5 +48,4 @@ void Endpoint::RemoveCollectable(
 
 const std::string& Endpoint::GetURI() const { return uri_; }
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

@@ -1,12 +1,10 @@
 #pragma once
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 enum class HttpMethod {
   Post,
   Put,
   Delete,
 };
 
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

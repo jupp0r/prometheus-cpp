@@ -3,9 +3,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace prometheus {
-
-namespace detail {
+namespace prometheus::detail {
 
 /// \brief Combine a hash value with nothing.
 /// It's the boundary condition of this serial functions.
@@ -34,6 +32,4 @@ inline void hash_combine(std::size_t* seed, const T& value,
   hash_combine(seed, args...);
 }
 
-}  // namespace detail
-
-}  // namespace prometheus
+}  // namespace prometheus::detail

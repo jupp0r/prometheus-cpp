@@ -11,8 +11,7 @@
 #include "prometheus/registry.h"
 #include "prometheus/summary.h"
 
-namespace prometheus {
-namespace detail {
+namespace prometheus::detail {
 class MetricsHandler : public CivetHandler {
  public:
   explicit MetricsHandler(Registry& registry);
@@ -35,5 +34,4 @@ class MetricsHandler : public CivetHandler {
   Family<Summary>& request_latencies_family_;
   Summary& request_latencies_;
 };
-}  // namespace detail
-}  // namespace prometheus
+}  // namespace prometheus::detail

@@ -105,17 +105,21 @@ the [GitHub Workflows](.github/workflows) might help.
 
 ### With CMake
 
-For CMake builds don't forget to fetch the submodules first. Please note that
-[zlib](https://zlib.net/) and [libcurl](https://curl.se/) are not provided by
-the included submodules. In the example below their usage is disabled.
+`prometheus-cpp` does not vendor its dependencies. It expects the following
+libraries to already be installed and discoverable via `find_package()`:
 
-Then build as usual.
+- [civetweb](https://github.com/civetweb/civetweb)
+- [googletest](https://github.com/google/googletest) (optional, needed for `ENABLE_TESTING`)
+- [benchmark](https://github.com/google/benchmark) (optional, needed for benchmarks)
+- [zlib](https://zlib.net/) (optional, needed for `ENABLE_COMPRESSION`)
+- [libcurl](https://curl.se/) (optional, needed for `ENABLE_PUSH`)
+
+Use whichever package manager you prefer to provide them, e.g.
+[vcpkg](#vcpkg), [Conan](#conan), your system's package manager, or a
+manually installed copy. In the example below push support and compression
+are disabled to keep the dependency list minimal.
 
 ``` shell
-# fetch third-party dependencies
-git submodule init
-git submodule update
-
 mkdir _build
 cd _build
 
@@ -155,9 +159,6 @@ configuration options.
 To generate a Debian package you could follow these steps:
 
 ``` shell
-# fetch third-party dependencies
-git submodule update --init
-
 # run cmake
 cmake -B_build -DCPACK_GENERATOR=DEB -DBUILD_SHARED_LIBS=ON # or OFF for static libraries
 

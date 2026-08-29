@@ -10,7 +10,6 @@
 
 #include "detail/curl_wrapper.h"
 #include "detail/label_encoder.h"
-#include "prometheus/detail/future_std.h"
 #include "prometheus/metric_family.h"  // IWYU pragma: keep
 #include "prometheus/text_serializer.h"
 
@@ -65,7 +64,7 @@ Gateway::Gateway(const std::string& host, const std::string& port,
 Gateway::Gateway(const std::string& url,
                  std::function<void(CURL*)> presetupCurl,
                  const std::string& jobname, const Labels& labels) {
-  curlWrapper_ = detail::make_unique<detail::CurlWrapper>(presetupCurl);
+  curlWrapper_ = std::make_unique<detail::CurlWrapper>(presetupCurl);
 
   std::stringstream jobUriStream;
   jobUriStream << url;

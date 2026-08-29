@@ -7,7 +7,6 @@
 
 #include "CivetServer.h"
 #include "endpoint.h"
-#include "prometheus/detail/future_std.h"
 
 namespace prometheus {
 
@@ -67,7 +66,7 @@ detail::Endpoint& Exposer::GetEndpointForUri(const std::string& uri) {
     return *it->get();
   }
 
-  endpoints_.emplace_back(detail::make_unique<detail::Endpoint>(*server_, uri));
+  endpoints_.emplace_back(std::make_unique<detail::Endpoint>(*server_, uri));
   return *endpoints_.back().get();
 }
 

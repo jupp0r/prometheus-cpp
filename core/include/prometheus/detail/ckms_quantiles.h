@@ -39,7 +39,7 @@ class PROMETHEUS_CPP_CORE_EXPORT CKMSQuantiles {
   void reset();
 
  private:
-  double allowableError(int rank);
+  double allowableError(int rank, std::size_t size);
   bool insertBatch();
   void compress();
 

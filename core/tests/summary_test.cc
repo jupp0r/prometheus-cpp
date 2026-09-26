@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <thread>
@@ -71,6 +72,23 @@ TEST(SummaryTest, quantile_values) {
   EXPECT_NEAR(s.quantile.at(2).value, 0.99 * SAMPLES, 0.001 * SAMPLES);
 }
 
+TEST(SummaryTest, single_quantile_with_ascending_observations) {
+  constexpr double quantile = 0.9;
+  constexpr double error = 0.01;
+
+  for (const int samples : {100, 500}) {
+    SCOPED_TRACE(samples);
+    Summary summary{Summary::Quantiles{{quantile, error}},
+                    std::chrono::hours{1}};
+    for (int i = 1; i <= samples; ++i) summary.Observe(i);
+
+    auto metric = summary.Collect();
+    const auto& s = metric.summary;
+    ASSERT_EQ(s.quantile.size(), 1U);
+    EXPECT_NEAR(s.quantile.at(0).value, quantile * samples, error * samples);
+  }
+}
+
 TEST(SummaryTest, max_age) {
   Summary summary{Summary::Quantiles{{0.99, 0.001}}, std::chrono::seconds(1),
                   2};
@@ -102,25 +120,50 @@ TEST(SummaryTest, construction_with_dynamic_quantile_vector) {
   summary.Observe(8.0);
 }
 
+TEST(SummaryTest, compress_keeps_larger_value_on_merge) {
+  // With q=1.0 the two samples are eligible to be merged in compress().
+  // The surviving sample must retain the larger value, not the smaller one.
+  Summary summary{Summary::Quantiles{{1.0, 0.001}}, std::chrono::hours{1}};
+  summary.Observe(1.0);
+  summary.Observe(100.0);
+  auto metric = summary.Collect();
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 1U);
+  EXPECT_DOUBLE_EQ(s.quantile.at(0).value, 100.0);
+}
+
+TEST(SummaryTest, insert_preserves_double_precision) {
+  // 2^24+1 is not exactly representable as float, so a truncating
+  // double->float->double round trip would corrupt the stored value.
+  Summary summary{Summary::Quantiles{{1.0, 0.001}}, std::chrono::hours{1}};
+  const double v = 16777217.0;
+  summary.Observe(1.0);
+  summary.Observe(v);
+  auto metric = summary.Collect();
+  auto s = metric.summary;
+  ASSERT_EQ(s.quantile.size(), 1U);
+  EXPECT_DOUBLE_EQ(s.quantile.at(0).value, v);
+}
+
 TEST(SummaryTest, quantile_with_out_of_order_batches) {
-  // Flush large values into the sample first, then insert smaller values so
-  // that insertBatch() hits the --idx path (value < sample_[item].value).
+  // Insert small values into a sample that already contains larger values.
   Summary summary{Summary::Quantiles{{0.5, 0.05}}, std::chrono::hours{1}};
 
   for (int i = 0; i < 10; ++i) summary.Observe(100.0 + i);
-  summary.Collect();  // flushes buffer → sample_ now contains large values
+  summary.Collect();  // Flush the first batch before inserting smaller values.
 
   for (int i = 0; i < 10; ++i) summary.Observe(1.0 + i);
-  auto metric = summary.Collect();  // flushes buffer with small values < existing sample → --idx
+  auto metric = summary.Collect();
   auto s = metric.summary;
 
   // 20 observations total, sum = (1..10) + (100..109) = 55 + 1045 = 1100
   EXPECT_EQ(s.sample_count, 20U);
   EXPECT_DOUBLE_EQ(s.sample_sum, 1100.0);
-  // p50 with error 0.05 on 20 samples: rank error ≤ 1, true median is 10 or 100
+  // p50 with error 0.05 permits ranks 9..11: values 9, 10, or 100.
   ASSERT_EQ(s.quantile.size(), 1U);
-  EXPECT_GE(s.quantile.at(0).value, 1.0);
-  EXPECT_LE(s.quantile.at(0).value, 109.0);
+  const auto value = s.quantile.at(0).value;
+  EXPECT_TRUE(value == 9.0 || value == 10.0 || value == 100.0)
+      << "Unexpected p50 value: " << value;
 }
 
 }  // namespace

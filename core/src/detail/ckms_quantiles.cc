@@ -39,7 +39,7 @@ double CKMSQuantiles::get(double q) {
 
   int rankMin = 0;
   const auto desired = static_cast<int>(q * count_);
-  const auto bound = desired + (allowableError(desired) / 2);
+  const auto bound = desired + (allowableError(desired, sample_.size()) / 2);
 
   auto it = sample_.begin();
   decltype(it) prev;
@@ -65,8 +65,7 @@ void CKMSQuantiles::reset() {
   buffer_count_ = 0;
 }
 
-double CKMSQuantiles::allowableError(int rank) {
-  auto size = sample_.size();
+double CKMSQuantiles::allowableError(int rank, std::size_t size) {
   double minError = size + 1;
 
   for (const auto& q : quantiles_.get()) {
@@ -85,42 +84,42 @@ double CKMSQuantiles::allowableError(int rank) {
 }
 
 bool CKMSQuantiles::insertBatch() {
+  // If there is no data to insert return false
   if (buffer_count_ == 0) {
     return false;
   }
 
+  // Sort the buffer upto buffer_count_ to prepare for inserting items
   std::sort(buffer_.begin(), buffer_.begin() + buffer_count_);
 
   std::size_t start = 0;
+
+  sample_.reserve(sample_.size() + buffer_count_);
+  // If the sample set is empty, add the first item
   if (sample_.empty()) {
     sample_.emplace_back(buffer_[0], 1, 0);
-    ++start;
+    ++start;  // Skip the first item since it's already added to the sample
     ++count_;
   }
 
-  std::size_t idx = 0;
-  std::size_t item = idx++;
-
+  // Loop through the buffer and insert the items into the sample set
   for (std::size_t i = start; i < buffer_count_; ++i) {
-    double v = buffer_[i];
-    while (idx < sample_.size() && sample_[item].value < v) {
-      item = idx++;
+    double value = buffer_[i];
+
+    auto iterator = std::lower_bound(
+        sample_.begin(), sample_.end(), value,
+        [](const Item& item, double val) { return item.value < val; });
+    std::size_t idx = std::distance(sample_.begin(), iterator);
+
+    int delta = 0;
+    if (idx > 0 && idx < sample_.size()) {
+      delta = static_cast<int>(std::floor(
+                  allowableError(static_cast<int>(idx) + 1, sample_.size()))) +
+              1;
     }
 
-    if (sample_[item].value > v) {
-      --idx;
-    }
-
-    int delta;
-    if (idx - 1 == 0 || idx + 1 == sample_.size()) {
-      delta = 0;
-    } else {
-      delta = static_cast<int>(std::floor(allowableError(idx + 1))) + 1;
-    }
-
-    sample_.emplace(sample_.begin() + idx, v, 1, delta);
-    count_++;
-    item = idx++;
+    sample_.emplace(iterator, value, 1, delta);
+    ++count_;
   }
 
   buffer_count_ = 0;
@@ -128,24 +127,45 @@ bool CKMSQuantiles::insertBatch() {
 }
 
 void CKMSQuantiles::compress() {
+  // If there are less than 2 items in the sample set, there's nothing to
+  // compress
   if (sample_.size() < 2) {
     return;
   }
 
-  std::size_t idx = 0;
-  std::size_t prev;
-  std::size_t next = idx++;
+  std::vector<Item> compressed_samples;  // Vector to hold compressed samples
+  compressed_samples.reserve(
+      sample_.size());  // Reserve space to avoid multiple allocations
 
-  while (idx < sample_.size()) {
-    prev = next;
-    next = idx++;
+  // Start with the first sample
+  compressed_samples.push_back(sample_[0]);
 
-    if (sample_[prev].g + sample_[next].g + sample_[next].delta <=
-        allowableError(idx - 1)) {
-      sample_[next].g += sample_[prev].g;
-      sample_.erase(sample_.begin() + prev);
+  // Merges logically remove items even though sample_ stays unchanged.
+  auto logical_size = sample_.size();
+
+  for (std::size_t idx = 1; idx < sample_.size(); ++idx) {
+    const Item& current_sample = sample_[idx];
+    Item& last_compressed_sample = compressed_samples.back();
+    const auto logical_index = static_cast<int>(compressed_samples.size());
+
+    // Check if we can compress the current sample into the last compressed
+    // sample
+    if (last_compressed_sample.g + current_sample.g + current_sample.delta <=
+        allowableError(logical_index, logical_size)) {
+      // Keep current_sample's value/delta (matches original semantics of
+      // dropping the earlier, smaller-value sample) but combine weights.
+      int merged_g = last_compressed_sample.g + current_sample.g;
+      last_compressed_sample = current_sample;
+      last_compressed_sample.g = merged_g;
+      --logical_size;
+    } else {
+      // If not compressible, add current sample to compressed samples
+      compressed_samples.push_back(current_sample);
     }
   }
+
+  // Replace old samples with new compressed samples
+  sample_ = std::move(compressed_samples);
 }
 
 }  // namespace prometheus::detail

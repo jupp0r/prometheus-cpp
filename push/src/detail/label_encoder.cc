@@ -29,8 +29,11 @@ bool needsEncoding(char c) {
 void encodeLabel(std::ostream& os, const Label& label) {
   if (label.second.empty()) {
     os << "/" << label.first << "@base64/=";
-  } else if (std::any_of(label.second.begin(), label.second.end(),
+  } else if (label.second == "." || label.second == ".." ||
+             std::any_of(label.second.begin(), label.second.end(),
                          needsEncoding)) {
+    // "." and ".." are dot segments that would be removed from the path
+    // (RFC 3986 section 5.2.4), so they have to be base64 encoded as well.
     os << "/" << label.first << "@base64/"
        << detail::base64url_encode(label.second);
   } else {

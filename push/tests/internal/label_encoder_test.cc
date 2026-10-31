@@ -35,6 +35,12 @@ TEST_F(LabelEncoderTest, unreserved_chars) {
   EXPECT_EQ("/foo/a-b.c_d~e", Encode(Label{"foo", "a-b.c_d~e"}));
 }
 
+TEST_F(LabelEncoderTest, dot_segments) {
+  EXPECT_EQ("/foo@base64/Lg==", Encode(Label{"foo", "."}));
+  EXPECT_EQ("/foo@base64/Li4=", Encode(Label{"foo", ".."}));
+  EXPECT_EQ("/foo/...", Encode(Label{"foo", "..."}));
+}
+
 TEST_F(LabelEncoderTest, empty) {
   EXPECT_EQ("/first_label@base64/=", Encode(Label{"first_label", ""}));
 }
